@@ -2,7 +2,7 @@
   :description "CL-STL : a port of C++ standard template library for Common Lisp."
   :version "0.8.1"
   :author "Show MATSUOKA <show@architect-matsuoka.jpn.org>"
-  :licence "Public Domain"
+  :licence "GPL v2.0"
   :depends-on ("cl-overload"
 			   "cl-operator")
   :components ((:file "cl-stl-base")
@@ -21,7 +21,7 @@
 			   (:file "cl-stl-deque"            :depends-on ("cl-stl-iterator"))
 			   (:file "cl-stl-list"             :depends-on ("cl-stl-iterator"))
 			   (:file "cl-stl-forward-list"     :depends-on ("cl-stl-cl-conslist"))
-			   (:file "cl-stl-numeric"          :depends-on ("cl-stl-iterator cl-stl-algo-base" "cl-stl-vector" "cl-stl-array"))
+			   (:file "cl-stl-numeric"          :depends-on ("cl-stl-iterator" "cl-stl-algo-base" "cl-stl-vector" "cl-stl-array"))
 			   (:file "cl-stl-algorithm"        :depends-on ("cl-stl-base" "cl-stl-algo-base" "cl-stl-vector" "cl-stl-array"))
 			   (:file "cl-stl-rbnode"           :depends-on ("cl-stl-base"))
 			   (:file "cl-stl-rbtree"           :depends-on ("cl-stl-rbnode"))

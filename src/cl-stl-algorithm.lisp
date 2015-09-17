@@ -17007,6 +17007,7 @@
 	(__set-symmetric-difference-imp-09 (__cons-itr-cons first1)
 									   (__cons-itr-cons  last1) first2 last2 (clone result) #'operator_<))
 
+  #+(or cl-stl-extra (not cl-stl-0x98))
   (defmethod-overload set-symmetric-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 												(first2 input-iterator) (last2 input-iterator) (result output-iterator) comp)
 	;;(format t "specialized set-symmetric-difference for cons-const-iterator & input-iterator & output-iterator is invoked.~%")
@@ -17048,6 +17049,7 @@
 																  (opr::vec-ptr-index  result)
 																  (opr::vec-ptr-buffer result) #'operator_<)))
 
+  #+(or cl-stl-extra (not cl-stl-0x98))
   (defmethod-overload set-symmetric-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 												(first2 input-iterator) (last2 input-iterator) (result vector-pointer) comp)
 	;;(format t "specialized set-symmetric-difference for cons-const-iterator & input-iterator & vector-pointer is invoked.~%")
@@ -17137,6 +17139,7 @@
 									   (opr::vec-ptr-index  last2)
 									   (opr::vec-ptr-buffer first2) (clone result) #'operator_<))
 
+  #+(or cl-stl-extra (not cl-stl-0x98))
   (defmethod-overload set-symmetric-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 												(first2 const-vector-pointer) (last2 const-vector-pointer)
 												(result output-iterator) comp)
@@ -17190,6 +17193,7 @@
 																  (opr::vec-ptr-index  result)
 																  (opr::vec-ptr-buffer result) #'operator_<)))
 
+  #+(or cl-stl-extra (not cl-stl-0x98))
   (defmethod-overload set-symmetric-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 												(first2 const-vector-pointer) (last2 const-vector-pointer) (result vector-pointer) comp)
 	;;(format t "specialized set-symmetric-difference for cons-const-iterator & const-vector-pointer & vector-pointer is invoked.~%")
