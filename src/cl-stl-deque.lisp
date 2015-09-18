@@ -59,10 +59,6 @@
 ;; internal utilities
 ;;
 ;;--------------------------------------------------------------------
-(defun __deq-block-create (init-element)
-  (make-deque-block :buffer (make-array +DEQUE-BLOCK-SIZE+
-										:initial-element init-element)))
-
 (locally (declare (optimize speed))
   (defun __deq-block-clone (src-blk)
 	(let* ((new-blk (make-deque-block :buffer (make-array +DEQUE-BLOCK-SIZE+
@@ -85,18 +81,6 @@
 		(declare (type fixnum idx))
 		(declare (type simple-vector buf))
 		(_= (svref buf idx) val)))))
-
-;;ToDo : this function is orphan...?
-(locally (declare (optimize speed))
-  (defun __deq-block-for-each (blk func start end)
-	(declare (type fixnum start end))
-	(when blk
-	  (do ((idx start (1+ idx))
-		   (buf (__deq-block-buffer blk)))
-		  ((= idx end) nil)
-		(declare (type fixnum idx))
-		(declare (type simple-vector buf))
-		(funcall func (svref buf idx))))))
 
 (locally (declare (optimize speed))
   (defun __deque-create-core ()
@@ -156,7 +140,8 @@
 (defun __deque-ensure-block-exist (core idx)
   (let ((map (__deq-core-map core)))
 	(unless (svref map idx)
-	  (setf (svref map idx) (__deq-block-create nil)))
+	  (setf (svref map idx)
+			(make-deque-block :buffer (make-array +DEQUE-BLOCK-SIZE+ :initial-element nil))))
 	(svref map idx)))
 
 (defun __deque-extend-map (core &optional (new-block-count 0))
