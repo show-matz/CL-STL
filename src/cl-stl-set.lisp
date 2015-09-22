@@ -37,9 +37,10 @@
   #-cl-stl-debug nil
   #+cl-stl-debug
   (let ((g-node (gensym "NODE")))
-	`(let ((,g-node (set-itr-node ,itr)))
-	   (unless (eq ,g-node (__rbtree-find (set-tree ,cont) (__rbnode-value ,g-node)))
-		 (error 'undefined-behavior :what ,(format nil "~A is not iterator of ~A." itr cont))))))
+	`(unless (_== ,itr (stl:end ,cont))
+	   (let ((,g-node (set-itr-node ,itr)))
+		 (unless (eq ,g-node (__rbtree-find (set-tree ,cont) (__rbnode-value ,g-node)))
+		   (error 'undefined-behavior :what ,(format nil "~A is not iterator of ~A." itr cont)))))))
 
 (defmacro __set-check-iterator-range (itr1 itr2)
   (declare (ignorable itr1 itr2))
@@ -232,39 +233,39 @@
 ;-----------------------------------------------------
 (defmethod begin ((container stl:set))
   (make-instance 'set-iterator
-				 :node (__rbtree-get-first (set-tree container))))
+				 :node (__rbtree-begin (set-tree container))))
 
 (defmethod end ((container stl:set))
   (make-instance 'set-iterator
-				 :node (__rbnode-next (__rbtree-get-end (set-tree container)))))
+				 :node (__rbtree-end (set-tree container))))
 
 (defmethod rbegin ((container stl:set))
   (make-instance 'set-reverse-iterator
-				 :node (__rbtree-get-end (set-tree container))))
+				 :node (__rbtree-rbegin (set-tree container))))
 
 (defmethod rend ((container stl:set))
   (make-instance 'set-reverse-iterator
-				 :node (__rbnode-prev (__rbtree-get-first (set-tree container)))))
+				 :node (__rbtree-rend (set-tree container))))
 
 #-cl-stl-0x98
 (defmethod cbegin ((container stl:set))
   (make-instance 'set-const-iterator
-				 :node (__rbtree-get-first (set-tree container))))
+				 :node (__rbtree-begin (set-tree container))))
 
 #-cl-stl-0x98
 (defmethod cend ((container stl:set))
   (make-instance 'set-const-iterator
-				 :node (__rbnode-next (__rbtree-get-end (set-tree container)))))
+				 :node (__rbtree-end (set-tree container))))
 
 #-cl-stl-0x98
 (defmethod crbegin ((container stl:set))
   (make-instance 'set-const-reverse-iterator
-				 :node (__rbtree-get-end (set-tree container))))
+				 :node (__rbtree-rbegin (set-tree container))))
 
 #-cl-stl-0x98
 (defmethod crend ((container stl:set))
   (make-instance 'set-const-reverse-iterator
-				 :node (__rbnode-prev (__rbtree-get-first (set-tree container)))))
+				 :node (__rbtree-rend (set-tree container))))
 
 
 ;-----------------------------------------------------
@@ -307,8 +308,8 @@
 
 ;; insert ( single elememt with hint ) - returns iterator.
 (defmethod-overload insert ((container stl:set)
-							   (itr #+cl-stl-0x98 set-iterator
-									#-cl-stl-0x98 set-const-iterator) value)
+							(itr #+cl-stl-0x98 set-iterator
+								 #-cl-stl-0x98 set-const-iterator) value)
   (__set-check-iterator-belong itr container)
   (let* ((tree (set-tree container))
 		 (node (__rbtree-insert-with-hint (set-itr-node itr) tree value nil t)))
@@ -498,9 +499,9 @@
 				 (if (/= (__rbtree-cur-size rbtree1)
 						 (__rbtree-cur-size rbtree2))
 					 nil
-					 (do ((node1 (__rbtree-get-first rbtree1))
-						  (last1 (__rbtree-get-end   rbtree1))
-						  (node2 (__rbtree-get-first rbtree2)))
+					 (do ((node1 (__rbtree-begin rbtree1))
+						  (last1 (__rbtree-end   rbtree1))
+						  (node2 (__rbtree-begin rbtree2)))
 						 ((eq node1 last1) t)
 					   (unless (_== (__rbnode-value node1) (__rbnode-value node2))
 						 (return-from __container-equal nil))
@@ -516,10 +517,10 @@
 
 
 (labels ((__container-compare (rbtree1 rbtree2)
-		   (let* ((node1 (__rbtree-get-first rbtree1))
-				  (node2 (__rbtree-get-first rbtree2))
-				  (last1 (__rbtree-get-end   rbtree1))
-				  (last2 (__rbtree-get-end   rbtree2)))
+		   (let* ((node1 (__rbtree-begin rbtree1))
+				  (node2 (__rbtree-begin rbtree2))
+				  (last1 (__rbtree-end   rbtree1))
+				  (last2 (__rbtree-end   rbtree2)))
 			 (do ()
 				 ((and (eq node1 last1) (eq node2 last2)) 0)
 			   (if (eq node1 last1)

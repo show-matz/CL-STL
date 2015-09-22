@@ -3,18 +3,18 @@ Common Lisp library like C++ STL ( Standard Template Library ).
 
 CL-STL depend on CL-OVERLOAD and CL-OPERATOR.
 
-CL-STL provids...
+CL-STL provides...
 
-* Containers ( vector, deque, list, forward-list, etc. )
-* Algorithm
+* Containers ( vector, deque, list, forward-list, map, set, etc. )
+* Algorithms
 * Functors
 * Iterators
 * etc.
 
 Not provides...
 
-* some containers ( unordered-map etc. )
-* stream features
+* Hash containers.
+* Stream features
 * etc.
 
 ...sorry, document is not yet ( now writing ).

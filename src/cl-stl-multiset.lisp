@@ -36,15 +36,16 @@
   (declare (ignorable itr cont))
   #-cl-stl-debug nil
   #+cl-stl-debug
-  `(unless (do* ((tree  (multiset-tree ,cont))
-				 (node  (multiset-itr-node ,itr))
-				 (node1 (__rbtree-lower-bound tree (__rbnode-value node)))
-				 (node2 (__rbtree-upper-bound tree (__rbnode-value node))))
-				((eq node1 node2) nil)
-			 (when (eq node1 node)
-			   (return t))
-			 (setf node1 (__rbnode-next node1)))
-	 (error 'undefined-behavior :what ,(format nil "~A is not iterator of ~A." itr cont))))
+  `(unless (_== ,itr (stl:end ,cont))
+	 (unless (do* ((tree  (multiset-tree ,cont))
+				   (node  (multiset-itr-node ,itr))
+				   (node1 (__rbtree-lower-bound tree (__rbnode-value node)))
+				   (node2 (__rbtree-upper-bound tree (__rbnode-value node))))
+				  ((eq node1 node2) nil)
+			   (when (eq node1 node)
+				 (return t))
+			   (setf node1 (__rbnode-next node1)))
+	   (error 'undefined-behavior :what ,(format nil "~A is not iterator of ~A." itr cont)))))
 
 (defmacro __multiset-check-iterator-range (itr1 itr2)
   (declare (ignorable itr1 itr2))
@@ -236,39 +237,39 @@
 ;-----------------------------------------------------
 (defmethod begin ((container multiset))
   (make-instance 'multiset-iterator
-				 :node (__rbtree-get-first (multiset-tree container))))
+				 :node (__rbtree-begin (multiset-tree container))))
 
 (defmethod end ((container multiset))
   (make-instance 'multiset-iterator
-				 :node (__rbnode-next (__rbtree-get-end (multiset-tree container)))))
+				 :node (__rbtree-end (multiset-tree container))))
 
 (defmethod rbegin ((container multiset))
   (make-instance 'multiset-reverse-iterator 
-				 :node (__rbtree-get-end (multiset-tree container))))
+				 :node (__rbtree-rbegin (multiset-tree container))))
 
 (defmethod rend ((container multiset))
   (make-instance 'multiset-reverse-iterator 
-				 :node (__rbnode-prev (__rbtree-get-first (multiset-tree container)))))
+				 :node (__rbtree-rend (multiset-tree container))))
 
 #-cl-stl-0x98
 (defmethod cbegin ((container multiset))
   (make-instance 'multiset-const-iterator
-				 :node (__rbtree-get-first (multiset-tree container))))
+				 :node (__rbtree-begin (multiset-tree container))))
 
 #-cl-stl-0x98
 (defmethod cend ((container multiset))
   (make-instance 'multiset-const-iterator
-				 :node (__rbnode-next (__rbtree-get-end (multiset-tree container)))))
+				 :node (__rbtree-end (multiset-tree container))))
 
 #-cl-stl-0x98
 (defmethod crbegin ((container multiset))
   (make-instance 'multiset-const-reverse-iterator
-				 :node (__rbtree-get-end (multiset-tree container))))
+				 :node (__rbtree-rbegin (multiset-tree container))))
 
 #-cl-stl-0x98
 (defmethod crend ((container multiset))
   (make-instance 'multiset-const-reverse-iterator
-				 :node (__rbnode-prev (__rbtree-get-first (multiset-tree container)))))
+				 :node (__rbtree-rend (multiset-tree container))))
 
 
 ;-----------------------------------------------------
@@ -502,9 +503,9 @@
 				 (if (/= (__rbtree-cur-size rbtree1)
 						 (__rbtree-cur-size rbtree2))
 					 nil
-					 (do ((node1 (__rbtree-get-first rbtree1))
-						  (last1 (__rbtree-get-end   rbtree1))
-						  (node2 (__rbtree-get-first rbtree2)))
+					 (do ((node1 (__rbtree-begin rbtree1))
+						  (last1 (__rbtree-end   rbtree1))
+						  (node2 (__rbtree-begin rbtree2)))
 						 ((eq node1 last1) t)
 					   (unless (_== (__rbnode-value node1) (__rbnode-value node2))
 						 (return-from __container-equal nil))
@@ -521,10 +522,10 @@
 
 
 (labels ((__container-compare (rbtree1 rbtree2)
-		   (let* ((node1 (__rbtree-get-first rbtree1))
-				  (node2 (__rbtree-get-first rbtree2))
-				  (last1 (__rbtree-get-end   rbtree1))
-				  (last2 (__rbtree-get-end   rbtree2)))
+		   (let* ((node1 (__rbtree-begin rbtree1))
+				  (node2 (__rbtree-begin rbtree2))
+				  (last1 (__rbtree-end   rbtree1))
+				  (last2 (__rbtree-end   rbtree2)))
 			 (do ()
 				 ((and (eq node1 last1) (eq node2 last2)) 0)
 			   (if (eq node1 last1)

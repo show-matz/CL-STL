@@ -1,15 +1,15 @@
 (in-package :cl-stl)
 
-(declaim (inline __rbnode-incf-rank
-				 __rbnode-decf-rank
-				 __rbnode-has-left-node
+(declaim (inline __rbnode-has-left-child
 				 __rbnode-is-external
 				 __rbnode-is-top
 				 __rbnode-is-left
 				 __rbnode-is-red
 				 __rbnode-brother
+				 __rbnode-connect-left
+				 __rbnode-connect-right
 				 __rbnode-max
-				 __rbnode-mttn))
+				 __rbnode-min))
 
 ;;------------------------------------------------------------------------------
 ;;
@@ -28,20 +28,14 @@
 ;; rbnode utilities
 ;;
 ;;------------------------------------------------------------------------------
-(defun __rbnode-incf-rank (node)
-  (incf (__rbnode-rank node)))
-
-(defun __rbnode-decf-rank (node)
-  (decf (__rbnode-rank node)))
-
-(defun __rbnode-has-left-node (node)
+(defun __rbnode-has-left-child (node)
   (/= 0 (__rbnode-rank (__rbnode-left node))))
 
 (defun __rbnode-is-external (node)
-  (= 0 (__rbnode-rank node)))
+  (zerop (__rbnode-rank node)))
 
 (defun __rbnode-is-top (node)
-  (= 0 (__rbnode-rank (__rbnode-parent node))))
+  (zerop (__rbnode-rank (__rbnode-parent node))))
 
 (defun __rbnode-is-left (node)
   (eq node (__rbnode-left (__rbnode-parent node))))
@@ -56,6 +50,16 @@
 		(__rbnode-right parent)
 		left)))
 
+(defun __rbnode-connect-left (parent child)
+  (setf (__rbnode-left   parent) child)
+  (setf (__rbnode-parent  child) parent)
+  child)
+
+(defun __rbnode-connect-right (parent child)
+  (setf (__rbnode-right  parent) child)
+  (setf (__rbnode-parent  child) parent)
+  child)
+
 (defun __rbnode-max (node)
   (do ((right (__rbnode-right node)))
 	  ((__rbnode-is-external right) node)
@@ -68,39 +72,23 @@
 	(setf node left)
 	(setf left (__rbnode-left left))))
 
-(defun __rbnode-depth (node)
-  (if (__rbnode-is-external node)
-	  (values 0 0)
-	  (multiple-value-bind (l-min l-max)
-		  (__rbnode-depth (__rbnode-left node))
-		(multiple-value-bind (r-min r-max)
-			(__rbnode-depth (__rbnode-right node))
-		  (values (1+ (min l-min r-min)) (1+ (max l-max r-max)))))))
-
-(defun __rbnode-size (node)
-  (if (__rbnode-is-external node)
-	  0
-	  (+ 1
-		 (__rbnode-size (__rbnode-left  node))
-		 (__rbnode-size (__rbnode-right node)))))
-
 (defun __rbnode-next (node)
   (let ((right  (__rbnode-right  node))
 		(parent (__rbnode-parent node)))
 	(if (and right (not (__rbnode-is-external right)))
-		; 外点でない右子がいれば、その左末端子が次ノード
+		;; if exists non-external right child, next node is left-most child of right child.
 		(__rbnode-min right)
-		; 上記以外の場合
+		;; otherwise...
 		(if (or (null parent) (__rbnode-is-external parent))
-			;親がいない、もしくはいても外点の場合、node が最大値で決定 → 右外点を返却して復帰
+			;; when parent is lack or external-node, node has max value. -> returns (external) right node.
 			right
-			; 上記以外の場合
+			;; otherwise...
 			(if (eq node (__rbnode-left parent))
-				; 自分が親の左子の場合、親が次ノード
+				;; when node is left-child of parent : next node is parent.
 				parent
-				; 自分が親の右子の場合
+				;; otherwise ( it means that node is right child of parent )...
 				(let (parent2)
-				  ; 最左の親(とその親)を取得
+				  ;; get left-most ancestor and it's parent
 				  (labels ((imp ()
 							 (setf parent2 (__rbnode-parent parent))
 							 (when (eq parent (__rbnode-right parent2))
@@ -111,28 +99,28 @@
 					(imp))
 				  (if (and (not (__rbnode-is-external parent))
 						   (not (__rbnode-is-external parent2)))
-					  ; 外点でない最左親の右親があれば、それが次ノード
+					  ;; if exists right-parent of left-most ancestor, it's next node.
 					  parent2
-					  ; node が最大値で決定→ 右外点を返却して復帰
+					  ;; otherwise, node has max value. -> returns (external) right node.
 					  right)))))))
 
 (defun __rbnode-prev (node)
   (let ((left   (__rbnode-left   node))
 		(parent (__rbnode-parent node)))
 	(if (and left (not (__rbnode-is-external left)))
-		; 外点でない左子がいれば、その右末端子が前ノード
+		;; if exists non-external left child, prev node is right-most child of left child.
 		(__rbnode-max left)
-		; 上記以外の場合
+		;; otherwise...
 		(if (or (null parent) (__rbnode-is-external parent))
-			; 親がいない、もしくはいても外点の場合、nodeが最小値で決定→ 左外点を返却して復帰
+			;; when parent is lack or external node, node has min value. -> returns (external) left node.
 			left
-			;上記以外の場合
+			;; otherwise...
 			(if (eq node (__rbnode-right parent))
-				; 自分が親の右子の場合、親が前ノード
+				;; when node is right-child of parent : prev node is parent.
 				parent
-				; 自分が親の左子の場合
+				;; otherwise ( it means that node is left child of parent )...
 				(let (parent2)
-				  ;最右の親(とその親)を取得
+				  ;; get right-most ancestor and it's parent
 				  (labels ((imp ()
 							 (setf parent2 (__rbnode-parent parent))
 							 (when (eq parent (__rbnode-left parent2))
@@ -143,9 +131,9 @@
 					(imp))
 				  (if (and (not (__rbnode-is-external parent))
 						   (not (__rbnode-is-external parent2)))
-					  ;外点でない最右親の左親があれば、それが前ノード
+					  ;; if exists left-parent of right-most ancestor, it's prev node.
 					  parent2
-					  ;最大値決定→左外点を返却して復帰
+					  ;; otherwise, node has min value. -> returns (external) left node.
 					  left)))))))
 
 
@@ -156,6 +144,26 @@
 ;; debug methods
 ;;
 ;;------------------------------------------------------------------------------
+;; used only '__rbtree-check-integrity'...
+#+cl-stl-debug
+(defun __rbnode-depth (node)
+  (if (__rbnode-is-external node)
+	  (values 0 0)
+	  (multiple-value-bind (l-min l-max)
+		  (__rbnode-depth (__rbnode-left node))
+		(multiple-value-bind (r-min r-max)
+			(__rbnode-depth (__rbnode-right node))
+		  (values (1+ (min l-min r-min)) (1+ (max l-max r-max)))))))
+
+;; used only '__rbtree-check-integrity'...
+#+cl-stl-debug
+(defun __rbnode-size (node)
+  (if (__rbnode-is-external node)
+	  0
+	  (+ 1
+		 (__rbnode-size (__rbnode-left  node))
+		 (__rbnode-size (__rbnode-right node)))))
+
 #+cl-stl-debug
 (defun __rbnode-check-reachable (node1 node2)
   (do ()
@@ -173,7 +181,7 @@
 			(tag-fnc (functor-function (clone tag-fnc)))
 			(left-node  (__rbnode-left  node))
 			(right-node (__rbnode-right node)))
-		; 右子に対してチェック呼び出し
+		;; recursive call for right child.
 		(unless (__rbnode-is-external right-node)
 		  (incf ret (__rbnode-check-integrity right-node stream pred tag-fnc)))
 
@@ -181,7 +189,7 @@
 			  (tag-left  (funcall tag-fnc (__rbnode-value left-node)))
 			  (tag-right (funcall tag-fnc (__rbnode-value right-node))))
 
-		  ; 大小関係のチェック
+		  ;; check ordering.
 		  (unless (__rbnode-is-external left-node)
 			(when (funcall pred (__rbnode-value node)(__rbnode-value left-node))
 			  (incf ret)
@@ -192,7 +200,7 @@
 			  (incf ret)
 			  (format stream "[~A] > right [~A]~%" my-tag tag-right)))
 
-		  ; ランクのチェック
+		  ;; check ranking.
 		  (let* ((my-rank     (__rbnode-rank node))
 				 (parent-rank (__rbnode-rank (__rbnode-parent node)))
 				 (left-rank   (__rbnode-rank (__rbnode-left   node)))
@@ -219,7 +227,7 @@
 					(format stream "parent(~A) - [~A](~A) - right(~A)"
 							parent-rank my-tag my-rank right-rank))))))
 
-		; 左子に対してチェック呼び出し
+		;; recursive call for left child.
 		(unless (__rbnode-is-external left-node)
 		  (incf ret (__rbnode-check-integrity left-node stream pred tag-fnc)))
 		ret)))
