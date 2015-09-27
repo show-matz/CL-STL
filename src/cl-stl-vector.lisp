@@ -630,6 +630,25 @@
 (defmethod (setf operator_[]) (val (cont stl:vector) (idx integer))
   (_= (svref (vec-core-buffer (vector-core cont)) idx) val))
 
+(defmethod operator_& ((cont stl:vector) (idx fixnum))
+  (let* ((core (vector-core cont))
+		 (cnt  (if core (vec-core-size core) 0)))
+	(if (zerop cnt)
+		(error 'undefined-behavior :what "operator_& for empty vector.")
+		(if (or (< idx 0) (< cnt idx))
+			(error 'out-of-range :what (format nil "index ~A is out of range." idx))
+			(make-instance 'vector-pointer :buffer (vec-core-buffer core) :index idx)))))
+  
+(defmethod operator_const& ((cont stl:vector) (idx fixnum))
+  (let* ((core (vector-core cont))
+		 (cnt  (if core (vec-core-size core) 0)))
+	(if (zerop cnt)
+		(error 'undefined-behavior :what "operator_const& for empty vector.")
+		(if (or (< idx 0) (< cnt idx))
+			(error 'out-of-range :what (format nil "index ~A is out of range." idx))
+			(make-instance 'const-vector-pointer :buffer (vec-core-buffer core) :index idx)))))
+
+
 #-cl-stl-0x98
 (defmethod data ((container stl:vector))
   (__vector-ensure-core-exist container)

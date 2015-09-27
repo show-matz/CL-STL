@@ -302,6 +302,26 @@
   (_= (svref (array-data cont) idx) val))
 
 #-cl-stl-0x98
+(defmethod operator_& ((cont stl:array) (idx fixnum))
+  (let* ((buf (array-data cont))
+		 (cnt (length buf)))
+	(if (zerop cnt)
+		(error 'undefined-behavior :what "operator_& for empty array.")
+		(if (or (< idx 0) (< cnt idx))
+			(error 'out-of-range :what (format nil "index ~A is out of range." idx))
+			(make-instance 'vector-pointer :buffer buf :index idx)))))
+  
+#-cl-stl-0x98
+(defmethod operator_const& ((cont stl:array) (idx fixnum))
+  (let* ((buf (array-data cont))
+		 (cnt (length buf)))
+	(if (zerop cnt)
+		(error 'undefined-behavior :what "operator_& for empty array.")
+		(if (or (< idx 0) (< cnt idx))
+			(error 'out-of-range :what (format nil "index ~A is out of range." idx))
+			(make-instance 'const-vector-pointer :buffer buf :index idx)))))
+
+#-cl-stl-0x98
 (defmethod data ((container stl:array))
   (array-data container))
 

@@ -18,3 +18,9 @@ Not provides...
 * etc.
 
 ...sorry, document is not yet ( now writing ).
+
+
+CAUTION:
+
+Associative containers are still buggy, please do NOT use them.
+
