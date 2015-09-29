@@ -630,7 +630,7 @@
 (defmethod (setf operator_[]) (val (cont stl:vector) (idx integer))
   (_= (svref (vec-core-buffer (vector-core cont)) idx) val))
 
-(defmethod operator_& ((cont stl:vector) (idx fixnum))
+(defmethod operator_& ((cont stl:vector) (idx integer))
   (let* ((core (vector-core cont))
 		 (cnt  (if core (vec-core-size core) 0)))
 	(if (zerop cnt)
@@ -639,7 +639,7 @@
 			(error 'out-of-range :what (format nil "index ~A is out of range." idx))
 			(make-instance 'vector-pointer :buffer (vec-core-buffer core) :index idx)))))
   
-(defmethod operator_const& ((cont stl:vector) (idx fixnum))
+(defmethod operator_const& ((cont stl:vector) (idx integer))
   (let* ((core (vector-core cont))
 		 (cnt  (if core (vec-core-size core) 0)))
 	(if (zerop cnt)

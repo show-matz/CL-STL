@@ -350,6 +350,13 @@
 	  (_= (stl:second pr) val)
 	  (stl:second pr))))
 
+(defmethod operator_& ((cont stl:map) key)
+  (_& (_[] cont key)))
+
+(defmethod operator_const& ((cont stl:map) key)
+  (const_& (_[] cont key)))
+
+
 ;-----------------------------------------------------
 ; modifiers
 ;-----------------------------------------------------

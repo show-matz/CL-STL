@@ -302,7 +302,7 @@
   (_= (svref (array-data cont) idx) val))
 
 #-cl-stl-0x98
-(defmethod operator_& ((cont stl:array) (idx fixnum))
+(defmethod operator_& ((cont stl:array) (idx integer))
   (let* ((buf (array-data cont))
 		 (cnt (length buf)))
 	(if (zerop cnt)
@@ -312,7 +312,7 @@
 			(make-instance 'vector-pointer :buffer buf :index idx)))))
   
 #-cl-stl-0x98
-(defmethod operator_const& ((cont stl:array) (idx fixnum))
+(defmethod operator_const& ((cont stl:array) (idx integer))
   (let* ((buf (array-data cont))
 		 (cnt (length buf)))
 	(if (zerop cnt)

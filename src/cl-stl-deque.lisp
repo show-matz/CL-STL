@@ -810,6 +810,12 @@
   (__deque-set-at (deque-core cont) idx val t)
   val)
 
+(defmethod operator_& ((cont deque) (idx integer))
+  (_& (_[] cont idx)))
+
+(defmethod operator_const& ((cont deque) (idx integer))
+  (const_& (_[] cont idx)))
+
 
 ;-----------------------------------------------------
 ; modifiers
