@@ -464,6 +464,20 @@
 ;; internal utilities
 ;;
 ;;------------------------------------------------------------------------------
+(defun __setf-form-p (form)
+  (handler-case
+	  (destructuring-bind (_call (_func (_setf sym)) _newval &rest args) form
+		(declare (ignorable sym _newval args))
+		(when (and (eq _call 'cl:funcall)
+				   (eq _func 'cl:function)
+				   (eq _setf 'cl:setf))
+		  (cadr form)))
+	(error (c) (declare (ignorable c)) nil)))
+
+(defun __setter-exist-p (form)
+  (handler-case (eval form)
+	(error (c) (declare (ignorable c)) nil)))
+
 (defmacro __check-type-of-move-constructor (cont type &optional (typename type))
   (check-type cont symbol)
   (check-type typename symbol)
@@ -1437,15 +1451,21 @@
   (defmacro-overload move (first last result)
 	`(,(make-overload-name 'cl-stl:move 3) ,first ,last ,result))
   (defmacro-overload move (place)
-	(let ((g-get (gensym "GET")))
-	  (multiple-value-bind (vars forms var set ref)
-		  (get-setf-expansion place)
-		`(let* (,@(mapcar #'cl:list vars forms))
-		   (if (eq (type-of ,ref) 'remove-reference)
-			   ,ref
-			   (make-instance 'remove-reference
-							  :closure (lambda (&optional (,@var ',g-get))
-										 (if (eq ,@var ',g-get) ,ref ,set)))))))))
+	(labels ((fix-setter (form v)
+			   (let ((setter (__setf-form-p form)))
+				 (if (or (null setter) (__setter-exist-p setter)) form v))))
+	  (let ((g-tag (gensym "TAG"))
+			(g-obj (gensym "OBJ")))
+		(multiple-value-bind (vars forms var set ref) (get-setf-expansion place)
+		  `(let* (,@(mapcar #'cl:list vars forms)
+				  (,g-obj ,ref))
+			 (if (eq (type-of ,g-obj) 'remove-reference)
+				 ,g-obj
+				 (make-instance 'remove-reference
+								:closure (lambda (&optional (,@var ',g-tag))
+										   (if (eq ,@var ',g-tag)
+											   ,g-obj
+											   ,(fix-setter set (car var))))))))))))
 
 
 #-cl-stl-0x98 (defgeneric move-backward (first last result)
@@ -1479,15 +1499,20 @@
 <<return value>>
   nil.
 "
-  (multiple-value-bind (vars1 forms1 var1 set1 ref1) (get-setf-expansion a)
-    (multiple-value-bind (vars2 forms2 var2 set2 ref2) (get-setf-expansion b)
-      `(let* (,@(mapcar #'cl:list vars1 forms1)
-              ,@(mapcar #'cl:list vars2 forms2))
-		 (multiple-value-bind (,@var1 ,@var2)
-			 (,(make-overload-name 'cl-stl:swap 2) ,ref1 ,ref2)
-           ,set1
-           ,set2
-           nil)))))
+  (labels ((fix-setter (form)
+			 (let ((setter (__setf-form-p form)))
+			   (when (or (null setter) (__setter-exist-p setter))
+				 form))))
+	(multiple-value-bind (vars1 forms1 var1 set1 ref1) (get-setf-expansion a)
+	  (multiple-value-bind (vars2 forms2 var2 set2 ref2) (get-setf-expansion b)
+		`(let* (,@(mapcar #'cl:list vars1 forms1)
+				,@(mapcar #'cl:list vars2 forms2))
+		   (multiple-value-bind (,@var1 ,@var2)
+			   (,(make-overload-name 'cl-stl:swap 2) ,ref1 ,ref2)
+			 (declare (ignorable ,@var1 ,@var2))
+			 ,(fix-setter set1)
+			 ,(fix-setter set2)
+			 nil))))))
 
 
 (defgeneric swap-ranges (first1 last1 first2)

@@ -1,7 +1,8 @@
 # CL-STL
 Common Lisp library like C++ STL ( Standard Template Library ).
 
-CL-STL depend on CL-OVERLOAD and CL-OPERATOR.
+This library depend on CL-OVERLOAD and CL-OPERATOR.
+
 
 CL-STL provides...
 
