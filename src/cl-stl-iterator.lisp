@@ -164,9 +164,11 @@
 				 :iterator (__insert-itr-iterator itr)))
 
 (defmethod (setf operator_*) (new-val (itr insert-iterator))
-  (insert (__insert-itr-target   itr)
-		  (__insert-itr-iterator itr) new-val)
-  new-val)
+  (let ((ret (insert (__insert-itr-target   itr)
+					 (__insert-itr-iterator itr) new-val)))
+	(_++ ret)
+	(setf (__insert-itr-iterator itr) ret)
+	new-val))
 
 (defmethod operator_++ ((itr insert-iterator))
   itr)
