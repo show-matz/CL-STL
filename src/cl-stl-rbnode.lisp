@@ -1,235 +1,154 @@
 (in-package :cl-stl)
 
-(declaim (inline __rbnode-has-left-child
-				 __rbnode-is-external
-				 __rbnode-is-top
-				 __rbnode-is-left
+(declaim (inline __rbnode-color
+				 __rbnode-parent
+				 __rbnode-left
+				 __rbnode-right
+				 __rbnode-value
+				 (setf __rbnode-color)
+				 (setf __rbnode-parent)
+				 (setf __rbnode-left)
+				 (setf __rbnode-right)
+				 (setf __rbnode-value)
 				 __rbnode-is-red
-				 __rbnode-brother
-				 __rbnode-connect-left
-				 __rbnode-connect-right
-				 __rbnode-max
-				 __rbnode-min))
+				 __rbnode-is-black
+				 __rbnode-is-left-child
+				 __rbnode-is-right-child
+				 __rbnode-minimum
+				 __rbnode-maximum))
+
+
 
 ;;------------------------------------------------------------------------------
 ;;
 ;; class difinition
 ;;
 ;;------------------------------------------------------------------------------
-(defstruct (rbnode (:conc-name __rbnode-))
-  (rank   0 :type fixnum)
-  (value  nil)
-  (parent nil)
-  (left   nil)
-  (right  nil))
+(locally (declare (optimize speed))
+  (defstruct (rbnode (:conc-name __rbnode-))
+	(color  :red :type symbol)
+	(parent nil)
+	(left   nil)
+	(right  nil)
+	(value  nil)))
+
 
 ;;------------------------------------------------------------------------------
 ;;
 ;; rbnode utilities
 ;;
 ;;------------------------------------------------------------------------------
-(defun __rbnode-has-left-child (node)
-  (/= 0 (__rbnode-rank (__rbnode-left node))))
+(locally (declare (optimize speed))
 
-(defun __rbnode-is-external (node)
-  (zerop (__rbnode-rank node)))
+  (defun __rbnode-is-red (node)
+	(declare (type rbnode node))
+	(eq :red (__rbnode-color node)))
 
-(defun __rbnode-is-top (node)
-  (zerop (__rbnode-rank (__rbnode-parent node))))
+  (defun __rbnode-is-black (node)
+	(declare (type rbnode node))
+	(eq :black (__rbnode-color node)))
 
-(defun __rbnode-is-left (node)
-  (eq node (__rbnode-left (__rbnode-parent node))))
+  (defun __rbnode-is-left-child (node)
+	(declare (type rbnode node))
+	(eq node (__rbnode-left (__rbnode-parent node))))
 
-(defun __rbnode-is-red (node)
-  (= (__rbnode-rank node) (__rbnode-rank (__rbnode-parent node))))
-
-(defun __rbnode-brother (node)
-  (let* ((parent (__rbnode-parent node))
-		 (left   (__rbnode-left parent)))
-	(if (eq node left)
-		(__rbnode-right parent)
-		left)))
-
-(defun __rbnode-connect-left (parent child)
-  (setf (__rbnode-left   parent) child)
-  (setf (__rbnode-parent  child) parent)
-  child)
-
-(defun __rbnode-connect-right (parent child)
-  (setf (__rbnode-right  parent) child)
-  (setf (__rbnode-parent  child) parent)
-  child)
-
-(defun __rbnode-max (node)
-  (do ((right (__rbnode-right node)))
-	  ((__rbnode-is-external right) node)
-	(setf node right)
-	(setf right (__rbnode-right right))))
-
-(defun __rbnode-min (node)
-  (do ((left (__rbnode-left node)))
-	  ((__rbnode-is-external left) node)
-	(setf node left)
-	(setf left (__rbnode-left left))))
-
-(defun __rbnode-next (node)
-  (let ((right  (__rbnode-right  node))
-		(parent (__rbnode-parent node)))
-	(if (and right (not (__rbnode-is-external right)))
-		;; if exists non-external right child, next node is left-most child of right child.
-		(__rbnode-min right)
-		;; otherwise...
-		(if (or (null parent) (__rbnode-is-external parent))
-			;; when parent is lack or external-node, node has max value. -> returns (external) right node.
-			right
-			;; otherwise...
-			(if (eq node (__rbnode-left parent))
-				;; when node is left-child of parent : next node is parent.
-				parent
-				;; otherwise ( it means that node is right child of parent )...
-				(let (parent2)
-				  ;; get left-most ancestor and it's parent
-				  (labels ((imp ()
-							 (setf parent2 (__rbnode-parent parent))
-							 (when (eq parent (__rbnode-right parent2))
-							   (setf parent parent2)
-							   (if (__rbnode-is-external parent)
-								   nil
-								   (imp)))))
-					(imp))
-				  (if (and (not (__rbnode-is-external parent))
-						   (not (__rbnode-is-external parent2)))
-					  ;; if exists right-parent of left-most ancestor, it's next node.
-					  parent2
-					  ;; otherwise, node has max value. -> returns (external) right node.
-					  right)))))))
-
-(defun __rbnode-prev (node)
-  (let ((left   (__rbnode-left   node))
-		(parent (__rbnode-parent node)))
-	(if (and left (not (__rbnode-is-external left)))
-		;; if exists non-external left child, prev node is right-most child of left child.
-		(__rbnode-max left)
-		;; otherwise...
-		(if (or (null parent) (__rbnode-is-external parent))
-			;; when parent is lack or external node, node has min value. -> returns (external) left node.
-			left
-			;; otherwise...
-			(if (eq node (__rbnode-right parent))
-				;; when node is right-child of parent : prev node is parent.
-				parent
-				;; otherwise ( it means that node is left child of parent )...
-				(let (parent2)
-				  ;; get right-most ancestor and it's parent
-				  (labels ((imp ()
-							 (setf parent2 (__rbnode-parent parent))
-							 (when (eq parent (__rbnode-left parent2))
-							   (setf parent parent2)
-							   (if (__rbnode-is-external parent)
-								   nil
-								   (imp)))))
-					(imp))
-				  (if (and (not (__rbnode-is-external parent))
-						   (not (__rbnode-is-external parent2)))
-					  ;; if exists left-parent of right-most ancestor, it's prev node.
-					  parent2
-					  ;; otherwise, node has min value. -> returns (external) left node.
-					  left)))))))
+  (defun __rbnode-is-right-child (node)
+	(declare (type rbnode node))
+	(eq node (__rbnode-right (__rbnode-parent node)))))
 
 
 
+(locally (declare (optimize speed))
 
-;;------------------------------------------------------------------------------
-;;
-;; debug methods
-;;
-;;------------------------------------------------------------------------------
-;; used only '__rbtree-check-integrity'...
-#+cl-stl-debug
-(defun __rbnode-depth (node)
-  (if (__rbnode-is-external node)
-	  (values 0 0)
-	  (multiple-value-bind (l-min l-max)
-		  (__rbnode-depth (__rbnode-left node))
-		(multiple-value-bind (r-min r-max)
-			(__rbnode-depth (__rbnode-right node))
-		  (values (1+ (min l-min r-min)) (1+ (max l-max r-max)))))))
+  (defun __rbnode-minimum (node)
+	(declare (type rbnode node))
+	(let ((left (__rbnode-left node)))
+	  (if (null left)
+		  node
+		  (__rbnode-minimum left))))
 
-;; used only '__rbtree-check-integrity'...
-#+cl-stl-debug
-(defun __rbnode-size (node)
-  (if (__rbnode-is-external node)
-	  0
-	  (+ 1
-		 (__rbnode-size (__rbnode-left  node))
-		 (__rbnode-size (__rbnode-right node)))))
+  (defun __rbnode-maximum (node)
+	(declare (type rbnode node))
+	(let ((right (__rbnode-right node)))
+	  (if (null right)
+		  node
+		  (__rbnode-maximum right)))))
 
-#+cl-stl-debug
-(defun __rbnode-check-reachable (node1 node2)
-  (do ()
-	  ((null node1) nil)
-	(when (eq node1 node2)
-	  (return-from __rbnode-check-reachable t))
-	(setf node1 (__rbnode-next node1))))
-  
-#+cl-stl-debug
-(defun __rbnode-check-integrity (node stream pred tag-fnc)
-  (if (__rbnode-is-external node)
-	  0
-	  (let ((ret 0)
-			(pred    (functor-function (clone pred)))
-			(tag-fnc (functor-function (clone tag-fnc)))
-			(left-node  (__rbnode-left  node))
-			(right-node (__rbnode-right node)))
-		;; recursive call for right child.
-		(unless (__rbnode-is-external right-node)
-		  (incf ret (__rbnode-check-integrity right-node stream pred tag-fnc)))
 
-		(let ((my-tag    (funcall tag-fnc (__rbnode-value node)))
-			  (tag-left  (funcall tag-fnc (__rbnode-value left-node)))
-			  (tag-right (funcall tag-fnc (__rbnode-value right-node))))
 
-		  ;; check ordering.
-		  (unless (__rbnode-is-external left-node)
-			(when (funcall pred (__rbnode-value node)(__rbnode-value left-node))
-			  (incf ret)
-			  (format stream "[~A] < left [~A]~%" my-tag tag-left)))
+(locally (declare (optimize speed))
+  (defun __rbnode-increment (node)
+	(declare (type rbnode node))
+	(if (__rbnode-right node)
+		(progn
+		  (setf node (__rbnode-right node))
+		  (do ()
+			  ((null (__rbnode-left node)) node)
+			(setf node (__rbnode-left node))))
+		(let ((node2 (__rbnode-parent node)))
+		  (declare (type rbnode node2))
+		  (do ()
+			  ((not (eq node (__rbnode-right node2))))
+			(setf node node2)
+			(setf node2 (__rbnode-parent node2)))
+		  (unless (eq (__rbnode-right node) node2)
+			(setf node node2))
+		  node))))
+		  
+(locally (declare (optimize speed))
+  (defun __rbnode-decrement (node)
+	(declare (type rbnode node))
+	(if (and (__rbnode-is-red node)
+			 (eq node (__rbnode-parent (__rbnode-parent node))))
+		(__rbnode-right node)
+		(if (__rbnode-left node)
+			(let ((node2 (__rbnode-left node)))
+			  (declare (type rbnode node2))
+			  (do ()
+				  ((null (__rbnode-right node2)) node2)
+				(setf node2 (__rbnode-right node2))))
+			(let ((node2 (__rbnode-parent node)))
+			  (declare (type rbnode node2))
+			  (do ()
+				  ((not (eq node (__rbnode-left node2))) node2)
+				(setf node node2)
+				(setf node2 (__rbnode-parent node2))))))))
 
-		  (unless (__rbnode-is-external right-node)
-			(when (funcall pred (__rbnode-value right-node)(__rbnode-value node))
-			  (incf ret)
-			  (format stream "[~A] > right [~A]~%" my-tag tag-right)))
 
-		  ;; check ranking.
-		  (let* ((my-rank     (__rbnode-rank node))
-				 (parent-rank (__rbnode-rank (__rbnode-parent node)))
-				 (left-rank   (__rbnode-rank (__rbnode-left   node)))
-				 (right-rank  (__rbnode-rank (__rbnode-right  node)))
-				 (left-delta  (- my-rank left-rank))
-				 (right-delta (- my-rank right-rank)))
-			(if (= parent-rank my-rank)
-				(progn
-				  (when (/= left-delta 1)
-					(incf ret)
-					(format stream "parent(~A) - [~A](~A) - left(~A)"
-							parent-rank my-tag my-rank left-rank))
-				  (When (/= right-delta 1)
-					(incf ret)
-					(format stream "parent(~A) - [~A](~A) - right(~A)"
-							parent-rank my-tag my-rank right-rank)))
-				(progn
-				  (when (and (/= left-delta 1) (/= left-delta 0))
-					(incf ret)
-					(format stream "parent(~A) - [~A](~A) - left(~A)"
-							parent-rank my-tag my-rank left-rank))
-				  (when (and (/= right-delta 1) (/= right-delta 0))
-					(incf ret)
-					(format stream "parent(~A) - [~A](~A) - right(~A)"
-							parent-rank my-tag my-rank right-rank))))))
+(locally (declare (optimize speed))
+  (defun __rbnode-rotate-left (node root)
+	(declare (type rbnode node root))
+	(let ((right (__rbnode-right node)))
+	  (declare (type rbnode right))
+	  (setf (__rbnode-right node) (__rbnode-left right))
+	  (when (__rbnode-left right)
+		(setf (__rbnode-parent (__rbnode-left right)) node))
+	  (setf (__rbnode-parent right) (__rbnode-parent node))
+	  (if (eq node root)
+		  (setf root right)
+		  (if (eq node (__rbnode-left (__rbnode-parent node)))
+			  (setf (__rbnode-left  (__rbnode-parent node)) right)
+			  (setf (__rbnode-right (__rbnode-parent node)) right)))
+	  (setf (__rbnode-left  right) node)
+	  (setf (__rbnode-parent node) right)
+	  root)))
 
-		;; recursive call for left child.
-		(unless (__rbnode-is-external left-node)
-		  (incf ret (__rbnode-check-integrity left-node stream pred tag-fnc)))
-		ret)))
 
+(locally (declare (optimize speed))
+  (defun __rbnode-rotate-right (node root)
+	(declare (type rbnode node root))
+	(let ((left (__rbnode-left node)))
+	  (declare (type rbnode left))
+	  (setf (__rbnode-left node) (__rbnode-right left))
+	  (when (__rbnode-right left)
+		(setf (__rbnode-parent (__rbnode-right left)) node))
+	  (setf (__rbnode-parent left) (__rbnode-parent node))
+	  (if (eq node root)
+		  (setf root left)
+		  (if (eq node (__rbnode-right (__rbnode-parent node)))
+			  (setf (__rbnode-right (__rbnode-parent node)) left)
+			  (setf (__rbnode-left  (__rbnode-parent node)) left)))
+	  (setf (__rbnode-right  left) node)
+	  (setf (__rbnode-parent node) left)
+	  root)))
 
