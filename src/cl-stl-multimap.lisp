@@ -296,13 +296,13 @@
 ;;----------------------------------------------------------
 (locally (declare (optimize speed))
 
-  ;; insert ( single elememt ) - returns iterator.
+  ;; insert ( single element ) - returns iterator.
   (defmethod-overload insert ((container multimap) value)
 	(__map-check-item-pairness value)
 	(make-instance 'multimap-iterator
 				   :node (__rbtree-insert-equal (__assoc-tree container) value t)))
 
-  ;; insert ( single elememt by remove reference ) - returns iterator.
+  ;; insert ( single element by remove reference ) - returns iterator.
   #-cl-stl-0x98
   (defmethod-overload insert ((container multimap) (rm remove-reference))
 	(let ((val (funcall (__rm-ref-closure rm))))
@@ -311,17 +311,23 @@
 	  (make-instance 'multimap-iterator
 					 :node (__rbtree-insert-equal (__assoc-tree container) val nil))))
 
-  ;; insert ( single elememt with hint ) - returns iterator.
+  ;; insert ( single element with hint ) - returns iterator.
   (defmethod-overload insert ((container multimap)
 							  (itr #+cl-stl-0x98 multimap-iterator
 								   #-cl-stl-0x98 multimap-const-iterator) value)
+	#+cl-stl-0x98  ;; HACK
+	(when (and (typep itr   'multimap-const-iterator)
+			   (typep value 'multimap-const-iterator))
+	  (__rbtree-insert-range-equal (__assoc-tree container) itr value t)
+	  (return-from __insert-3 nil))
+	
 	(__multimap-check-iterator-belong itr container)
 	(__map-check-item-pairness value)
 	(make-instance 'multimap-iterator
 				   :node (__rbtree-insert-hint-equal (__assoc-tree container)
 													 (__assoc-itr-node itr) value t)))
 
-  ;; insert ( single elememt with hint by remove reference ) - returns iterator.
+  ;; insert ( single element with hint by remove reference ) - returns iterator.
   #-cl-stl-0x98
   (defmethod-overload insert ((container multimap)
 							  (itr multimap-const-iterator) (rm remove-reference))

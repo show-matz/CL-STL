@@ -41,6 +41,7 @@
 ;;
 ;;--------------------------------------------------------------------
 (defmacro __map-check-item-pairness (sym)
+  (declare (ignorable sym))
   #-cl-stl-debug nil
   #+cl-stl-debug
   `(unless (typep ,sym 'stl:pair)
@@ -355,14 +356,14 @@
 ;;----------------------------------------------------------
 (locally (declare (optimize speed))
 
-  ;; insert ( single elememt ) - returns pair<iterator,bool>.
+  ;; insert ( single element ) - returns pair<iterator,bool>.
   (defmethod-overload insert ((container stl::map) value)
 	(__map-check-item-pairness value)
 	(multiple-value-bind (node success)
 		(__rbtree-insert-unique (__assoc-tree container) value t)
 	  (make-pair (make-instance 'map-iterator :node node) success)))
 
-  ;; insert ( single elememt by remove reference ) - returns pair<iterator,bool>.
+  ;; insert ( single element by remove reference ) - returns pair<iterator,bool>.
   #-cl-stl-0x98
   (defmethod-overload insert ((container stl::map) (rm remove-reference))
 	(let ((val (funcall (__rm-ref-closure rm))))
@@ -372,17 +373,23 @@
 		  (__rbtree-insert-unique (__assoc-tree container) val nil)
 		(make-pair (make-instance 'map-iterator :node node) success))))
 
-  ;; insert ( single elememt with hint ) - returns iterator.
+  ;; insert ( single element with hint ) - returns iterator.
   (defmethod-overload insert ((container stl::map)
 							  (itr #+cl-stl-0x98 map-iterator
 								   #-cl-stl-0x98 map-const-iterator) value)
+	#+cl-stl-0x98  ;; HACK
+	(when (and (typep itr   'map-const-iterator)
+			   (typep value 'map-const-iterator))
+	  (__rbtree-insert-range-unique (__assoc-tree container) itr value t)
+	  (return-from __insert-3 nil))
+	
 	(__map-check-iterator-belong itr container)
 	(__map-check-item-pairness value)
 	(make-instance 'map-iterator
 				   :node (__rbtree-insert-hint-unique (__assoc-tree container)
 													  (__assoc-itr-node itr) value t)))
 
-  ;; insert ( single elememt with hint by remove reference ) - returns iterator.
+  ;; insert ( single element with hint by remove reference ) - returns iterator.
   #-cl-stl-0x98
   (defmethod-overload insert ((container stl::map)
 							  (itr map-const-iterator) (rm remove-reference))

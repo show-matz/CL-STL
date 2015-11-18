@@ -293,12 +293,12 @@
 ;;----------------------------------------------------------
 (locally (declare (optimize speed))
 
-  ;; insert ( single elememt ) - returns iterator.
+  ;; insert ( single element ) - returns iterator.
   (defmethod-overload insert ((container multiset) value)
 	(make-instance 'multiset-iterator
 				   :node (__rbtree-insert-equal (__assoc-tree container) value t)))
 
-  ;; insert ( single elememt by remove reference ) - returns iterator.
+  ;; insert ( single element by remove reference ) - returns iterator.
   #-cl-stl-0x98
   (defmethod-overload insert ((container multiset) (rm remove-reference))
 	(let ((val (funcall (__rm-ref-closure rm))))
@@ -306,16 +306,22 @@
 	  (make-instance 'multiset-iterator
 					 :node (__rbtree-insert-equal (__assoc-tree container) val nil))))
 
-  ;; insert ( single elememt with hint ) - returns iterator.
+  ;; insert ( single element with hint ) - returns iterator.
   (defmethod-overload insert ((container multiset)
 							  (itr #+cl-stl-0x98 multiset-iterator
 								   #-cl-stl-0x98 multiset-const-iterator) value)
+	#+cl-stl-0x98  ;; HACK
+	(when (and (typep itr   'multiset-const-iterator)
+			   (typep value 'multiset-const-iterator))
+	  (__rbtree-insert-range-equal (__assoc-tree container) itr value t)
+	  (return-from __insert-3 nil))
+	
 	(__multiset-check-iterator-belong itr container)
 	(make-instance 'multiset-iterator
 				   :node (__rbtree-insert-hint-equal (__assoc-tree container)
 													 (__assoc-itr-node itr) value t)))
 
-  ;; insert ( single elememt with hint by remove reference ) - returns iterator.
+  ;; insert ( single element with hint by remove reference ) - returns iterator.
   #-cl-stl-0x98
   (defmethod-overload insert ((container multiset)
 							  (itr multiset-const-iterator) (rm remove-reference))
