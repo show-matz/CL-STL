@@ -10759,41 +10759,59 @@
 
   ;;PTN; remove : 0 -   f 
   (labels ((__remove-imp-0 (first last value eql-bf)
-			 (declare (type cl:function eql-bf))
 			 (with-operators
 				 (if (_== first last)
-					 @~first
-					 (for (((in @~first) (out @~first)) (_/= in last) ++in :returns out)
-					   (let ((cur-val *in))
-						 (unless (funcall eql-bf value cur-val)
-						   #+cl-stl-0x98 (_= *out cur-val)
-						   #-cl-stl-0x98 (multiple-value-bind (a b) (operator_move *out cur-val)
-										   (setf *in  b)
-										   (setf *out a))
-						   ++out)))))))
+					 @~last
+					 (let ((in @~first)
+						   (eql-bf (functor-function @~eql-bf)))
+					   (declare (type cl:function eql-bf))
+					   (for (nil (_/= in last) ++in)
+						 (when (funcall eql-bf *in value)
+						   (return)))
+					   (if (_== in last)
+						   in
+						   (let ((out @~in))
+							 ++in
+							 (for (nil (_/= in last) ++in :returns out)
+							   (let ((cur-val *in))
+								 (unless (funcall eql-bf value cur-val)
+								   #+cl-stl-0x98 (_= *out cur-val)
+								   #-cl-stl-0x98 (multiple-value-bind (a b) (operator_move *out cur-val)
+												   (setf *in  b)
+												   (setf *out a))
+								   ++out))))))))))
 
 	(defmethod-overload remove ((first forward-iterator) (last forward-iterator) value)
 	  (__remove-imp-0 first last value #'operator_==))
 
 	#+cl-stl-extra
 	(defmethod-overload remove ((first forward-iterator) (last forward-iterator) value eql-bf)
-	  (__remove-imp-0 first last value (functor-function (clone eql-bf)))))
+	  (__remove-imp-0 first last value eql-bf)))
 
   ;;PTN; remove : 1 -   ci
   #+(or cl-stl-extra (not cl-stl-0x98))
   (labels ((__remove-imp-1 (cons1 cons2 val eql-bf)
-			 (declare (type cl:list     cons1 cons2))
-			 (declare (type cl:function eql-bf))
-			 (let ((out cons1))
-			   (declare (type cl:list out))
-			   (for (nil (not (eq cons1 cons2)) (setf cons1 (cdr cons1)) :returns out)
-				 (let ((cur-val (car cons1)))
-				   (unless (funcall eql-bf val cur-val)
-					 #+cl-stl-0x98 (_= (car out) cur-val)
-					 #-cl-stl-0x98 (multiple-value-bind (a b) (operator_move (car out) cur-val)
-									 (setf (car cons1) b)
-									 (setf (car   out) a))
-					 (setf out (cdr out))))))))
+			 (declare (type cl:list cons1 cons2))
+			 (if (eq cons1 cons2)
+				 cons2
+				 (let ((eql-bf (functor-function (clone eql-bf))))
+				   (declare (type cl:function eql-bf))
+				   (for (nil (not (eq cons1 cons2)) (setf cons1 (cdr cons1)))
+					 (when (funcall eql-bf (car cons1) val)
+					   (return)))
+				   (if (eq cons1 cons2)
+					   cons2
+					   (let ((out cons1))
+						 (declare (type cl:list out))
+						 (setf cons1 (cdr cons1))
+						 (for (nil (not (eq cons1 cons2)) (setf cons1 (cdr cons1)) :returns out)
+						   (let ((cur-val (car cons1)))
+							 (unless (funcall eql-bf val cur-val)
+							   #+cl-stl-0x98 (_= (car out) cur-val)
+							   #-cl-stl-0x98 (multiple-value-bind (a b) (operator_move (car out) cur-val)
+											   (setf (car cons1) b)
+											   (setf (car   out) a))
+							   (setf out (cdr out)))))))))))
 
 	(defmethod-overload remove ((first cons-iterator) (last cons-iterator) val)
 	  ;;(format t "specialized remove for cons-iterator is invoked.~%")
@@ -10806,25 +10824,32 @@
 	  ;;(format t "specialized remove for cons-iterator is invoked.~%")
 	  (__algo-make-cons-iterator first
 								 (__remove-imp-1 (__cons-itr-cons first)
-												 (__cons-itr-cons  last)
-												 val (functor-function (clone eql-bf))))))
+												 (__cons-itr-cons  last) val eql-bf))))
 
   ;;PTN; remove : 2 -   vp
   (labels ((__remove-imp-2 (idx1 idx2 buffer val eql-bf)
 			 (declare (type fixnum idx1 idx2))
 			 (declare (type cl:vector buffer))
-			 (declare (type cl:function eql-bf))
-			 (let ((out idx1))
-			   (declare (type fixnum out))
-			   (for (nil (< idx1 idx2) (incf idx1) :returns out)
-				 (let ((cur-val (aref buffer idx1)))
-				   (unless (funcall eql-bf val cur-val)
-					 #+cl-stl-0x98 (_= (aref buffer out) cur-val)
-					 #-cl-stl-0x98 (multiple-value-bind (a b)
-									   (operator_move (aref buffer out) cur-val)
-									 (setf (aref buffer idx1) b)
-									 (setf (aref buffer  out) a))
-					 (incf out)))))))
+			 (if (= idx1 idx2)
+				 idx2
+				 (let ((eql-bf (functor-function (clone eql-bf))))
+				   (declare (type cl:function eql-bf))
+				   (for (nil (< idx1 idx2) (incf idx1))
+					 (when (funcall eql-bf (aref buffer idx1) val)
+					   (return)))
+				   (if (= idx1 idx2)
+					   idx2
+					   (let ((out idx1))
+						 (declare (type fixnum out))
+						 (incf idx1)
+						 (for (nil (< idx1 idx2) (incf idx1) :returns out)
+						   (let ((cur-val (aref buffer idx1)))
+							 (unless (funcall eql-bf val cur-val)
+							   #+cl-stl-0x98 (_= (aref buffer out) cur-val)
+							   #-cl-stl-0x98 (multiple-value-bind (a b) (operator_move (aref buffer out) cur-val)
+											   (setf (aref buffer idx1) b)
+											   (setf (aref buffer  out) a))
+							   (incf out))))))))))
 
 	(defmethod-overload remove ((first vector-pointer) (last vector-pointer) val)
 	  ;;(format t "specialized remove for vector-pointer is invoked.~%")
@@ -10841,8 +10866,7 @@
 	  (__algo-make-vect-iterator first
 								 (__remove-imp-2 (opr::vec-ptr-index  first)
 												 (opr::vec-ptr-index  last)
-												 (opr::vec-ptr-buffer first)
-												 val (functor-function (clone eql-bf)))))))
+												 (opr::vec-ptr-buffer first) val eql-bf)))))
 
 
 
