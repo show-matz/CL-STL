@@ -85,14 +85,15 @@
 
 #-cl-stl-0x98
 (defmethod operator_move ((lhs pair) (rhs pair))
-  (multiple-value-bind (a b) (operator_move (__pair-first  lhs)
-											(__pair-first  rhs))
-	(setf (__pair-first lhs) a)
-	(setf (__pair-first rhs) b))
-  (multiple-value-bind (a b) (operator_move (__pair-second lhs)
-											(__pair-second rhs))
-	(setf (__pair-second lhs) a)
-	(setf (__pair-second rhs) b))
+  (unless (eq lhs rhs)
+	(multiple-value-bind (a b) (operator_move (__pair-first  lhs)
+											  (__pair-first  rhs))
+	  (setf (__pair-first lhs) a)
+	  (setf (__pair-first rhs) b))
+	(multiple-value-bind (a b) (operator_move (__pair-second lhs)
+											  (__pair-second rhs))
+	  (setf (__pair-second lhs) a)
+	  (setf (__pair-second rhs) b)))
   (values lhs rhs))
 
 

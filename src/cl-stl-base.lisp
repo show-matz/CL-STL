@@ -2533,12 +2533,13 @@
 	(operator_cast (funcall (__rm-ref-closure obj)) typename))
 
   (defmethod operator_move (lhs rhs)
-	(declare (ignore lhs))
-	(values rhs nil)))
+	(if (eq lhs rhs)
+		(values lhs rhs)
+		(values rhs nil))))
 
 
 
-; MEMO : implementation for cons, see cl-stl-utility.lisp
+; MEMO : implementation for cons, see cl-stl-utility.lisp    ;ToDo : this comment is obsolete...
 
 
 

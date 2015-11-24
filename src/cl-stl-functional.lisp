@@ -933,10 +933,11 @@
 
 #-cl-stl-0x98
 (defmethod operator_move ((lhs function) (rhs function))
-  (setf (__function-target lhs) (__function-target rhs))
-  (setf (__functor-closure lhs) (__functor-closure rhs))
-  (setf (__function-target rhs) nil)
-  (setf (__functor-closure rhs) nil)
+  (unless (eq lhs rhs)
+	(setf (__function-target lhs) (__function-target rhs))
+	(setf (__functor-closure lhs) (__functor-closure rhs))
+	(setf (__function-target rhs) nil)
+	(setf (__functor-closure rhs) nil))
   (values lhs rhs))
 
 #-cl-stl-0x98
