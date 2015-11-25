@@ -343,86 +343,69 @@
 
 ;;------------------------------------------------------------------------------
 (locally (declare (optimize speed))
-  ;;ToDo : In 0x11 or later, can use swap or move...?
   (defun __swap-ranges-imp-0 (first1 last1 first2)
 	(with-operators
 		(if (_== first1 last1)
 			@~first2
-			(for (((itr1 @~first1) (itr2 @~first2)) (_/= itr1 last1) (progn ++itr1 ++itr2) :returns itr2)
+			(for (((itr1 @~first1)
+				   (itr2 @~first2)) (_/= itr1 last1) (progn ++itr1 ++itr2) :returns itr2)
 			  (swap *itr1 *itr2)))))
 
   (defun __swap-ranges-imp-1 (cons1 end1 first2)
 	(declare (type cl:list cons1 end1))
 	(with-operators
-		(for (((tmp nil) (itr2 @~first2)) (not (eq cons1 end1))
-										  (progn (setf cons1 (cdr cons1)) ++itr2) :returns itr2)
-		  (_= tmp         (car cons1))
-		  (_= (car cons1) *itr2)
-		  (_= *itr2       tmp))))
+		(for (((itr2 @~first2)) (not (eq cons1 end1))
+								(progn (setf cons1 (cdr cons1)) ++itr2) :returns itr2)
+		  (swap (car cons1) *itr2))))
 
   (defun __swap-ranges-imp-2 (idx1 last1 buffer1 first2)
 	(declare (type fixnum idx1 last1))
 	(declare (type cl:vector buffer1))
 	(with-operators
-		(for (((tmp nil) (itr2 @~first2)) (< idx1 last1) (progn (incf idx1) ++itr2) :returns itr2)
-		  (_= tmp                 (aref buffer1 idx1))
-		  (_= (aref buffer1 idx1) *itr2)
-		  (_= *itr2               tmp))))
+		(for (((itr2 @~first2)) (< idx1 last1) (progn (incf idx1) ++itr2) :returns itr2)
+		  (swap (aref buffer1 idx1) *itr2))))
 
   (defun __swap-ranges-imp-3 (first1 last1 cons2)
 	(declare (type cl:list cons2))
 	(with-operators
-		(for (((tmp nil) (itr @~first1)) (_/= itr last1)
-										(progn ++itr (setf cons2 (cdr cons2))) :returns cons2)
-		  (_= tmp         *itr)
-		  (_= *itr        (car cons2))
-		  (_= (car cons2) tmp))))
+		(for (((itr @~first1)) (_/= itr last1)
+							   (progn ++itr (setf cons2 (cdr cons2))) :returns cons2)
+		  (swap *itr (car cons2)))))
   
   (defun __swap-ranges-imp-4 (cons1 end1 cons2)
 	(declare (type cl:list cons1 end1 cons2))
-	(for (((tmp nil)) (not (eq cons1 end1))
-					  (progn (setf cons1 (cdr cons1))
-							 (setf cons2 (cdr cons2))) :returns cons2)
-	  (_= tmp         (car cons1))
-	  (_= (car cons1) (car cons2))
-	  (_= (car cons2) tmp)))
+	(for (nil (not (eq cons1 end1)) (progn (setf cons1 (cdr cons1))
+										   (setf cons2 (cdr cons2))) :returns cons2)
+	  (swap (car cons1) (car cons2))))
 
   (defun __swap-ranges-imp-5 (idx1 last1 buf1 cons2)
 	(declare (type fixnum idx1 last1))
 	(declare (type cl:vector buf1))
 	(declare (type cl:list cons2))
-	(for (((tmp nil)) (< idx1 last1) (progn (incf idx1)
-											(setf cons2 (cdr cons2))) :returns cons2)
-	  (_= tmp              (aref buf1 idx1))
-	  (_= (aref buf1 idx1) (car cons2))
-	  (_= (car cons2)      tmp)))
+	(for (nil (< idx1 last1) (progn (incf idx1)
+									(setf cons2 (cdr cons2))) :returns cons2)
+	  (swap (aref buf1 idx1) (car cons2))))
 
   (defun __swap-ranges-imp-6 (first last idx2 buffer2)
 	(declare (type fixnum idx2))
 	(declare (type cl:vector buffer2))
 	(with-operators
-		(for (((tmp nil) (itr @~first)) (_/= itr last) (progn ++itr (incf idx2)) :returns idx2)
-		  (_= tmp  *itr)
-		  (_= *itr (aref buffer2 idx2))
-		  (_= (aref buffer2 idx2) tmp))))
+		(for (((itr @~first)) (_/= itr last) (progn ++itr (incf idx2)) :returns idx2)
+		  (swap *itr (aref buffer2 idx2)))))
 
   (defun __swap-ranges-imp-7 (cons1 end1 idx2 buf2)
 	(declare (type cl:list cons1 end1))
 	(declare (type fixnum idx2))
 	(declare (type cl:vector buf2))
-	(for (((tmp nil)) (not (eq cons1 end1))
-					  (progn (setf cons1 (cdr cons1)) (incf idx2)) :returns idx2)
-	  (_= tmp              (car cons1))
-	  (_= (car cons1)      (aref buf2 idx2))
-	  (_= (aref buf2 idx2) tmp)))
+	(for (nil (not (eq cons1 end1)) (progn (setf cons1 (cdr cons1)) (incf idx2)) :returns idx2)
+	  (swap (car cons1) (aref buf2 idx2))))
   
   (defun __swap-ranges-imp-8 (idx1 last1 buf1 idx2 buf2)
 	(declare (type fixnum idx1 last1 idx2))
 	(declare (type cl:vector buf1 buf2))
-	(for (((tmp nil)) (< idx1 last1) (progn (incf idx1) (incf idx2)) :returns idx2)
-	  (_= tmp              (aref buf1 idx1))
-	  (_= (aref buf1 idx1) (aref buf2 idx2))
-	  (_= (aref buf2 idx2) tmp))))
+	(for (nil (< idx1 last1) (progn (incf idx1) (incf idx2)) :returns idx2)
+	  (swap (aref buf1 idx1) (aref buf2 idx2)))))
+
 
 ;;------------------------------------------------------------------------------
 (locally (declare (optimize speed))
@@ -2172,6 +2155,43 @@
 
   
   
+;;------------------------------------------------------------------------------
+(locally (declare (optimize speed))
+
+  ;;PTN; adjacent-find : 0 -  f
+  (defun __adjacent-find-imp-0 (first last eql-bf)
+	(declare (type cl:function eql-bf))
+	(with-operators
+		(if (_== first last)
+			@~first
+			(for (((prv @~first)
+				   (cur (next first))) (_/= cur last) (progn ++prv ++cur) :returns cur)
+			  (when (funcall eql-bf *prv *cur)
+				(return-from __adjacent-find-imp-0 prv))))))
+
+  ;;PTN; adjacent-find : 1 - cci
+  #+(or cl-stl-extra (not cl-stl-0x98))
+  (defun __adjacent-find-imp-1 (cons1 cons2 eql-bf)
+	(declare (type cl:function eql-bf))
+	(let ((chk (cdr cons1)))
+	  (for (nil (not (eq chk cons2)) (progn (setf cons1 (cdr cons1))
+											(setf   chk (cdr   chk))) :returns cons2)
+		(when (funcall eql-bf (car cons1) (car chk))
+		  (return-from __adjacent-find-imp-1 cons1)))))
+
+  ;;PTN; adjacent-find : 2 - cvp
+  (defun __adjacent-find-imp-2 (idx1 idx2 buffer eql-bf)
+	(declare (type fixnum idx1 idx2))
+	(declare (type cl:vector buffer))
+	(declare (type cl:function eql-bf))
+	(let ((chk (1+ idx1)))
+	  (declare (type fixnum chk))
+	  (for (nil (< chk idx2) (progn (incf idx1) (incf chk)) :returns idx2)
+		(when (funcall eql-bf (aref buffer idx1) (aref buffer chk))
+		  (return-from __adjacent-find-imp-2 idx1))))))
+
+
+
 ;;------------------------------------------------------------------------------
 (locally (declare (optimize speed))
 
@@ -6217,76 +6237,47 @@
 (locally (declare (optimize speed))
 
   ;;PTN; adjacent-find : 0 -  f
-  (labels ((__adjacent-find-imp-0 (first last eql-bf)
-			 (declare (type cl:function eql-bf))
-			 (with-operators
-				 (if (_== first last)
-					 @~first
-					 (for (((prv @~first)
-							(cur (next first))) (_/= cur last) (progn ++prv ++cur) :returns cur)
-					   (when (funcall eql-bf *prv *cur)
-						 (return-from __adjacent-find-imp-0 prv)))))))
-
-	(defmethod-overload adjacent-find ((first forward-iterator) (last forward-iterator))
-	  (__adjacent-find-imp-0 first last #'operator_==))
-
-	(defmethod-overload adjacent-find ((first forward-iterator) (last forward-iterator) eql-bf)
-	  (__adjacent-find-imp-0 first last (functor-function (clone eql-bf)))))
-
+  (defmethod-overload adjacent-find ((first forward-iterator) (last forward-iterator))
+	(__adjacent-find-imp-0 first last #'operator_==))
+  
+  (defmethod-overload adjacent-find ((first forward-iterator) (last forward-iterator) eql-bf)
+	(__adjacent-find-imp-0 first last (functor-function (clone eql-bf))))
 
   ;;PTN; adjacent-find : 1 - cci
   #+(or cl-stl-extra (not cl-stl-0x98))
-  (labels ((__adjacent-find-imp-1 (cons1 cons2 eql-bf)
-			 (declare (type cl:function eql-bf))
-			 (let ((chk (cdr cons1)))
-			   (for (nil (not (eq chk cons2)) (progn (setf cons1 (cdr cons1))
-													 (setf   chk (cdr   chk))) :returns cons2)
-				 (when (funcall eql-bf (car cons1) (car chk))
-				   (return-from __adjacent-find-imp-1 cons1))))))
+  (defmethod-overload adjacent-find ((first cons-const-iterator) (last cons-const-iterator))
+	;;(format t "specialized adjacent-find for cons-const-iterator is invoked.~%")
+	(__algo-make-cons-iterator first
+							   (__adjacent-find-imp-1 (__cons-itr-cons first)
+													  (__cons-itr-cons  last) #'operator_==)))
 
-	(defmethod-overload adjacent-find ((first cons-const-iterator) (last cons-const-iterator))
-	  ;;(format t "specialized adjacent-find for cons-const-iterator is invoked.~%")
-	  (__algo-make-cons-iterator first
-								 (__adjacent-find-imp-1 (__cons-itr-cons first)
-														(__cons-itr-cons  last) #'operator_==)))
-
-	(defmethod-overload adjacent-find ((first cons-const-iterator)
-									   (last  cons-const-iterator) eql-bf)
-	  ;;(format t "specialized adjacent-find for cons-const-iterator is invoked.~%")
-	  (__algo-make-cons-iterator first
-								 (__adjacent-find-imp-1 (__cons-itr-cons first)
-														(__cons-itr-cons  last)
-														(functor-function (clone eql-bf))))))
-
+  #+(or cl-stl-extra (not cl-stl-0x98))
+  (defmethod-overload adjacent-find ((first cons-const-iterator)
+									 (last  cons-const-iterator) eql-bf)
+	;;(format t "specialized adjacent-find for cons-const-iterator is invoked.~%")
+	(__algo-make-cons-iterator first
+							   (__adjacent-find-imp-1 (__cons-itr-cons first)
+													  (__cons-itr-cons  last)
+													  (functor-function (clone eql-bf)))))
 
   ;;PTN; adjacent-find : 2 - cvp
-  (labels ((__adjacent-find-imp-2 (idx1 idx2 buffer eql-bf)
-			 (declare (type fixnum idx1 idx2))
-			 (declare (type cl:vector buffer))
-			 (declare (type cl:function eql-bf))
-			 (let ((chk (1+ idx1)))
-			   (declare (type fixnum chk))
-			   (for (nil (< chk idx2) (progn (incf idx1) (incf chk)) :returns idx2)
-				 (when (funcall eql-bf (aref buffer idx1) (aref buffer chk))
-				   (return-from __adjacent-find-imp-2 idx1))))))
+  (defmethod-overload adjacent-find ((first const-vector-pointer) (last const-vector-pointer))
+	;;(format t "specialized adjacent-find for const-vector-pointer is invoked.~%")
+	(__pointer-check-iterator-range first last)
+	(__algo-make-vect-iterator first
+							   (__adjacent-find-imp-2 (opr::vec-ptr-index  first)
+													  (opr::vec-ptr-index   last)
+													  (opr::vec-ptr-buffer first) #'operator_==)))
 
-	(defmethod-overload adjacent-find ((first const-vector-pointer) (last const-vector-pointer))
-	   ;;(format t "specialized adjacent-find for const-vector-pointer is invoked.~%")
-	  (__pointer-check-iterator-range first last)
-	  (__algo-make-vect-iterator first
-								 (__adjacent-find-imp-2 (opr::vec-ptr-index  first)
-														(opr::vec-ptr-index   last)
-														(opr::vec-ptr-buffer first) #'operator_==)))
-
-	(defmethod-overload adjacent-find ((first const-vector-pointer)
-									   (last  const-vector-pointer) eql-bf)
-	   ;;(format t "specialized adjacent-find for const-vector-pointer is invoked.~%")
-	  (__pointer-check-iterator-range first last)
-	  (__algo-make-vect-iterator first
-								 (__adjacent-find-imp-2 (opr::vec-ptr-index  first)
-														(opr::vec-ptr-index   last)
-														(opr::vec-ptr-buffer first)
-														(functor-function (clone eql-bf)))))))
+  (defmethod-overload adjacent-find ((first const-vector-pointer)
+									 (last  const-vector-pointer) eql-bf)
+	;;(format t "specialized adjacent-find for const-vector-pointer is invoked.~%")
+	(__pointer-check-iterator-range first last)
+	(__algo-make-vect-iterator first
+							   (__adjacent-find-imp-2 (opr::vec-ptr-index  first)
+													  (opr::vec-ptr-index   last)
+													  (opr::vec-ptr-buffer first)
+													  (functor-function (clone eql-bf))))))
 
 
 
@@ -11445,42 +11436,54 @@
 (locally (declare (optimize speed))
 
   ;;PTN; unique : 0 -   f 
-  (labels ((__unique-imp-0 (itr1 itr2 pred)
-			 (declare (type cl:function pred))
-			 (with-operators
-				 (if (_== itr1 itr2)
-					 @~itr1
-					 (for (((last @~itr1)
-							(dest (next itr1))
-							(src  (next itr1))) (_/= src itr2) ++src :returns dest)
-					   (unless (funcall pred *last *src)
-						 (_= *dest *src)    ;;ToDo : Can use 'move' in 0x11 or later ?
-						 (_= last dest)
-						 ++dest))))))
+  (labels ((__unique-imp-0 (first last eql-bf)
+		   (with-operators
+			   (if (_== first last)
+				   @~last
+				   (let ((eql-bf (functor-function (clone eql-bf))))
+					 (declare (type cl:function eql-bf))
+					 (let ((first (__adjacent-find-imp-0 first last eql-bf)))
+					   (if (_== first last)
+						   first
+						   (let ((dest @~first))
+							 ++first
+							 (for (nil (_/= ++first last) nil)
+							   (unless (funcall eql-bf *dest *first)
+								 ++dest
+								 #+cl-stl-0x98 (_= *dest *first)
+								 #-cl-stl-0x98 (multiple-value-bind (a b) (operator_move *dest *first)
+												 (setf *first b)
+												 (setf *dest  a))))
+							 ++dest))))))))
 
 	(defmethod-overload unique ((first forward-iterator) (last forward-iterator))
 	  (__unique-imp-0 first last #'operator_==))
 
 	(defmethod-overload unique ((first forward-iterator) (last forward-iterator) pred)
-	  (__unique-imp-0 first last (functor-function (clone pred)))))
+	  (__unique-imp-0 first last pred)))
 
   ;;PTN; unique : 1 -   ci
   #+(or cl-stl-extra (not cl-stl-0x98))
   (labels ((__unique-imp-1 (cons1 cons2 eql-bf)
 			 (declare (type cl:list cons1 cons2))
-			 (declare (type cl:function eql-bf))
 			 (if (eq cons1 cons2)
 				 cons2
-				 (let ((src  (cdr cons1))
-					   (dest (cdr cons1))
-					   (last cons1))
-				   (declare (type cl:list src dest last))
-				   (for (nil (not (eq src cons2)) (setf src (cdr src)) :returns dest)
-					 (unless (funcall eql-bf (car src) (car last))
-					   (unless (eq dest src)
-						 (_= (car dest) (car src)))    ;;ToDo : Can use 'move' in 0x11 or later ?
-					   (setf last dest)
-					   (setf dest (cdr dest))))))))
+				 (let ((eql-bf (functor-function (clone eql-bf))))
+				   (declare (type cl:function eql-bf))
+				   (let ((cons1 (__adjacent-find-imp-1 cons1 cons2 eql-bf)))
+					 (if (eq cons1 cons2)
+						 cons2
+						 (let ((dest cons1))
+						   (declare (type cl:list dest))
+						   (setf cons1 (cdr cons1))
+						   (for (nil (not (eq (setf cons1 (cdr cons1)) cons2)) nil)
+							 (unless (funcall eql-bf (car dest) (car cons1))
+							   (setf dest (cdr dest))
+							   #+cl-stl-0x98 (_= (car dest) (car cons1))
+							   #-cl-stl-0x98 (multiple-value-bind (a b) (operator_move (car dest) (car cons1))
+											   (setf (car cons1) b)
+											   (setf (car dest)  a))))
+						   (setf dest (cdr dest)))))))))
 
 	(defmethod-overload unique ((first cons-iterator) (last cons-iterator))
 	  ;;(format t "specialized unique for cons-iterator is invoked.~%")
@@ -11492,26 +11495,31 @@
 	  ;;(format t "specialized unique for cons-iterator is invoked.~%")
 	  (__algo-make-cons-iterator first
 								 (__unique-imp-1 (__cons-itr-cons first)
-												 (__cons-itr-cons  last) (functor-function (clone pred))))))
+												 (__cons-itr-cons  last) pred))))
 
   ;;PTN; unique : 2 -   vp
   (labels ((__unique-imp-2 (idx1 idx2 buffer eql-bf)
 			 (declare (type fixnum idx1 idx2))
 			 (declare (type cl:vector buffer))
-			 (declare (type cl:function eql-bf))
 			 (if (= idx1 idx2)
 				 idx2
-				 (let ((src  (1+ idx1))
-					   (dest (1+ idx1))
-					   (last idx1))
-				   (declare (type fixnum src dest last))
-				   (for (nil (< src idx2) (incf src) :returns dest)
-					 (unless (funcall eql-bf (aref buffer src)
-									  (aref buffer last))
-					   (unless (= dest src)
-						 (_= (aref buffer dest) (aref buffer src)))    ;;ToDo : Can use 'move' in 0x11 or later ?
-					   (setf last dest)
-					   (incf dest)))))))
+				 (let ((eql-bf (functor-function (clone eql-bf))))
+				   (declare (type cl:function eql-bf))
+				   (let ((idx1 (__adjacent-find-imp-2 idx1 idx2 buffer eql-bf)))
+					 (if (= idx1 idx2)
+						 idx2
+						 (let ((dest idx1))
+						   (declare (type fixnum dest))
+						   (incf idx1)
+						   (for (nil (/= (incf idx1) idx2) nil)
+							 (unless (funcall eql-bf (aref buffer dest) (aref buffer idx1))
+							   (incf dest)
+							   #+cl-stl-0x98 (_= (aref buffer dest) (aref buffer idx1))
+							   #-cl-stl-0x98 (multiple-value-bind (a b) (operator_move (aref buffer dest)
+																					   (aref buffer idx1))
+											   (setf (aref buffer idx1) b)
+											   (setf (aref buffer dest) a))))
+						   (incf dest))))))))
 
 	(defmethod-overload unique ((first vector-pointer) (last vector-pointer))
 	  ;;(format t "specialized unique for vector-pointer is invoked.~%")
@@ -11527,7 +11535,7 @@
 	  (__algo-make-vect-iterator first
 								 (__unique-imp-2 (opr::vec-ptr-index  first)
 												 (opr::vec-ptr-index  last)
-												 (opr::vec-ptr-buffer first) (functor-function (clone pred)))))))
+												 (opr::vec-ptr-buffer first) pred)))))
 
 
 
