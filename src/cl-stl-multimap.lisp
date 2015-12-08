@@ -225,7 +225,7 @@
 	  (declare (type rbtree tree))
 	  (declare (type cl:vector arr))
 	  (__rbtree-clear tree)
-	  (__rbtree-insert-array-unique tree arr 0 (length arr) t))
+	  (__rbtree-insert-array-equal tree arr 0 (length arr) t))
 	cont))
 
 
