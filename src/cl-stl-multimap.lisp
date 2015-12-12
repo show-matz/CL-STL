@@ -365,10 +365,11 @@
   (defmethod-overload insert ((container multimap) (ptr1 const-vector-pointer) (ptr2 const-vector-pointer))
 	(__pointer-check-iterator-range ptr1 ptr2)
 	;;ToDo : check pair-ness of values in sequence...
-	(let ((arr (opr::vec-ptr-buffer ptr1)))
-	  (declare (type cl:vector arr))
-	  (__rbtree-insert-array-equal (__assoc-tree container) arr 0 (length arr) t)
-	nil)))
+	(__rbtree-insert-array-equal (__assoc-tree container)
+								 (opr::vec-ptr-buffer ptr1)
+								 (opr::vec-ptr-index  ptr1)
+								 (opr::vec-ptr-index  ptr2) t)
+	nil))
 
 
 ;; emplace

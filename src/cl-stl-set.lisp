@@ -352,10 +352,11 @@
 
   (defmethod-overload insert ((container stl::set) (ptr1 const-vector-pointer) (ptr2 const-vector-pointer))
 	(__pointer-check-iterator-range ptr1 ptr2)
-	(let ((arr (opr::vec-ptr-buffer ptr1)))
-	  (declare (type cl:vector arr))
-	  (__rbtree-insert-array-unique (__assoc-tree container) arr 0 (length arr) t)
-	nil)))
+	(__rbtree-insert-array-unique (__assoc-tree container)
+								  (opr::vec-ptr-buffer ptr1)
+								  (opr::vec-ptr-index  ptr1)
+								  (opr::vec-ptr-index  ptr2) t)
+	nil))
 
 ;; emplace
 #-cl-stl-0x98
