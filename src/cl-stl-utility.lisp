@@ -133,8 +133,12 @@
 #-cl-stl-0x98
 (defmethod-overload swap ((p1 pair) (p2 pair))
   (unless (eq p1 p2)
-	(swap (stl:first  p1) (stl:first  p2))
-	(swap (stl:second p1) (stl:second p2)))
+	(multiple-value-bind (v1 v2) (__swap-2 (stl:first p1) (stl:first p2))
+	  (setf (stl:first p1) v1)
+	  (setf (stl:first p2) v2))
+	(multiple-value-bind (v1 v2) (__swap-2 (stl:second p1) (stl:second p2))
+	  (setf (stl:second p1) v1)
+	  (setf (stl:second p2) v2)))
   (values p1 p2))
 
 

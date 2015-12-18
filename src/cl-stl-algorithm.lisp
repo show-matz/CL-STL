@@ -9005,7 +9005,10 @@
 		(declare (type fixnum idx))
 		(for (nil (< idx len1) (incf idx))
 		  (swap (aref arr1 idx) (aref arr2 idx)))))
-	(values arr1 arr2)))
+	(values arr1 arr2))
+
+  (defmethod-overload swap ((str1 cl:string) (str2 cl:string))
+	(values str2 str1)))
 
 #+cl-stl-extra
 (locally (declare (optimize speed))
