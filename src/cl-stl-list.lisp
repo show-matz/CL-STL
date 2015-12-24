@@ -218,8 +218,8 @@
 		   (cnt (length arr))
 		   (s1  (make-list-node))
 		   (s2  (make-list-node)))
-	  (declare (type cl:vector arr))
-	  (declare (type fixnum    cnt))
+	  (declare (type simple-vector arr))
+	  (declare (type fixnum        cnt))
 	  (__list-connect-node s1 s2)
 	  (if (zerop cnt)
 		  (make-instance 'stl:list :size 0 :top s1 :last s2)
@@ -233,7 +233,7 @@
 #-cl-stl-0x98
 (locally (declare (optimize speed))
   (define-constructor list ((arg remove-reference))
-	(let ((cont (funcall (__rm-ref-closure arg))))
+	(let ((cont (funcall (the cl:function (__rm-ref-closure arg)))))
 	  (__check-type-of-move-constructor cont stl:list)
 	  (prog1
 		  (make-instance 'stl:list
@@ -369,8 +369,8 @@
 		   (cnt  (length arr))
 		   (node (list-top-sentinel  cont))
 		   (last (list-last-sentinel cont)))
-	  (declare (type cl:vector arr))
-	  (declare (type fixnum    idx cnt))
+	  (declare (type simple-vector arr))
+	  (declare (type fixnum        idx cnt))
 	  (setf node (list-node-next node))
 	  (do ()
 		  ((or (= idx cnt)
@@ -579,9 +579,9 @@
 							(itr list-const-iterator) (rm remove-reference))
   (__list-check-iterator-belong itr cont)
   (let ((node (list-itr-node itr))
-		(val (funcall (__rm-ref-closure rm))))
+		(val (funcall (the cl:function (__rm-ref-closure rm)))))
 	(__list-insert node (__list-new-node val nil))
-	(funcall (__rm-ref-closure rm) nil))
+	(funcall (the cl:function (__rm-ref-closure rm)) nil))
   (incf (list-size-cache cont))
   (prev itr))
 
@@ -594,8 +594,8 @@
 	(__list-check-iterator-belong itr cont)
 	(let* ((arr (__initlist-data il))
 		   (cnt (length arr)))
-	  (declare (type cl:vector arr))
-	  (declare (type fixnum    cnt))
+	  (declare (type simple-vector arr))
+	  (declare (type fixnum        cnt))
 	  (if (zerop cnt)
 		  (clone itr)
 		  (let* ((node (list-itr-node itr))
@@ -604,7 +604,8 @@
 				((= idx cnt) nil)
 			  (declare (type fixnum idx))
 			  (__list-insert node (__list-new-node (aref arr idx))))
-			(incf (list-size-cache cont) cnt)
+			(setf (list-size-cache cont)
+				  (the fixnum (+ (the fixnum (list-size-cache cont)) cnt)))
 			(make-instance 'list-iterator :node (list-node-next prev)))))))
 
 #-cl-stl-0x98    ; emplace
@@ -956,6 +957,7 @@
 (locally (declare (optimize speed))
   (defmethod-overload for ((cont stl:list) func)
 	;MEMO : func is always lambda function ( see stl:for ). 
+	(declare (type cl:function func))
 	(let ((node (list-node-next (list-top-sentinel cont)))
 		  (last (list-last-sentinel cont)))
 	  (do ()

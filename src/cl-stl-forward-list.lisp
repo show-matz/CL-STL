@@ -121,8 +121,8 @@
   (define-constructor forward-list ((arg initializer-list))
 	(let* ((arr (__initlist-data arg))
 		   (cnt (length arr)))
-	  (declare (type cl:vector arr))
-	  (declare (type fixnum    cnt))
+	  (declare (type simple-vector arr))
+	  (declare (type fixnum        cnt))
 	  (let ((idx 0))
 		(declare (type fixnum idx))
 		(for (((acc nil)) (< idx cnt) (incf idx)
@@ -133,7 +133,7 @@
 ; move constructor
 #-cl-stl-0x98
 (define-constructor forward-list ((arg remove-reference))
-  (let ((cont (funcall (__rm-ref-closure arg))))
+  (let ((cont (funcall (the cl:function (__rm-ref-closure arg)))))
 	(__check-type-of-move-constructor cont forward-list)
 	(let ((lst (__slst-top-node cont)))
 	  (prog1
@@ -208,8 +208,8 @@
 		(let* ((arr (__initlist-data il))
 			   (idx 0)
 			   (cnt (length arr)))
-		  (declare (type cl:vector arr))
-		  (declare (type fixnum    idx cnt))
+		  (declare (type simple-vector arr))
+		  (declare (type fixnum        idx cnt))
 		  (__assign-imp (__slst-top-node cont)
 						(lambda ()
 						  (if (= idx cnt)
@@ -262,8 +262,8 @@
 		(let* ((arr (__initlist-data il))
 			   (idx 0)
 			   (cnt (length arr)))
-		  (declare (type cl:vector arr))
-		  (declare (type fixnum    idx cnt))
+		  (declare (type simple-vector arr))
+		  (declare (type fixnum        idx cnt))
 		  (__assign-imp (__slst-top-node cont)
 						(lambda ()
 						  (if (= idx cnt)
@@ -412,8 +412,8 @@
 									  (itr  forward-list-const-iterator) (rm remove-reference))
 	  (__slst-check-iterator-belong itr cont)
 	  (let ((node (__cons-itr-cons itr))
-			(val  (funcall (__rm-ref-closure rm))))
-		(funcall (__rm-ref-closure rm) nil)
+			(val  (funcall (the cl:function (__rm-ref-closure rm)))))
+		(funcall (the cl:function (__rm-ref-closure rm)) nil)
 		(__insert-imp node nil (lambda ()
 								 (prog1 val (setf val eos))))
 		(make-instance 'forward-list-iterator :node (cdr node))))
@@ -472,8 +472,8 @@
 			   (idx  0)
 			   (cnt  (length arr))
 			   (node (__cons-itr-cons itr)))
-		  (declare (type cl:vector arr))
-		  (declare (type fixnum    idx cnt))
+		  (declare (type simple-vector arr))
+		  (declare (type fixnum        idx cnt))
 		  (__insert-imp node t (lambda ()
 								 (if (= idx cnt)
 									 eos
@@ -725,20 +725,20 @@
 							   (cdr (__slst-top-node cont2))))))
 
   (defmethod operator_< ((cont1 forward-list) (cont2 forward-list))
-	(< (__conslist-compare (cdr (__slst-top-node cont1))
-						   (cdr (__slst-top-node cont2))) 0))
+	(< (the fixnum (__conslist-compare (cdr (__slst-top-node cont1))
+									   (cdr (__slst-top-node cont2)))) 0))
 
   (defmethod operator_<= ((cont1 forward-list) (cont2 forward-list))
-	(<= (__conslist-compare (cdr (__slst-top-node cont1))
-							(cdr (__slst-top-node cont2))) 0))
+	(<= (the fixnum (__conslist-compare (cdr (__slst-top-node cont1))
+										(cdr (__slst-top-node cont2)))) 0))
 
   (defmethod operator_> ((cont1 forward-list) (cont2 forward-list))
-	(< 0 (__conslist-compare (cdr (__slst-top-node cont1))
-							 (cdr (__slst-top-node cont2)))))
+	(< 0 (the fixnum (__conslist-compare (cdr (__slst-top-node cont1))
+										 (cdr (__slst-top-node cont2))))))
 
   (defmethod operator_>= ((cont1 forward-list) (cont2 forward-list))
-	(<= 0 (__conslist-compare (cdr (__slst-top-node cont1))
-							  (cdr (__slst-top-node cont2))))))
+	(<= 0 (the fixnum (__conslist-compare (cdr (__slst-top-node cont1))
+										  (cdr (__slst-top-node cont2)))))))
 			 
 
 ;-----------------------------------------------------
@@ -748,6 +748,7 @@
 (locally (declare (optimize speed))
   (defmethod-overload for ((cont forward-list) func)
 	;MEMO : func is always lambda function ( see stl:for ). 
+	(declare (type cl:function func))
 	(dolist (itm (cdr (__slst-top-node cont)))
 	  (funcall func itm))))
 

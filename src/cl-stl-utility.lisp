@@ -46,7 +46,7 @@
 ;; move constructor
 #-cl-stl-0x98
 (define-constructor pair ((rm-ref remove-reference))
-  (let ((pr (funcall (__rm-ref-closure rm-ref))))
+  (let ((pr (funcall (the cl:function (__rm-ref-closure rm-ref)))))
 	(__check-type-of-move-constructor pr pair)
 	(prog1 (make-instance 'pair :first  (stl:first  pr)
 								:second (stl:second pr))
@@ -57,11 +57,11 @@
 #-cl-stl-0x98
 (define-constructor pair ((rm-ref1 remove-reference)
 						  (rm-ref2 remove-reference))
-  (let ((v1 (funcall (__rm-ref-closure rm-ref1)))
-		(v2 (funcall (__rm-ref-closure rm-ref2))))
+  (let ((v1 (funcall (the cl:function (__rm-ref-closure rm-ref1))))
+		(v2 (funcall (the cl:function (__rm-ref-closure rm-ref2)))))
 	(prog1 (make-instance 'pair :first v1 :second v2)
-	  (funcall (__rm-ref-closure rm-ref1) nil)
-	  (funcall (__rm-ref-closure rm-ref2) nil))))
+	  (funcall (the cl:function (__rm-ref-closure rm-ref1)) nil)
+	  (funcall (the cl:function (__rm-ref-closure rm-ref2)) nil))))
 
 (defmethod operator_clone ((obj pair))
   (make-instance 'pair :first  (stl:first  obj)

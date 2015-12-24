@@ -17,7 +17,8 @@
   #+cl-stl-debug (check-type itr2 symbol)
   #+cl-stl-debug
   `(unless (and (eq (opr::vec-ptr-buffer ,itr1) (opr::vec-ptr-buffer ,itr2))
-				(<= (opr::vec-ptr-index  ,itr1) (opr::vec-ptr-index  ,itr2)))
+				(<= (the fixnum (opr::vec-ptr-index ,itr1))
+					(the fixnum (opr::vec-ptr-index ,itr2))))
 	 (error 'undefined-behavior :what ,(format nil "[~A ~A) isn't legal sequence." itr1 itr2))))
 
 
@@ -126,7 +127,8 @@
 
   (locally (declare (optimize speed))
 	(defmethod-overload for ((cont cl:vector) func)
-	  (declare (type cl:vector cont))
+	  (declare (type cl:vector   cont))
+	  (declare (type cl:function func))
 	  ;;MEMO : func is always lambda function ( see stl:for ).
 	  (let ((idx 0)
 			(cnt (length cont)))

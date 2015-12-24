@@ -2525,12 +2525,12 @@
 (progn
   (defmethod operator_= :around (a (b remove-reference))
 	(multiple-value-bind (lhs rhs)
-		(operator_move a (funcall (__rm-ref-closure b)))
-	  (funcall (__rm-ref-closure b) rhs)
+		(operator_move a (funcall (the cl:function (__rm-ref-closure b))))
+	  (funcall (the cl:function (__rm-ref-closure b)) rhs)
 	  lhs))
 
   (defmethod operator_cast ((obj remove-reference) typename)
-	(operator_cast (funcall (__rm-ref-closure obj)) typename))
+	(operator_cast (funcall (the cl:function (__rm-ref-closure obj))) typename))
 
   (defmethod operator_move (lhs rhs)
 	(if (eq lhs rhs)

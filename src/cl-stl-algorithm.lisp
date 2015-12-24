@@ -124,6 +124,8 @@
 	  (_= (car out-cons) (car cons1))))
 
   (defun __copy-imp-5 (idx1 idx2 src-buf out-cons)
+	(declare (type fixnum idx1 idx2))
+	(declare (type cl:vector src-buf))
 	(declare (type cl:list out-cons))
 	(for (nil (< idx1 idx2) (progn (incf idx1)
 								   (setf out-cons (cdr out-cons))) :returns out-cons)
@@ -443,7 +445,7 @@
 		(let ((ret  (- last  middle))
 			  (len1 (- last   first))
 			  (len2 (- middle first)))
-		  (declare (type fixnum len1 len2))
+		  (declare (type fixnum ret len1 len2))
 		  (if (= len2 (- len1 len2))
 			  (progn
 				(__swap-ranges-imp-8 first middle buffer middle buffer)
@@ -455,9 +457,11 @@
 					  (progn (when (= len2 1)
 							   (let ((val nil))
 								 (_= val (aref buffer idx1))
-								 #+cl-stl-0x98 (__copy-imp-8 (1+ idx1) (+ idx1 len1) buffer idx1 buffer)
-								 #-cl-stl-0x98 (__move-imp-8 (1+ idx1) (+ idx1 len1) buffer idx1 buffer)
-								 (_= (aref buffer (+ idx1 (1- len1))) val))
+								 #+cl-stl-0x98 (__copy-imp-8 (the fixnum (1+ idx1))
+															 (the fixnum (+ idx1 len1)) buffer idx1 buffer)
+								 #-cl-stl-0x98 (__move-imp-8 (the fixnum (1+ idx1))
+															 (the fixnum (+ idx1 len1)) buffer idx1 buffer)
+								 (_= (aref buffer (the fixnum (+ idx1 (the fixnum (1- len1))))) val))
 							   (return-from __rotate-imp-2 ret))
 							 (let ((idx2 (+ idx1 len2)))
 							   (declare (type fixnum idx2))
@@ -475,9 +479,13 @@
 					  (progn (setf len2 (- len1 len2))
 							 (when (= len2 1)
 							   (let ((val nil))
-								 (_= val (aref buffer (+ idx1 (1- len1))))
-								 #+cl-stl-0x98 (__copy-backward-imp-3 idx1 (+ idx1 (1- len1)) buffer (+ idx1 len1) buffer)
-								 #-cl-stl-0x98 (__move-backward-imp-3 idx1 (+ idx1 (1- len1)) buffer (+ idx1 len1) buffer)
+								 (_= val (aref buffer (the fixnum (+ idx1 (the fixnum (1- len1))))))
+								 #+cl-stl-0x98 (__copy-backward-imp-3 idx1
+																	  (the fixnum (+ idx1 (the fixnum (1- len1))))
+																	  buffer (the fixnum (+ idx1 len1)) buffer)
+								 #-cl-stl-0x98 (__move-backward-imp-3 idx1
+																	  (the fixnum (+ idx1 (the fixnum (1- len1))))
+																	  buffer (the fixnum (+ idx1 len1)) buffer)
 								 (_= (aref buffer idx1) val))
 							   (return-from __rotate-imp-2 ret))
 							 (let ((idx2 (+ idx1 len1)))
@@ -544,15 +552,17 @@
 	(declare (type cl:function less-bf))
 	(if (= first last)
 		last
-		(for (((middle first)) t nil)
-		  (let ((distance (the fixnum (- last first))))
-			(declare (type fixnum distance))
-			(when (<= distance 0)
-			  (return-from __lower-bound-imp-2 first))
-			(setf middle (+ first (ash distance -1)))
-			(if (funcall less-bf (aref buf middle) val)
-				(setf first (1+ middle))
-				(setf last middle)))))))
+		(let ((middle first))
+		  (declare (type fixnum middle))
+		  (for (nil t nil)
+			(let ((distance (the fixnum (- last first))))
+			  (declare (type fixnum distance))
+			  (when (<= distance 0)
+				(return-from __lower-bound-imp-2 first))
+			  (setf middle (+ first (ash distance -1)))
+			  (if (funcall less-bf (aref buf middle) val)
+				  (setf first (1+ middle))
+				  (setf last middle))))))))
 
 ;;------------------------------------------------------------------------------
 (locally (declare (optimize speed))
@@ -601,15 +611,17 @@
 	(declare (type cl:function less-bf))
 	(if (= top last)
 		last
-		(for (((middle top)) t nil)
-		  (let ((distance (the fixnum (- last top))))
-			(declare (type fixnum distance))
-			(when (<= distance 0)
-			  (return-from __upper-bound-imp-2 top))
-			(setf middle (+ top (ash distance -1)))
-			(if (not (funcall less-bf val (aref buffer middle)))
-				(setf top (1+ middle))
-				(setf last middle)))))))
+		(let ((middle top))
+		  (declare (type fixnum middle))
+		  (for (nil t nil)
+			(let ((distance (the fixnum (- last top))))
+			  (declare (type fixnum distance))
+			  (when (<= distance 0)
+				(return-from __upper-bound-imp-2 top))
+			  (setf middle (+ top (ash distance -1)))
+			  (if (not (funcall less-bf val (aref buffer middle)))
+				  (setf top (1+ middle))
+				  (setf last middle))))))))
 
 
 ;;------------------------------------------------------------------------------
@@ -1249,7 +1261,9 @@
 	(with-operators
 		(let ((tmp nil))
 		  (_= tmp last[-1])
-		  (__push-heap first (1- (the fixnum (_- last first))) 0 tmp comp)))
+		  (__push-heap first
+					   (the fixnum (1- (the fixnum (_- last first))))
+					   0 tmp comp)))
 	nil)
 
   ;;IMP; push-heap : 1 -  vp
@@ -1260,12 +1274,13 @@
 	(let ((half (ash (1- idx1) -1)))
 	  (declare (type fixnum half))
 	  (for (nil (< idx2 idx1) nil)
-		(unless (funcall less-bf (aref itr-buf (+ itr-idx half)) val)
+		(unless (funcall less-bf (aref itr-buf (the fixnum (+ itr-idx half))) val)
 		  (return nil))
-		(_= (aref itr-buf (+ itr-idx idx1)) (aref itr-buf (+ itr-idx half)))
+		(_= (aref itr-buf (the fixnum (+ itr-idx idx1)))
+			(aref itr-buf (the fixnum (+ itr-idx half))))
 		(setf idx1 half)
 		(setf half (ash (1- idx1) -1))))
-	(_= (aref itr-buf (+ itr-idx idx1)) val)))
+	(_= (aref itr-buf (the fixnum (+ itr-idx idx1))) val)))
 
 
 ;;------------------------------------------------------------------------------
@@ -1275,15 +1290,16 @@
 	(declare (type fixnum half dist))
 	(declare (type cl:function less-bf))
 	(let ((org-hlf half)
-		  (idx     (+ 2 (* 2 half))))
+		  (idx     (the fixnum (+ 2 (the fixnum (* 2 half))))))
 	  (declare (type fixnum org-hlf idx))
 	  (with-operators
 		  (for (nil (< idx dist) nil)
-			(when (funcall less-bf rdm-itr[idx] (_[] rdm-itr (the fixnum (1- idx))))
+			(when (funcall less-bf rdm-itr[idx]
+						   (_[] rdm-itr (the fixnum (1- idx))))
 			  (decf idx))
 			(_= rdm-itr[half] rdm-itr[idx])
 			(setf half idx)
-			(setf idx (the fixnum (+ 2 (* idx 2)))))
+			(setf idx (the fixnum (+ 2 (the fixnum (* idx 2))))))
 		(when (= idx dist)
 		  (_= rdm-itr[half] (_[] rdm-itr (the fixnum (1- idx))))
 		  (setf half (the fixnum (1- idx))))
@@ -1296,17 +1312,19 @@
 	(declare (type cl:vector itr-buf))
 	(declare (type cl:function less-bf))
 	(let ((org-hlf half)
-		  (idx     (+ 2 (* 2 half))))
+		  (idx     (the fixnum (+ 2 (the fixnum (* 2 half))))))
 	  (declare (type fixnum org-hlf idx))
 	  (for (nil (< idx dist) nil)
-		(when (funcall less-bf (aref itr-buf (+ itr-idx idx))
-							   (aref itr-buf (+ itr-idx (the fixnum (1- idx)))))
+		(when (funcall less-bf (aref itr-buf (the fixnum (+ itr-idx idx)))
+							   (aref itr-buf (the fixnum (+ itr-idx (the fixnum (1- idx))))))
 		  (decf idx))
-		(_= (aref itr-buf (+ itr-idx half)) (aref itr-buf (+ itr-idx idx)))
+		(_= (aref itr-buf (the fixnum (+ itr-idx half)))
+			(aref itr-buf (the fixnum (+ itr-idx  idx))))
 		(setf half idx)
-		(setf idx (the fixnum (+ 2 (* idx 2)))))
+		(setf idx (the fixnum (+ 2 (the fixnum (* idx 2))))))
 	  (when (= idx dist)
-		(_= (aref itr-buf (+ itr-idx half)) (aref itr-buf (+ itr-idx (the fixnum (1- idx)))))
+		(_= (aref itr-buf (the fixnum (+ itr-idx half)))
+			(aref itr-buf (the fixnum (+ itr-idx (the fixnum (1- idx))))))
 		(setf half (the fixnum (1- idx))))
 	  (__push-heap-imp-1 itr-buf itr-idx half org-hlf v less-bf))))
 
@@ -1357,7 +1375,7 @@
 			(declare (type fixnum half))
 			(for (((tmp nil)) (< 0 half) nil)
 			  (decf half)
-			  (_= tmp (aref buffer (+ idx1 half)))
+			  (_= tmp (aref buffer (the fixnum (+ idx1 half))))
 			  (__adjust-heap-1 buffer idx1 half dist tmp less-bf)))))))
 
 
@@ -1368,7 +1386,7 @@
   (defun __sort-heap-imp-0 (first last comp)
 	(declare (type cl:function comp))
 	(with-operators
-		(for (((itr @~last)) (< 1 (_- itr first)) --itr)
+		(for (((itr @~last)) (< 1 (the fixnum (_- itr first))) --itr)
 		  (__pop-heap-imp-0 first (_- itr 1) (_- itr 1) itr[-1] comp))))
 
   ;;IMP; sort-heap : 1 -  vp
@@ -1377,8 +1395,10 @@
 	(declare (type cl:vector buffer))
 	(declare (type cl:function less-bf))
 	(for (((tmp nil)) (< 1 (- idx2 idx1)) (decf idx2))
-	  (_= tmp (aref buffer (1- idx2)))
-	  (__pop-heap-imp-1 buffer idx1 (1- idx2) (1- idx2) tmp less-bf))))
+	  (_= tmp (aref buffer (the fixnum (1- idx2))))
+	  (__pop-heap-imp-1 buffer idx1
+						(the fixnum (1- idx2))
+						(the fixnum (1- idx2)) tmp less-bf))))
 
 
 
@@ -1542,25 +1562,27 @@
   (defun __buffered-rotate-1 (idx1 idx2 idx3 buffer d1 d2 tmpitr)
 	(declare (type fixnum idx1 idx2 idx3 d1 d2))
 	(declare (type cl:vector buffer))
-	(if (and (<= d1 d2) (<= d1 (tmpitr-maxlen tmpitr)))
+	(if (and (<= d1 d2) (<= d1 (the fixnum (tmpitr-maxlen tmpitr))))
 		(progn
 		  (__copy-imp-2 idx1 idx2 buffer (tmpitr-init tmpitr))
 		  (__copy-imp-8 idx2 idx3 buffer idx1 buffer)
 		  ;; MEMO : depends on implementation of tmpitr...
-		  (__copy-backward-imp-3 (opr::vec-ptr-index (tmpitr-begin tmpitr))
-								 (opr::vec-ptr-index (tmpitr-cur   tmpitr))
-								 (__vector-data (tmpitr-buffer tmpitr)) idx3 buffer))
-		(if (<= d2 (tmpitr-maxlen tmpitr))
+		  (the fixnum 
+			   (__copy-backward-imp-3 (opr::vec-ptr-index (tmpitr-begin tmpitr))
+									  (opr::vec-ptr-index (tmpitr-cur   tmpitr))
+									  (__vector-data (tmpitr-buffer tmpitr)) idx3 buffer)))
+		(if (<= d2 (the fixnum (tmpitr-maxlen tmpitr)))
 			(progn
 			  (__copy-imp-2 idx2 idx3 buffer (tmpitr-init tmpitr))
 			  (__copy-backward-imp-3 idx1 idx2 buffer idx3 buffer)
 			  ;; MEMO : depends on implementation of tmpitr...
-			  (__copy-imp-8 (opr::vec-ptr-index (tmpitr-begin tmpitr))
-							(opr::vec-ptr-index (tmpitr-cur   tmpitr))
-							(__vector-data (tmpitr-buffer tmpitr)) idx1 buffer))
+			  (the fixnum 
+				   (__copy-imp-8 (opr::vec-ptr-index (tmpitr-begin tmpitr))
+								 (opr::vec-ptr-index (tmpitr-cur   tmpitr))
+								 (__vector-data (tmpitr-buffer tmpitr)) idx1 buffer)))
 			(progn
 			  (__rotate-imp-2 idx1 idx2 idx3 buffer)
-			  (+ idx1 d2))))))
+			  (the fixnum (+ idx1 d2)))))))
 			  
 ;;------------------------------------------------------------------------------
 (locally (declare (optimize speed))
@@ -1605,7 +1627,7 @@
 								(advance itr3-n d2n)
 								(setf itr1-n (__lower-bound-imp-0 itr1 itr2 *itr3-n less-bf))
 								(setf d1n (the fixnum (distance itr1 itr1-n)))))
-						  (setf itr2-n (__buffered-rotate-0 itr1-n itr2 itr3-n (- d1 d1n) d2n tmpitr))
+						  (setf itr2-n (__buffered-rotate-0 itr1-n itr2 itr3-n (the fixnum (- d1 d1n)) d2n tmpitr))
 						  (__buffered-merge-0 itr1 itr1-n itr2-n d1n d2n tmpitr less-bf)
 						  (__buffered-merge-0 itr2 itr3-n itr3 (- d1 d1n) (- d2 d2n) tmpitr less-bf))))))))
 
@@ -1620,7 +1642,7 @@
 			  (when (funcall less-bf (aref buffer idx2) (aref buffer idx1))
 				(swap (aref buffer idx2) (aref buffer idx1)))
 			  nil)
-			(if (and (<= d1 d2) (<= d1 (tmpitr-maxlen tmpitr)))
+			(if (and (<= d1 d2) (<= d1 (the fixnum (tmpitr-maxlen tmpitr))))
 				(progn
 				  (__copy-imp-2 idx1 idx2 buffer (tmpitr-init tmpitr))
 				  ;; MEMO : depends on implementation of tmpitr...
@@ -1655,7 +1677,7 @@
 							(setf idx3-n (+ idx2 d2n))
 							(setf idx1-n (__lower-bound-imp-2 idx1 idx2 buffer (aref buffer idx3-n) less-bf))
 							(setf d1n (- idx1-n idx1))))
-					  (setf idx2-n (__buffered-rotate-1 idx1-n idx2 idx3-n buffer (- d1 d1n) d2n tmpitr))
+					  (setf idx2-n (__buffered-rotate-1 idx1-n idx2 idx3-n buffer (the fixnum (- d1 d1n)) d2n tmpitr))
 					  (__buffered-merge-1 idx1 idx1-n idx2-n buffer d1n d2n tmpitr less-bf)
 					  (__buffered-merge-1 idx2 idx3-n idx3   buffer (- d1 d1n) (- d2 d2n) tmpitr less-bf))))))))
 
@@ -1773,7 +1795,8 @@
 	(declare (type fixnum ideal))
 	(declare (type cl:function less-bf))
 	(with-operators
-		(for (((itr1 @~rdm-itr1) (itr2 @~rdm-itr2)) (< +SORT-MAX+ (_- itr2 itr1)) nil)
+		(for (((itr1 @~rdm-itr1)
+			   (itr2 @~rdm-itr2)) (< +SORT-MAX+ (the fixnum (_- itr2 itr1))) nil)
 		  (if (zerop ideal)
 			  (progn
 				(__make-heap-imp-0 itr1 itr2 less-bf)
@@ -1802,8 +1825,8 @@
 				 (idx 0))
 			(declare (type fixnum n idx))
 			(_= val (__median (aref buffer idx1)
-							  (aref buffer (+ n idx1))
-							  (aref buffer (1- idx2)) less-bf))
+							  (aref buffer (the fixnum (+ n idx1)))
+							  (aref buffer (the fixnum (1- idx2))) less-bf))
 			(setf idx (__unguarded-partition-1 idx1 idx2 buffer val less-bf))
 			(setf ideal (ash ideal -1))
 			(__recursive-sort-1 idx1 idx buffer ideal less-bf)
@@ -1884,7 +1907,9 @@
 				  (incf idx half)
 				  (setf lp (__recursive-stable-partition-1 bid-idx1_ idx      buffer pred-uf half       tmpitr))
 				  (setf rp (__recursive-stable-partition-1 idx       bid-idx2 buffer pred-uf (- n half) tmpitr))
-				  (__buffered-rotate-1 lp idx rp buffer (- idx lp) (- rp idx) tmpitr))))))))
+				  (__buffered-rotate-1 lp idx rp buffer
+									   (the fixnum (- idx lp))
+									   (the fixnum (- rp idx)) tmpitr))))))))
 
 
 ;;------------------------------------------------------------------------------
@@ -2313,8 +2338,8 @@
 		  (child  1))
 	  (declare (type fixnum parent child))
 	  (for (nil (< child len) (incf child) :returns len)
-		(when (funcall less-bf (aref buffer (+ idx parent))
-							   (aref buffer (+ idx child)))
+		(when (funcall less-bf (aref buffer (the fixnum (+ idx parent)))
+							   (aref buffer (the fixnum (+ idx  child))))
 		  (return-from __is-heap-until-imp-1 child))
 		(when (zerop (mod child 2))
 		  (incf parent))))))
@@ -2608,7 +2633,7 @@
 				   (for (((tmp nil)) (_/= src last) ++src)
 					 (when (funcall less-bf *src (aref rdm-buffer rdm-idx1))
 					   (_= tmp *src)
-					   (__adjust-heap-1 rdm-buffer rdm-idx1 0 (- dst rdm-idx1) tmp less-bf))))))
+					   (__adjust-heap-1 rdm-buffer rdm-idx1 0 (the fixnum (- dst rdm-idx1)) tmp less-bf))))))
 	  (with-operators
 		  (if (= rdm-idx1 rdm-idx2)
 			  rdm-idx2
@@ -2637,7 +2662,8 @@
 			   (declare (type fixnum dst))
 			   (for (nil (not (eq src end1)) (setf src (cdr src)))
 				 (when (funcall less-bf (car src) (aref rdm-buffer rdm-idx1))
-				   (__adjust-heap-1 rdm-buffer rdm-idx1 0 (- dst rdm-idx1) (car src) less-bf)))))
+				   (__adjust-heap-1 rdm-buffer rdm-idx1 0
+									(the fixnum (- dst rdm-idx1)) (car src) less-bf)))))
 	  (if (= rdm-idx1 rdm-idx2)
 		  rdm-idx2
 		  (let ((src cons1)
@@ -2663,7 +2689,7 @@
 			   (for (nil (< src in-idx2) (incf src))
 				 (when (funcall less-bf (aref in-buffer src) (aref rdm-buffer rdm-idx1))
 				   (__adjust-heap-1 rdm-buffer rdm-idx1 0
-									(- dst rdm-idx1) (aref in-buffer src) less-bf)))))
+									(the fixnum (- dst rdm-idx1)) (aref in-buffer src) less-bf)))))
 	  (if (= rdm-idx1 rdm-idx2)
 		  rdm-idx2
 		  (let ((src in-idx1)
@@ -2711,6 +2737,7 @@
 			  ++itr1 ++itr2)
 			(let ((d1 (distance itr1 last1))
 				  (d2 (distance itr2 last2)))
+			  (declare (type fixnum d1 d2))
 			  (cond
 				((=  d1 d2 0) t)
 				((/= d1 d2)   nil)
@@ -2719,7 +2746,8 @@
 	#-(or cl-stl-0x98 cl-stl-0x11)
 	(defun __is-permutation-imp-0c (first1 last1 first2 last2 pred) ; randomaccess-iterator version.
 	  (declare (type cl:function pred))
-	  (if (/= (distance first1 last1) (distance first2 last2))
+	  (if (/= (the fixnum (distance first1 last1))
+			  (the fixnum (distance first2 last2)))
 		  nil
 		  (with-operators
 			  (let ((first1 @~first1)
@@ -2763,7 +2791,8 @@
 	(defun __is-permutation-imp-1b (cons1 last1 first2 last2 pred)
 	  (declare (type cl:list cons1 last1))
 	  (declare (type cl:function pred))
-	  (if (/= (__conslist-count-nodes cons1 last1) (distance first2 last2))
+	  (if (/= (the fixnum (distance first2 last2))
+			  (the fixnum (__conslist-count-nodes cons1 last1)))
 		  nil
 		  (with-operators
 			  (let ((itr2 @~first2))
@@ -2803,14 +2832,15 @@
 			  (incf idx1))
 			(if (= idx1 last1)
 				t
-				(imp2 idx1 last1 buf1 itr2 (next itr2 (- last1 idx1)) pred)))))
+				(imp2 idx1 last1 buf1 itr2
+					  (next itr2 (the fixnum (- last1 idx1))) pred)))))
 
 	#-(or cl-stl-0x98 cl-stl-0x11)
 	(defun __is-permutation-imp-2b (idx1 last1 buf1 first2 last2 pred)
 	  (declare (type fixnum idx1 last1))
 	  (declare (type cl:vector buf1))
 	  (declare (type cl:function pred))
-	  (if (/= (- last1 idx1) (distance first2 last2))
+	  (if (/= (- last1 idx1) (the fixnum (distance first2 last2)))
 		  nil
 		  (with-operators
 			  (let ((itr2 @~first2))
@@ -2854,7 +2884,8 @@
 	(defun __is-permutation-imp-3b (first1 last1 cons2 last2 pred)
 	  (declare (type cl:list cons2 last2))
 	  (declare (type cl:function pred))
-	  (if (/= (distance first1 last1) (__conslist-count-nodes cons2 last2))
+	  (if (/= (the fixnum (distance first1 last1))
+			  (the fixnum (__conslist-count-nodes cons2 last2)))
 		  nil
 		  (with-operators
 			  (let ((itr1 @~first1))
@@ -2897,8 +2928,8 @@
 	(defun __is-permutation-imp-4b (cons1 last1 cons2 last2 pred)
 	  (declare (type cl:list cons1 last1 cons2 last2))
 	  (declare (type cl:function pred))
-	  (if (/= (__conslist-count-nodes cons1 last1)
-			  (__conslist-count-nodes cons2 last2))
+	  (if (/= (the fixnum (__conslist-count-nodes cons1 last1))
+			  (the fixnum (__conslist-count-nodes cons2 last2)))
 		  nil
 		  (progn
 			(for (nil (and (not (eq cons1 last1))
@@ -2938,7 +2969,8 @@
 		(setf cons2 (cdr cons2)))
 	  (if (= idx1 last1)
 		  t
-		  (imp5 idx1 last1 buf1 cons2 (nthcdr (- last1 idx1) cons2) pred)))
+		  (imp5 idx1 last1 buf1 cons2
+				(nthcdr (the fixnum (- last1 idx1)) cons2) pred)))
 
 	#-(or cl-stl-0x98 cl-stl-0x11)
 	(defun __is-permutation-imp-5b (idx1 last1 buf1 cons2 last2 pred)
@@ -2946,7 +2978,7 @@
 	  (declare (type cl:vector buf1))
 	  (declare (type cl:list cons2 last2))
 	  (declare (type cl:function pred))
-	  (if (/= (- last1 idx1) (__conslist-count-nodes cons2 last2))
+	  (if (/= (- last1 idx1) (the fixnum (__conslist-count-nodes cons2 last2)))
 		  nil
 		  (progn
 			(for (nil (and (< idx1 last1)
@@ -2984,14 +3016,15 @@
 			  (incf idx2))
 			(if (_== itr1 last1)
 				t
-				(imp6 itr1 last1 idx2 (+ idx2 (distance itr1 last1)) buf2 pred)))))
+				(imp6 itr1 last1 idx2
+					  (+ idx2 (the fixnum (distance itr1 last1))) buf2 pred)))))
 
 	#-(or cl-stl-0x98 cl-stl-0x11)
 	(defun __is-permutation-imp-6b (first1 last1 idx2 last2 buf2 pred)
 	  (declare (type fixnum idx2 last2))
 	  (declare (type cl:vector buf2))
 	  (declare (type cl:function pred))
-	  (if (/= (distance first1 last1) (- last2 idx2))
+	  (if (/= (- last2 idx2) (the fixnum (distance first1 last1)))
 		  nil
 		  (with-operators
 			  (let ((itr1 @~first1))
@@ -3033,7 +3066,8 @@
 		(incf idx2))
 	  (if (eq cons1 last1)
 		  t
-		  (imp7 cons1 last1 idx2 (+ idx2 (__conslist-count-nodes cons1 last1)) buf2 pred)))
+		  (imp7 cons1 last1 idx2
+				(+ idx2 (the fixnum (__conslist-count-nodes cons1 last1))) buf2 pred)))
 
 	#-(or cl-stl-0x98 cl-stl-0x11)
 	(defun __is-permutation-imp-7b (cons1 last1 idx2 last2 buf2 pred)
@@ -3041,7 +3075,7 @@
 	  (declare (type fixnum idx2 last2))
 	  (declare (type cl:vector buf2))
 	  (declare (type cl:function pred))
-	  (if (/= (__conslist-count-nodes cons1 last1) (- last2 idx2))
+	  (if (/= (- last2 idx2) (the fixnum (__conslist-count-nodes cons1 last1)))
 		  nil
 		  (progn
 			(for (nil (and (not (eq cons1 last1))
@@ -3075,12 +3109,13 @@
 	  (declare (type cl:function pred))
 	  (for (nil (and (< idx1 last1)
 					 (funcall pred (aref buf1 idx1)
-							  (aref buf2 idx2))) nil)
+								   (aref buf2 idx2))) nil)
 		(incf idx1)
 		(incf idx2))
 	  (if (= idx1 last1)
 		  t
-		  (imp8 idx1 last1 buf1 idx2 (+ idx2 (- last1 idx1)) buf2 pred)))
+		  (imp8 idx1 last1 buf1 idx2
+				(+ idx2 (the fixnum (- last1 idx1))) buf2 pred)))
 
 	#-(or cl-stl-0x98 cl-stl-0x11)
 	(defun __is-permutation-imp-8b (idx1 last1 buf1 idx2 last2 buf2 pred)
@@ -5321,6 +5356,7 @@
 		t
 		(with-operators
 			(let ((pred (functor-function @~pred)))
+			  (declare (type cl:function pred))
 			  (for (((itr @~first)) (_/= itr last) ++itr :returns t)
 				(unless (funcall pred *itr)
 				  (return-from all-of nil)))))))
@@ -5371,6 +5407,7 @@
 		nil
 		(with-operators
 			(let ((pred (functor-function @~pred)))
+			  (declare (type cl:function pred))
 			  (for (((itr @~first)) (_/= itr last) ++itr :returns nil)
 				(when (funcall pred *itr)
 				  (return-from any-of t)))))))
@@ -5421,6 +5458,7 @@
 		t
 		(with-operators
 			(let ((pred (functor-function @~pred)))
+			  (declare (type cl:function pred))
 			  (for (((itr @~first)) (_/= itr last) ++itr :returns t)
 				(when (funcall pred *itr)
 				  (return-from none-of nil)))))))
@@ -5471,6 +5509,7 @@
 		  (if (_== first last)
 			  func
 			  (let ((fnc (functor-function func)))
+				(declare (type cl:function fnc))
 				(for (((itr @~first)) (_/= itr last) ++itr :returns func)
 				  (funcall fnc *itr)))))))
 
@@ -7222,13 +7261,15 @@
 
 	(defmethod-overload equal ((first1 randomaccess-iterator) (last1 randomaccess-iterator)
 							   (first2 randomaccess-iterator) (last2 randomaccess-iterator))
-	  (if (/= (distance first1 last1) (distance first2 last2))
+	  (if (/= (the fixnum (distance first1 last1))
+			  (the fixnum (distance first2 last2)))
 		  nil
 		  (__equal-imp-0a first1 last1 first2 #'operator_==)))
 
 	(defmethod-overload equal ((first1 randomaccess-iterator) (last1 randomaccess-iterator)
 							   (first2 randomaccess-iterator) (last2 randomaccess-iterator) eql-bf)
-	  (if (/= (distance first1 last1) (distance first2 last2))
+	  (if (/= (the fixnum (distance first1 last1))
+			  (the fixnum (distance first2 last2)))
 		  nil
 		  (__equal-imp-0a first1 last1 first2 (functor-function (clone eql-bf))))))
 
@@ -8250,6 +8291,7 @@
   ;;PTN; search-n : 0 -  f 
   (labels ((__search-n-imp-0 (first last cnt val eql-bf)
 			 (declare (type fixnum cnt))
+			 (declare (type cl:function eql-bf))
 			 (__error-unless-non-negative-fixnum search-n cnt)
 			 (labels ((imp-1 (itr n)
 						(declare (type fixnum n))
@@ -11509,6 +11551,7 @@
 				 (let ((eql-bf (functor-function (clone eql-bf))))
 				   (declare (type cl:function eql-bf))
 				   (let ((idx1 (__adjacent-find-imp-2 idx1 idx2 buffer eql-bf)))
+					 (declare (type fixnum idx1))
 					 (if (= idx1 idx2)
 						 idx2
 						 (let ((dest idx1))
@@ -12054,7 +12097,7 @@
 								   (let ((val *itr1))
 									 #+cl-stl-0x98 (__copy-imp-0 (_+ itr1 1) (_+ itr1 len1) itr1)
 									 #-cl-stl-0x98 (__move-imp-0 (_+ itr1 1) (_+ itr1 len1) itr1)
-									 (_= (_[] itr1 (1- len1)) val))
+									 (_= (_[] itr1 (the fixnum (1- len1))) val))
 								   (return-from rotate ret))
 								 (let ((itr2 (_+ itr1 len2)))
 								   (for (((cnt (- len1 len2)) (idx 0)) (< idx cnt) (progn (incf idx) ++itr1 ++itr2))
@@ -12067,9 +12110,9 @@
 
 						  (progn (setf len2 (- len1 len2))
 								 (when (= len2 1)
-								   (let ((val (_[] itr1 (1- len1))))
-									 #+cl-stl-0x98 (__copy-backward-imp-0 itr1 (_+ itr1 (1- len1)) (_+ itr1 len1))
-									 #-cl-stl-0x98 (__move-backward-imp-0 itr1 (_+ itr1 (1- len1)) (_+ itr1 len1))
+								   (let ((val (_[] itr1 (the fixnum (1- len1)))))
+									 #+cl-stl-0x98 (__copy-backward-imp-0 itr1 (_+ itr1 (the fixnum (1- len1))) (_+ itr1 len1))
+									 #-cl-stl-0x98 (__move-backward-imp-0 itr1 (_+ itr1 (the fixnum (1- len1))) (_+ itr1 len1))
 									 (_= *itr1 val))
 								   (return-from rotate ret))
 								 (let ((itr2 (_+ itr1 len1)))
@@ -12278,7 +12321,7 @@
 			   (for (nil (< idx idx2) (progn (incf idx) (incf dist)))
 				 (let ((n (funcall random-uf dist)))
 				   (declare (type fixnum n))
-				   (swap (aref buffer (+ idx1 n)) (aref buffer idx)))))))
+				   (swap (aref buffer (the fixnum (+ idx1 n))) (aref buffer idx)))))))
 
 	(defmethod-overload random-shuffle ((first vector-pointer) (last vector-pointer))
 	  ;;(format t "specialized random-shuffle for vector-pointer is invoked.~%")
@@ -13313,8 +13356,8 @@
 				 (__insertion-sort-1 idx1 idx2 buffer less-bf)
 				 (let ((idx idx1))
 				   (declare (type fixnum idx))
-				   (__recursive-sort-1 idx idx2 buffer (- idx2 idx) less-bf)
-				   (__insertion-sort-1 idx (+ idx +SORT-MAX+) buffer less-bf)
+				   (__recursive-sort-1 idx idx2 buffer (the fixnum (- idx2 idx)) less-bf)
+				   (__insertion-sort-1 idx (the fixnum (+ idx +SORT-MAX+)) buffer less-bf)
 				   (incf idx +SORT-MAX+)
 				   (for (((tmp nil)) (< idx idx2) (incf idx))
 					 (_= tmp (aref buffer idx))
@@ -13618,15 +13661,17 @@
 	;;(format t "specialized is-sorted for const-vector-pointer is invoked.~%")
 	(__pointer-check-iterator-range first last)
 	(let ((idx2 (opr::vec-ptr-index  last)))
-	  (= idx2 (__is-sorted-until-imp-2 (opr::vec-ptr-index  first) idx2
-									   (opr::vec-ptr-buffer first) #'operator_<))))
+	  (declare (type fixnum idx2))
+	  (= idx2 (the fixnum (__is-sorted-until-imp-2 (opr::vec-ptr-index  first) idx2
+												   (opr::vec-ptr-buffer first) #'operator_<)))))
 
   (defmethod-overload is-sorted ((first const-vector-pointer) (last const-vector-pointer) comp)
 	;;(format t "specialized is-sorted for const-vector-pointer is invoked.~%")
 	(__pointer-check-iterator-range first last)
 	(let ((idx2 (opr::vec-ptr-index  last)))
-	  (= idx2 (__is-sorted-until-imp-2 (opr::vec-ptr-index  first) idx2
-									   (opr::vec-ptr-buffer first) (functor-function (clone comp)))))))
+	  (declare (type fixnum idx2))
+	  (= idx2 (the fixnum (__is-sorted-until-imp-2 (opr::vec-ptr-index  first) idx2
+												   (opr::vec-ptr-buffer first) (functor-function (clone comp))))))))
 
 
 
@@ -13695,12 +13740,12 @@
 			 (with-operators
 				 (let ((first @~first)
 					   (last  @~last))
-				   (for (nil (< +SORT-MAX+ (_- last first)) nil)
+				   (for (nil (< +SORT-MAX+ (the fixnum (_- last first))) nil)
 					 (let* ((n   (ash (the fixnum (_- last first)) -1))
 							(v   (__median *first first[n] last[-1] comp))
 							(itr (__unguarded-partition-0 first last v comp)))
 					   (declare (type fixnum n))
-					   (if (>= (_- nth itr) 0)
+					   (if (<= 0 (the fixnum (_- nth itr)))
 						   (_= first itr)
 						   (_= last itr))))
 				   (__insertion-sort-0 first last comp)))))
@@ -13725,8 +13770,8 @@
 					  (idx 0))
 				 (declare (type fixnum n idx))
 				 (_= val (__median (aref buffer idx1)
-								   (aref buffer (+ idx1 n))
-								   (aref buffer (1- idx3)) less-bf))
+								   (aref buffer (the fixnum (+ idx1 n)))
+								   (aref buffer (the fixnum (1- idx3))) less-bf))
 				 (setf idx (__unguarded-partition-1 idx1 idx3 buffer val less-bf))
 				 (if (>= (- idx2 idx) 0)
 					 (setf idx1 idx)
@@ -14622,11 +14667,13 @@
 	(let ((idx1 (opr::vec-ptr-index first))
 		  (idx2 (opr::vec-ptr-index middle))
 		  (idx3 (opr::vec-ptr-index last)))
+	  (declare (type fixnum idx1 idx2 idx3))
 	  (if (= idx1 idx3)
 		  nil
 		  (let ((d1 (- idx2 idx1))
 				(d2 (- idx3 idx2))
 				(tmpitr (new-tmpitr)))
+			(declare (type fixnum d1 d2))
 			(tmpitr-set-buf-len tmpitr (min d1 d2))
 			(__buffered-merge-1 idx1 idx2 idx3
 								(opr::vec-ptr-buffer first) d1 d2 tmpitr #'operator_<)
@@ -14639,11 +14686,13 @@
 	(let ((idx1 (opr::vec-ptr-index first))
 		  (idx2 (opr::vec-ptr-index middle))
 		  (idx3 (opr::vec-ptr-index last)))
+	  (declare (type fixnum idx1 idx2 idx3))
 	  (if (= idx1 idx3)
 		  nil
 		  (let ((d1 (- idx2 idx1))
 				(d2 (- idx3 idx2))
 				(tmpitr (new-tmpitr)))
+			(declare (type fixnum d1 d2))
 			(tmpitr-set-buf-len tmpitr (min d1 d2))
 			(__buffered-merge-1 idx1 idx2 idx3
 								(opr::vec-ptr-buffer first)
@@ -17528,9 +17577,12 @@
 	(let ((idx1   (opr::vec-ptr-index  first))
 		  (idx2   (opr::vec-ptr-index  last))
 		  (buffer (opr::vec-ptr-buffer first)))
+	  (declare (type fixnum idx1 idx2))
+	  (declare (type cl:vector buffer))
 	  (let ((tmp nil))
-		(_= tmp (aref buffer (1- idx2)))
-		(__push-heap-imp-1 buffer idx1 (1- (- idx2 idx1)) 0 tmp #'operator_<)))
+		(_= tmp (aref buffer (the fixnum (1- idx2))))
+		(__push-heap-imp-1 buffer idx1
+						   (the fixnum (1- (the fixnum (- idx2 idx1)))) 0 tmp #'operator_<)))
 	nil)
 
   (defmethod-overload push-heap ((first vector-pointer) (last vector-pointer) comp)
@@ -17539,9 +17591,13 @@
 	(let ((idx1   (opr::vec-ptr-index  first))
 		  (idx2   (opr::vec-ptr-index  last))
 		  (buffer (opr::vec-ptr-buffer first)))
+	  (declare (type fixnum idx1 idx2))
+	  (declare (type cl:vector buffer))
 	  (let ((tmp nil))
-		(_= tmp (aref buffer (1- idx2)))
-		(__push-heap-imp-1 buffer idx1 (1- (- idx2 idx1)) 0 tmp (functor-function (clone comp)))))
+		(_= tmp (aref buffer (the fixnum (1- idx2))))
+		(__push-heap-imp-1 buffer idx1
+						   (the fixnum (1- (the fixnum (- idx2 idx1))))
+						   0 tmp (functor-function (clone comp)))))
 	nil))
 
 
@@ -17571,9 +17627,13 @@
 	(let ((idx1   (opr::vec-ptr-index  first))
 		  (idx2   (opr::vec-ptr-index  last))
 		  (buffer (opr::vec-ptr-buffer first)))
+	  (declare (type fixnum idx1 idx2))
+	  (declare (type cl:vector buffer))
 	  (let ((tmp nil))
-		(_= tmp (aref buffer (1- idx2)))
-		(__pop-heap-imp-1 buffer idx1 (1- idx2) (1- idx2) tmp #'operator_<)))
+		(_= tmp (aref buffer (the fixnum (1- idx2))))
+		(__pop-heap-imp-1 buffer idx1
+						  (the fixnum (1- idx2))
+						  (the fixnum (1- idx2)) tmp #'operator_<)))
 	nil)
 
   (defmethod-overload pop-heap ((first vector-pointer) (last vector-pointer) comp)
@@ -17582,9 +17642,13 @@
 	(let ((idx1   (opr::vec-ptr-index  first))
 		  (idx2   (opr::vec-ptr-index  last))
 		  (buffer (opr::vec-ptr-buffer first)))
+	  (declare (type fixnum idx1 idx2))
+	  (declare (type cl:vector buffer))
 	  (let ((tmp nil))
-		(_= tmp (aref buffer (1- idx2)))
-		(__pop-heap-imp-1 buffer idx1 (1- idx2) (1- idx2) tmp (functor-function (clone comp)))))
+		(_= tmp (aref buffer (the fixnum (1- idx2))))
+		(__pop-heap-imp-1 buffer idx1
+						  (the fixnum (1- idx2))
+						  (the fixnum (1- idx2)) tmp (functor-function (clone comp)))))
 	nil))
 
 
@@ -17664,11 +17728,13 @@
   ;;PTN; is-heap : 0 -  r
   (defmethod-overload is-heap ((first randomaccess-iterator) (last randomaccess-iterator))
 	(let ((len (_- last first)))
-	  (= len (__is-heap-until-imp-0 first len #'operator_<))))
+	  (declare (type fixnum len))
+	  (= len (the fixnum (__is-heap-until-imp-0 first len #'operator_<)))))
 
   (defmethod-overload is-heap ((first randomaccess-iterator) (last randomaccess-iterator) comp)
 	(let ((len (_- last first)))
-	  (= len (__is-heap-until-imp-0 first len (functor-function (clone comp))))))
+	  (declare (type fixnum len))
+	  (= len (the fixnum (__is-heap-until-imp-0 first len (functor-function (clone comp)))))))
 
 
   ;;PTN; is-heap : 1 - cvp
@@ -17677,17 +17743,23 @@
 	(__pointer-check-iterator-range first last)
 	(let ((idx1 (opr::vec-ptr-index first))
 		  (idx2 (opr::vec-ptr-index last)))
+	  (declare (type fixnum idx1 idx2))
 	  (let ((len (- idx2 idx1)))
-		(= len (__is-heap-until-imp-1 idx1 len (opr::vec-ptr-buffer first) #'operator_<)))))
+		(declare (type fixnum len))
+		(= len (the fixnum (__is-heap-until-imp-1 idx1 len
+												  (opr::vec-ptr-buffer first) #'operator_<))))))
 
   (defmethod-overload is-heap ((first const-vector-pointer) (last const-vector-pointer) comp)
 	;;(format t "specialized is-heap for const-vector-pointer is invoked.~%")
 	(__pointer-check-iterator-range first last)
 	(let ((idx1 (opr::vec-ptr-index first))
 		  (idx2 (opr::vec-ptr-index last)))
+	  (declare (type fixnum idx1 idx2))
 	  (let ((len (- idx2 idx1)))
-		(= len (__is-heap-until-imp-1 idx1 len (opr::vec-ptr-buffer first)
-									  (functor-function (clone comp))))))))
+		(declare (type fixnum len))
+		(= len (the fixnum (__is-heap-until-imp-1 idx1 len
+												  (opr::vec-ptr-buffer first)
+												  (functor-function (clone comp)))))))))
 
 
 
@@ -17715,18 +17787,19 @@
   (defmethod-overload is-heap-until ((first const-vector-pointer) (last const-vector-pointer))
 	;;(format t "specialized is-heap-until for const-vector-pointer is invoked.~%")
 	(__pointer-check-iterator-range first last)
-	(let* ((idx1 (opr::vec-ptr-index first))
-		   (idx2 (opr::vec-ptr-index last))
-		   (len (- idx2 idx1)))
-	  (_+ first (__is-heap-until-imp-1 idx1 len (opr::vec-ptr-buffer first) #'operator_<))))
+	(let ((idx1 (opr::vec-ptr-index first))
+		  (idx2 (opr::vec-ptr-index last)))
+	  (declare (type fixnum idx1 idx2))
+	  (_+ first (__is-heap-until-imp-1 idx1 (the fixnum (- idx2 idx1))
+									   (opr::vec-ptr-buffer first) #'operator_<))))
 
   (defmethod-overload is-heap-until ((first const-vector-pointer) (last const-vector-pointer) comp)
 	;;(format t "specialized is-heap-until for const-vector-pointer is invoked.~%")
 	(__pointer-check-iterator-range first last)
-	(let* ((idx1 (opr::vec-ptr-index first))
-		   (idx2 (opr::vec-ptr-index last))
-		   (len (- idx2 idx1)))
-	  (_+ first (__is-heap-until-imp-1 idx1 len
+	(let ((idx1 (opr::vec-ptr-index first))
+		  (idx2 (opr::vec-ptr-index last)))
+	  (declare (type fixnum idx1 idx2))
+	  (_+ first (__is-heap-until-imp-1 idx1 (the fixnum (- idx2 idx1))
 									   (opr::vec-ptr-buffer first)
 									   (functor-function (clone comp)))))))
 
@@ -17752,8 +17825,8 @@
 #-cl-stl-0x98 ; min ( initializer-list )
 (locally (declare (optimize speed))
   (labels ((__min-imp (arr comp)
-			 (declare (type cl:vector   arr))
-			 (declare (type cl:function comp))
+			 (declare (type simple-vector arr))
+			 (declare (type cl:function   comp))
 			 (let ((cnt (length arr)))
 			   (declare (type fixnum cnt))
 			   (if (zerop cnt)
@@ -17788,8 +17861,8 @@
 #-cl-stl-0x98 ; max ( initializer-list )
 (locally (declare (optimize speed))
   (labels ((__max-imp (arr comp)
-			 (declare (type cl:vector   arr))
-			 (declare (type cl:function comp))
+			 (declare (type simple-vector arr))
+			 (declare (type cl:function   comp))
 			 (let ((cnt (length arr)))
 			   (declare (type fixnum cnt))
 			   (if (zerop cnt)
@@ -17831,20 +17904,22 @@
 (locally (declare (optimize speed))
 
   (labels ((__minmax-imp (buf comp)
-			 (declare (type cl:vector buf))
-			 (declare (type cl:function comp))
+			 (declare (type simple-vector buf))
+			 (declare (type cl:function   comp))
 			 (multiple-value-bind (i1 i2) (__minmax-element-imp-2 0 (length buf) buf comp)
 			   (make-pair (aref buf i1)
 						  (aref buf i2)))))
 	
 	(defmethod-overload minmax ((il initializer-list))
 	  (let ((buf (__initlist-data il)))
+		(declare (type simple-vector buf))
 		(if (zerop (length buf))
 			(error 'undefined-behavior :what "Zero length initializer list.")
 			(__minmax-imp buf #'operator_<))))
 
 	(defmethod-overload minmax ((il initializer-list) comp)
 	  (let ((buf (__initlist-data il)))
+		(declare (type simple-vector buf))
 		(if (zerop (length buf))
 			(error 'undefined-behavior :what "Zero length initializer list.")
 			(__minmax-imp buf (functor-function (clone comp))))))))

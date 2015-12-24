@@ -119,6 +119,7 @@
 (define-constructor multiset ((il initializer-list))
   (declare (type initializer-list il))
   (let ((arr (__initlist-data il)))
+	(declare (type simple-vector arr))
 	(__create-multiset-with-array #'operator_< arr 0 (length arr))))
 
 ; constructor with initializer list 2
@@ -126,6 +127,7 @@
 (define-constructor multiset ((il initializer-list) (comp cl:function))
   (declare (type initializer-list il))
   (let ((arr (__initlist-data il)))
+	(declare (type simple-vector arr))
 	(__create-multiset-with-array comp arr 0 (length arr))))
 
 ; constructor with initializer list 3
@@ -135,12 +137,13 @@
 									 #+cl-stl-0x98 binary-function))
   (declare (type initializer-list il))
   (let ((arr (__initlist-data il)))
+	(declare (type simple-vector arr))
 	(__create-multiset-with-array comp arr 0 (length arr))))
 
 ; move constructor
 #-cl-stl-0x98
 (define-constructor multiset ((arg remove-reference))
-  (let ((cont (funcall (__rm-ref-closure arg))))
+  (let ((cont (funcall (the cl:function (__rm-ref-closure arg)))))
 	(__check-type-of-move-constructor cont multiset)
 	(let ((obj (__create-multiset (key-comp cont))))
 	  (__rbtree-swap (__assoc-tree obj) (__assoc-tree cont))
@@ -220,8 +223,8 @@
 	(declare (type initializer-list il))
 	(let ((tree (__assoc-tree cont))
 		  (arr  (__initlist-data il)))
-	  (declare (type rbtree tree))
-	  (declare (type cl:vector arr))
+	  (declare (type rbtree        tree))
+	  (declare (type simple-vector arr))
 	  (__rbtree-clear tree)
 	  (__rbtree-insert-array-equal tree arr 0 (length arr) t))
 	cont))
@@ -301,8 +304,8 @@
   ;; insert ( single element by remove reference ) - returns iterator.
   #-cl-stl-0x98
   (defmethod-overload insert ((container multiset) (rm remove-reference))
-	(let ((val (funcall (__rm-ref-closure rm))))
-	  (funcall (__rm-ref-closure rm) nil)
+	(let ((val (funcall (the cl:function (__rm-ref-closure rm)))))
+	  (funcall (the cl:function (__rm-ref-closure rm)) nil)
 	  (make-instance 'multiset-iterator
 					 :node (__rbtree-insert-equal (__assoc-tree container) val nil))))
 
@@ -326,8 +329,8 @@
   (defmethod-overload insert ((container multiset)
 							  (itr multiset-const-iterator) (rm remove-reference))
 	(__multiset-check-iterator-belong itr container)
-	(let ((val (funcall (__rm-ref-closure rm))))
-	  (funcall (__rm-ref-closure rm) nil)
+	(let ((val (funcall (the cl:function (__rm-ref-closure rm)))))
+	  (funcall (the cl:function (__rm-ref-closure rm)) nil)
 	  (make-instance 'multiset-iterator
 					 :node (__rbtree-insert-hint-equal (__assoc-tree container)
 													   (__assoc-itr-node itr) val nil))))
@@ -337,6 +340,7 @@
   (defmethod-overload insert ((container multiset) (il initializer-list))
 	(declare (type initializer-list il))
 	(let ((arr (__initlist-data il)))
+	  (declare (type simple-vector arr))
 	  (__rbtree-insert-array-equal (__assoc-tree container) arr 0 (length arr) t)
 	  nil)))
 

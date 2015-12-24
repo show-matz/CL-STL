@@ -19,24 +19,24 @@
 ;;
 ;;--------------------------------------------------------------------------------
 #-cl-stl-0x98
-(defmethod size ((obj initializer-list))
-  (length (__initlist-data obj)))
+(locally (declare (optimize speed))
 
-#-cl-stl-0x98
-(defmethod begin ((obj initializer-list))
-  (const_& (__initlist-data obj) 0))
+  (defmethod size ((obj initializer-list))
+	(length (the simple-vector (__initlist-data obj))))
 
-#-cl-stl-0x98
-(defmethod end ((obj initializer-list))
-  (let ((arr (__initlist-data obj)))
-	(const_& arr (length arr))))
+  (defmethod begin ((obj initializer-list))
+	(const_& (__initlist-data obj) 0))
 
-#-cl-stl-0x98
-(defmethod-overload for ((cont initializer-list) func)
-  ;;MEMO : func is always lambda function ( see stl:for ). 
-  (locally (declare (optimize speed))
+  (defmethod end ((obj initializer-list))
+	(let ((arr (__initlist-data obj)))
+	  (declare (type simple-vector arr))
+	  (const_& arr (length arr))))
+
+  (defmethod-overload for ((cont initializer-list) func)
+	;;MEMO : func is always lambda function ( see stl:for ). 
+	(declare (type cl:function func))
 	(let ((arr (__initlist-data cont)))
-	  (declare (type cl:vector arr))
+	  (declare (type simple-vector arr))
 	  (let ((idx 0)
 			(cnt (length arr)))
 		(declare (type fixnum idx cnt))

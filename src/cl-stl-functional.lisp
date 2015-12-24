@@ -862,13 +862,14 @@
 
 #-cl-stl-0x98
 (labels ((__function-ctor (op)
-		   (let* ((op  (when op (clone op)))
-				  (fnc (when op (functor-function op))))
-			 (make-instance 'function
-							:target  op
-							:closure (when fnc
-									   (lambda (&rest args)
-										 (apply fnc args)))))))
+		   (if (null op)
+			   (make-instance 'function)
+			   (let* ((target  (clone op))
+					  (closure (functor-function target)))
+				 (make-instance 'function
+								:target  target
+								:closure (lambda (&rest args)
+										   (apply closure args)))))))
   (define-constructor function ()
 	(make-instance 'function))
   (define-constructor function ((op (eql nil)))
@@ -884,7 +885,7 @@
 
 #-cl-stl-0x98
 (define-constructor function ((rm remove-reference))
-  (let ((fnc (funcall (__rm-ref-closure rm))))
+  (let ((fnc (funcall (the cl:function (__rm-ref-closure rm)))))
 	(__check-type-of-move-constructor fnc function)
 	(let ((obj (make-instance 'function)))
 	  (setf (__function-target obj) (__function-target fnc))
@@ -903,17 +904,21 @@
 #-cl-stl-0x98
 (defmethod operator_cast ((fn function) (typename (eql 'boolean)))
   (if (__function-target fn) t nil))
-
+ 
 #-cl-stl-0x98
 (locally (declare (optimize speed))
   (labels ((__assign (fnc op)
 			 (declare (type function fnc))
-			 (let* ((op (when op (clone op)))
-					(fn (when op (functor-function op))))
-			   (setf (__function-target fnc) op)
-			   (setf (__functor-closure fnc) (when fn
-											   (lambda (&rest args)
-												 (apply fn args)))))))
+			 (if (null op)
+				 (progn
+				   (setf (__function-target fnc) nil)
+				   (setf (__functor-closure fnc) nil))
+				 (let* ((target  (clone op))
+						(closure (functor-function op)))
+				   (setf (__function-target fnc) target)
+				   (setf (__functor-closure fnc) (locally (declare (type cl:function closure))
+												   (lambda (&rest args)
+													 (apply closure args))))))))
 	(declare (inline __assign))
 	(defmethod operator_= ((lhs function) rhs)
 	  (error 'type-mismatch :what (format nil "Can't convert ~A to stl:function." rhs))
@@ -922,13 +927,15 @@
 	  (__assign lhs (__function-target rhs))
 	  lhs)
 	(defmethod operator_= ((lhs function) (rhs (eql nil)))
-	  (__assign lhs nil)
+	  (setf (__function-target lhs) nil)
+	  (setf (__functor-closure lhs) nil)
 	  lhs)
 	(defmethod-overload assign ((this function) (fnc function))
 	  (__assign this (__function-target fnc))
 	  nil)
 	(defmethod-overload assign ((this function) (fnc (eql nil)))
-	  (__assign this nil)
+	  (setf (__function-target this) nil)
+	  (setf (__functor-closure this) nil)
 	  nil)))
 
 #-cl-stl-0x98

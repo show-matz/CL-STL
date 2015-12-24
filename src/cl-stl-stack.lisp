@@ -46,7 +46,7 @@
 ; move constructor & move init constructor
 #-cl-stl-0x98
 (define-constructor stack ((arg remove-reference))
-  (let ((cont (funcall (__rm-ref-closure arg))))
+  (let ((cont (funcall (the cl:function (__rm-ref-closure arg)))))
 	(if (eq (type-of cont) 'stack)
 		(let* ((src-cont (__stck-container cont))
 			   (new-cont (dynamic-new (type-of src-cont))))

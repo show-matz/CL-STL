@@ -198,6 +198,8 @@
   (locally (declare (optimize speed))
 	(defmethod-overload for ((cont cl:list) func)
 	  ;;MEMO : func is always lambda function ( see stl:for ).
+	  (declare (type cl:list     cont))
+	  (declare (type cl:function func))
 	  (dolist (v cont)
 		(funcall func v)))))
 

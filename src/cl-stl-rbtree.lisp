@@ -521,7 +521,7 @@
 			 (let ((node-y (__rbtree-rebalance-for-erase node (__rbtree-header tree))))
 			   (declare (type rbnode node-y))
 			   (__rbtree-destroy-node node-y)
-			   (decf (__rbtree-node-count tree))
+			   (decf (the fixnum (__rbtree-node-count tree)))
 			   nil))
 		   ;; NOTE : always return nil.
 		   (__erase-aux2 (tree node1 node2)
@@ -636,7 +636,7 @@
 	  (cond
 		;; when end
 		((eq node (__rbtree-end-node tree))
-		 (if (and (< 0 (__rbtree-size tree))
+		 (if (and (< 0 (the fixnum (__rbtree-size tree)))
 				  (funcall cmp (funcall key-of (__rbnode-value (__rbtree-rightmost tree))) key))
 			 (values nil (__rbtree-rightmost tree))
 			 (__rbtree-get-insert-unique-pos tree key)))
@@ -675,7 +675,7 @@
 	  (cond
 		;; when end
 		((eq node (__rbtree-end-node tree))
-		 (if (and (< 0 (__rbtree-size tree))
+		 (if (and (< 0 (the fixnum (__rbtree-size tree)))
 				  (not (funcall cmp key (funcall key-of (__rbnode-value (__rbtree-rightmost tree))))))
 			 (values nil (__rbtree-rightmost tree))
 			 (__rbtree-get-insert-equal-pos tree key)))
@@ -720,7 +720,7 @@
 										(funcall key-of val)
 										(funcall key-of (__rbnode-value node-p))))))
 		(__rbtree-insert-and-rebalance insert-left-p node-z node-p (__rbtree-header tree))
-		(incf (__rbtree-node-count tree))
+		(incf (the fixnum (__rbtree-node-count tree)))
 		node-z)))
 
   ;; returns rbnode
@@ -736,7 +736,7 @@
 											 (funcall key-of (__rbnode-value node))
 											 (funcall key-of val))))))
 		(__rbtree-insert-and-rebalance insert-left-p node-z node (__rbtree-header tree))
-		(incf (__rbtree-node-count tree))
+		(incf (the fixnum (__rbtree-node-count tree)))
 		node-z)))
 
   ;; returns rbnode
@@ -760,6 +760,7 @@
   (defun __rbtree-insert-unique (tree val need-copy)
 	(declare (type rbtree tree))
 	(let ((key-of (__rbtree-key-func tree)))
+	  (declare (type cl:function key-of))
 	  (multiple-value-bind (node1 node2)
 		  (__rbtree-get-insert-unique-pos tree (funcall key-of val))
 		(if node2
@@ -770,6 +771,7 @@
   (defun __rbtree-insert-equal (tree val need-copy)
 	(declare (type rbtree tree))
 	(let ((key-of (__rbtree-key-func tree)))
+	  (declare (type cl:function key-of))
 	  (multiple-value-bind (node1 node2)
 		  (__rbtree-get-insert-equal-pos tree (funcall key-of val))
 		(__rbtree-insert tree node1 node2 val need-copy))))
@@ -779,6 +781,7 @@
 	(declare (type rbtree tree))
 	(declare (type rbnode node))
 	(let ((key-of (__rbtree-key-func tree)))
+	  (declare (type cl:function key-of))
 	  (multiple-value-bind (node1 node2)
 		  (__rbtree-get-insert-hint-unique-pos tree node (funcall key-of val))
 		(if node2
@@ -790,6 +793,7 @@
 	(declare (type rbtree tree))
 	(declare (type rbnode node))
 	(let ((key-of (__rbtree-key-func tree)))
+	  (declare (type cl:function key-of))
 	  (multiple-value-bind (node1 node2)
 		  (__rbtree-get-insert-hint-equal-pos tree node (funcall key-of val))
 		(if node2
@@ -846,7 +850,7 @@
 										(funcall key-of (__rbnode-value new-node))
 										(funcall key-of (__rbnode-value node-p))))))
 		(__rbtree-insert-and-rebalance insert-left-p new-node node-p (__rbtree-header tree))
-		(incf (__rbtree-node-count tree))
+		(incf (the fixnum (__rbtree-node-count tree)))
 		new-node)))
 
   ;; returns rbnode
@@ -861,7 +865,7 @@
 											 (funcall key-of (__rbnode-value node))
 											 (funcall key-of (__rbnode-value new-node)))))))
 		(__rbtree-insert-and-rebalance insert-left-p new-node node (__rbtree-header tree))
-		(incf (__rbtree-node-count tree))
+		(incf (the fixnum (__rbtree-node-count tree)))
 		new-node)))
 
   ;; returns rbnode
@@ -887,6 +891,7 @@
 	(declare (type rbtree tree))
 	(let ((key-of   (__rbtree-key-func tree))
 		  (new-node (__rbtree-create-node val nil)))
+	  (declare (type cl:function key-of))
 	  (handler-case
 		  (multiple-value-bind (node1 node2) (__rbtree-get-insert-unique-pos tree (funcall key-of val))
 			(if node2
@@ -903,6 +908,7 @@
 	(declare (type rbtree tree))
 	(let ((key-of   (__rbtree-key-func tree))
 		  (new-node (__rbtree-create-node val nil)))
+	  (declare (type cl:function key-of))
 	  (handler-case
 		  (multiple-value-bind (node1 node2) (__rbtree-get-insert-equal-pos tree (funcall key-of val))
 			(__rbtree-insert-node tree node1 node2 new-node))
@@ -916,6 +922,7 @@
 	(declare (type rbnode node))
 	(let ((key-of   (__rbtree-key-func tree))
 		  (new-node (__rbtree-create-node val nil)))
+	  (declare (type cl:function key-of))
 	  (handler-case
 		  (multiple-value-bind (node1 node2) (__rbtree-get-insert-hint-unique-pos tree node (funcall key-of val))
 			(if node2
@@ -933,6 +940,7 @@
 	(declare (type rbnode node))
 	(let ((key-of   (__rbtree-key-func tree))
 		  (new-node (__rbtree-create-node val nil)))
+	  (declare (type cl:function key-of))
 	  (handler-case
 		  (multiple-value-bind (node1 node2) (__rbtree-get-insert-hint-equal-pos tree node (funcall key-of val))
 			(if node2
@@ -967,6 +975,7 @@
 	(multiple-value-bind (node1 node2) (__rbtree-equal-range tree key)
 	  (do ((cnt 0 (1+ cnt)))
 		  ((eq node1 node2) cnt)
+		(declare (type fixnum cnt))
 		(setf node1 (__rbnode-increment node1)))))
 
   ;;NOTE : returns rbnode
@@ -1045,33 +1054,34 @@
 
 
 #+cl-stl-debug
-(locally (declare (optimize speed))
-  (defun __rbtree-dump (tree stream item-printer)
-	(declare (type rbtree tree))
-	(let ((item-printer (if item-printer
-							(functor-function (clone item-printer))
-							(lambda (s x) (format s "~A" x)))))
-	  (declare (type cl:function item-printer))
-	  (labels ((indent (cnt)
-				 (with-output-to-string (s)
-				   (do ((i 0 (incf i)))
-					   ((= i cnt) nil)
-					 (format s "    "))))
-			   (imp (node level)
-				 (declare (type rbnode node))
-				 (declare (type fixnum level))
-				 (let ((left  (__rbnode-left  node))
-					   (right (__rbnode-right node)))
-				   (when right (imp right (1+ level)))
-				   (format stream "~A[~A] ~A~%"
-						   (indent level)
-						   (if (__rbnode-is-red node) "R" "B")
-						   (with-output-to-string (tag)
-							 (funcall item-printer tag (__rbnode-value node))))
-				   (when left (imp left (1+ level))))))
-		(let ((root (__rbtree-root tree)))
-		  (when root
-			(imp root 0)))))))
+(defun __rbtree-dump (tree stream item-printer)
+  (declare (type rbtree tree))
+  (let ((item-printer (if item-printer
+						  (functor-function (clone item-printer))
+						  (lambda (s x) (format s "~A" x)))))
+	(declare (type cl:function item-printer))
+	(labels ((indent (cnt)
+			   (declare (type fixnum cnt))
+			   (with-output-to-string (s)
+				 (do ((i 0 (incf i)))
+					 ((= i cnt) nil)
+				   (declare (type fixnum i))
+				   (format s "    "))))
+			 (imp (node level)
+			   (declare (type rbnode node))
+			   (declare (type fixnum level))
+			   (let ((left  (__rbnode-left  node))
+					 (right (__rbnode-right node)))
+				 (when right (imp right (1+ level)))
+				 (format stream "~A[~A] ~A~%"
+						 (indent level)
+						 (if (__rbnode-is-red node) "R" "B")
+						 (with-output-to-string (tag)
+						   (funcall item-printer tag (__rbnode-value node))))
+				 (when left (imp left (1+ level))))))
+	  (let ((root (__rbtree-root tree)))
+		(when root
+		  (imp root 0))))))
 
 	  
 			   

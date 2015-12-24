@@ -13,9 +13,7 @@
 				 __rbnode-is-red
 				 __rbnode-is-black
 				 __rbnode-is-left-child
-				 __rbnode-is-right-child
-				 __rbnode-minimum
-				 __rbnode-maximum))
+				 __rbnode-is-right-child))
 
 
 

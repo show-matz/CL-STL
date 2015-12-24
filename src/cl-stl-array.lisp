@@ -90,7 +90,7 @@
 (locally (declare (optimize speed))
   (define-constructor array ((arg1 integer) (arg2 initializer-list))
 	(declare (type fixnum arg1))
-	(if (< arg1 (size arg2))
+	(if (< arg1 (the fixnum (size arg2)))
 		(error 'type-mismatch :what (format nil "Too many initializer for array<~A>." arg1))
 		(let* ((obj (__create-array arg1))
 			   (cnt arg1)
@@ -178,7 +178,8 @@
   (defmethod operator_move ((cont1 stl:array) (cont2 stl:array))
 	(if (eq cont1 cont2)
 		(values cont1 cont2)
-		(if (/= (size cont1) (size cont2))
+		(if (/= (the fixnum (size cont1))
+				(the fixnum (size cont2)))
 			(error 'type-mismatch :what "Type mismatch in move of array.")
 			(let* ((tmp (array-data cont1))
 				   (cnt (length tmp)))
@@ -426,14 +427,15 @@
 (locally (declare (optimize speed))
   (defmethod-overload for ((cont stl:array) func)
 	;MEMO : func is always lambda function ( see stl:for ). 
+	(declare (type cl:function func))
 	(let ((buf (array-data cont)))
 	  (when buf
-		(do ((idx 0 (incf idx))
-			 (cnt (length buf)))
-			((= idx cnt) nil)
-		  (declare (type simple-vector buf))
-		  (declare (type fixnum idx cnt))
-		  (funcall func (svref buf idx)))))))
+		(locally (declare (type simple-vector buf))
+		  (do ((idx 0 (incf idx))
+			   (cnt (length buf)))
+			  ((= idx cnt) nil)
+			(declare (type fixnum idx cnt))
+			(funcall func (svref buf idx))))))))
 
 
 ;-----------------------------------------------------

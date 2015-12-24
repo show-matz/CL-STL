@@ -156,7 +156,7 @@
 	  (declare (type fixnum size capacity))
 	  (when (= size capacity)
 		(let ((buffer  (vec-core-buffer core))
-			  (new-cap (__vector-calc-capacity (1+ size))))
+			  (new-cap (__vector-calc-capacity (the fixnum (1+ size)))))
 		  (declare (type fixnum new-cap))
 		  (declare (type simple-vector buffer))
 		  (setf (vec-core-capacity core) new-cap)
@@ -211,6 +211,7 @@
 (locally (declare (optimize speed))
   (defun __vector-counted-assign (core count get-next-value)
 	(declare (type fixnum count))
+	(declare (type cl:function get-next-value))
 	(__vector-resize core count nil)
 	(do ((i 0 (1+ i))
 		 (buf (vec-core-buffer core)))
@@ -221,6 +222,7 @@
 
 (locally (declare (optimize speed))
   (defun __vector-uncounted-assign (core get-next-value eos-sym)
+	(declare (type cl:function get-next-value))
 	(let ((old-size (vec-core-size core))
 		  (count 0)
 		  (next-val (funcall get-next-value)))
@@ -246,17 +248,19 @@
 (locally (declare (optimize speed))
   (defun __vector-counted-insert (core itr count get-next-value need-copy)
 	(declare (type fixnum count))
+	(declare (type cl:function get-next-value))
 	(let* ((old-size (vec-core-size core))
 		   (new-size (+ count old-size)))
 	  (declare (type fixnum old-size new-size))
 	  (__vector-resize core new-size nil)
 	  (let ((buf  (vec-core-buffer core))
 			(base (opr::vec-ptr-index   itr)))
+		(declare (type fixnum base))
 		(__vector-move-items-rightward buf base old-size count)
 		(do ((i base (1+ i))
 			 (last (+ base count)))
 			((= i last) nil)
-		  (declare (type fixnum i base last))
+		  (declare (type fixnum i last))
 		  (declare (type simple-vector buf))
 		  (if need-copy
 			  (_= (svref buf i) (funcall get-next-value))
@@ -310,7 +314,7 @@
 #-cl-stl-0x98
 (locally (declare (optimize speed))
   (define-constructor vector ((arg remove-reference))
-	(let ((cont (funcall (__rm-ref-closure arg))))
+	(let ((cont (funcall (the cl:function (__rm-ref-closure arg)))))
 	  (__check-type-of-move-constructor cont stl:vector)
 	  (let ((core (vector-core cont)))
 		(setf (vector-core cont) nil)
@@ -350,7 +354,7 @@
 	  (declare (type cl:vector buf))
 	  (if (= idx1 idx2)
 		  (make-instance 'stl:vector)
-		  (let ((core (__vector-create-core (- idx2 idx1))))
+		  (let ((core (__vector-create-core (the fixnum (- idx2 idx1)))))
 			(for (nil (< idx1 idx2) (incf idx1))
 			  (__vector-push-back core (aref buf idx1) t))
 			(make-instance 'stl:vector :core core))))))
@@ -458,7 +462,7 @@
 		  (progn
 			(__vector-ensure-core-exist cont)
 			(__vector-counted-assign (vector-core cont)
-									 (- idx2 idx1)
+									 (the fixnum (- idx2 idx1))
 									 (lambda ()
 									   (prog1 (aref buf idx1) (incf idx1)))))))
 	nil))
@@ -692,6 +696,7 @@
   (__vector-check-iterator-belong itr cont)
   (let ((idx (opr::vec-ptr-index itr))
 		(core (vector-core cont)))
+	(declare (type fixnum idx))
 	(if (= idx (vec-core-size core))
 		(__vector-push-back core value t)
 		(__vector-counted-insert core itr 1 (lambda () value) t))
@@ -725,6 +730,7 @@
 		  #-cl-stl-0x98 (clone itr))
 		(let ((idx (opr::vec-ptr-index itr))
 			  (core (vector-core cont)))
+		  (declare (type fixnum idx))
 		  (cond
 			((= idx (vec-core-size core))
 			 (with-operators
@@ -783,6 +789,7 @@
 			#-cl-stl-0x98 (clone itr))
 		  (let ((core (vector-core cont))
 				(cnt  (- idx2 idx1)))
+			(declare (type fixnum cnt))
 			(__vector-counted-insert core itr cnt
 									 (lambda ()
 									   (prog1 (aref buf idx1) (incf idx1))) t)
@@ -797,9 +804,9 @@
 (defmethod-overload insert ((cont stl:vector)
 							(itr  vector-const-iterator) (rm remove-reference))
   (__vector-check-iterator-belong itr cont)
-  (let ((val (funcall (__rm-ref-closure rm))))
+  (let ((val (funcall (the cl:function (__rm-ref-closure rm)))))
 	(__vector-counted-insert (vector-core cont) itr 1 (lambda () val) nil)
-	(funcall (__rm-ref-closure rm) nil))
+	(funcall (the cl:function (__rm-ref-closure rm)) nil))
   (make-instance 'vector-iterator
 				 :buffer (vec-core-buffer (vector-core cont))
 				 :index (opr::vec-ptr-index itr)))
@@ -889,7 +896,7 @@
   (labels ((__container-equal (cont1 cont2)
 			 (if (eq cont1 cont2)
 				 t
-				 (if (/= (size cont1) (size cont2))
+				 (if (/= (the fixnum (size cont1)) (the fixnum (size cont2)))
 					 nil
 					 (let ((cnt (size cont1)))
 					   (declare (type fixnum cnt))
@@ -960,6 +967,7 @@
 #-cl-stl-0x98
 (locally (declare (optimize speed))
   (defmethod-overload for ((cont stl:vector) func)
+	(declare (type cl:function func))
 	;MEMO : func is always lambda function ( see stl:for ). 
 	(let ((core (vector-core cont)))
 	  (when core

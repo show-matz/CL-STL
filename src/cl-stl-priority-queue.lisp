@@ -150,7 +150,7 @@
 #-cl-stl-0x98
 (define-constructor priority-queue ((comp cl:function)
 									(rm-ref remove-reference))
-  (let ((cont (funcall (__rm-ref-closure rm-ref))))
+  (let ((cont (funcall (the cl:function (__rm-ref-closure rm-ref)))))
 	(check-underlying-container-of-prique cont)
 	(let ((tmp (dynamic-new (type-of cont))))
 	  (swap tmp cont)
@@ -162,7 +162,7 @@
 (define-constructor priority-queue ((comp #-cl-stl-0x98 functor
 										  #+cl-stl-0x98 binary-function)
 									(rm-ref remove-reference))
-  (let ((cont (funcall (__rm-ref-closure rm-ref))))
+  (let ((cont (funcall (the cl:function (__rm-ref-closure rm-ref)))))
 	(check-underlying-container-of-prique cont)
 	(let ((tmp (dynamic-new (type-of cont))))
 	  (swap tmp cont)
@@ -171,10 +171,10 @@
 
 #-cl-stl-0x98
 (labels ((__ctor-imp (itr1 itr2 comp rm-ref)
-		   (let ((cont (funcall (__rm-ref-closure rm-ref))))
+		   (let ((cont (funcall (the cl:function (__rm-ref-closure rm-ref)))))
 			 (check-underlying-container-of-prique cont)
 			 (let ((tmp (dynamic-new (type-of cont))))
-			   ;;(funcall (__rm-ref-closure rm-ref) nil)
+			   ;;(funcall (the cl:function (__rm-ref-closure rm-ref)) nil)
 			   (swap tmp cont)
 			   (insert tmp (end tmp) itr1 itr2)
 			   (make-heap (begin tmp) (end tmp) comp)
@@ -205,7 +205,7 @@
 ; move constructor.
 #-cl-stl-0x98
 (define-constructor priority-queue ((rm-ref remove-reference))
-  (let ((cont (funcall (__rm-ref-closure rm-ref))))
+  (let ((cont (funcall (the cl:function (__rm-ref-closure rm-ref)))))
 	(__check-type-of-move-constructor cont priority-queue)
 	(let* ((src-pred (__prique-pred cont))
 		   (src-cont (__prique-container cont))

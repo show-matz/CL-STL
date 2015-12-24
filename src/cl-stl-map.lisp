@@ -123,6 +123,7 @@
 (define-constructor map ((il initializer-list))
   (declare (type initializer-list il))
   (let ((arr (__initlist-data il)))
+	(declare (type simple-vector arr))
 	(__create-map-with-array #'operator_< arr 0 (length arr))))
 
 ; constructor with initializer list 2
@@ -130,6 +131,7 @@
 (define-constructor map ((il initializer-list) (comp cl:function))
   (declare (type initializer-list il))
   (let ((arr (__initlist-data il)))
+	(declare (type simple-vector arr))
 	(__create-map-with-array comp arr 0 (length arr))))
 
 ; constructor with initializer list 3
@@ -139,12 +141,13 @@
 							   #+cl-stl-0x98 binary-function))
   (declare (type initializer-list il))
   (let ((arr (__initlist-data il)))
+	(declare (type simple-vector arr))
 	(__create-map-with-array comp arr 0 (length arr))))
 
 ; move constructor
 #-cl-stl-0x98
 (define-constructor map ((arg remove-reference))
-  (let ((cont (funcall (__rm-ref-closure arg))))
+  (let ((cont (funcall (the cl:function (__rm-ref-closure arg)))))
 	(__check-type-of-move-constructor cont stl::map)
 	(let ((obj (__create-map (key-comp cont))))
 	  (__rbtree-swap (__assoc-tree obj) (__assoc-tree cont))
@@ -224,8 +227,8 @@
 	(declare (type initializer-list il))
 	(let ((tree (__assoc-tree cont))
 		  (arr  (__initlist-data il)))
-	  (declare (type rbtree tree))
-	  (declare (type cl:vector arr))
+	  (declare (type rbtree        tree))
+	  (declare (type simple-vector arr))
 	  (__rbtree-clear tree)
 	  (__rbtree-insert-array-unique tree arr 0 (length arr) t))
 	cont))
@@ -366,9 +369,9 @@
   ;; insert ( single element by remove reference ) - returns pair<iterator,bool>.
   #-cl-stl-0x98
   (defmethod-overload insert ((container stl::map) (rm remove-reference))
-	(let ((val (funcall (__rm-ref-closure rm))))
+	(let ((val (funcall (the cl:function (__rm-ref-closure rm)))))
 	  (__map-check-item-pairness val)
-	  (funcall (__rm-ref-closure rm) nil)
+	  (funcall (the cl:function (__rm-ref-closure rm)) nil)
 	  (multiple-value-bind (node success)
 		  (__rbtree-insert-unique (__assoc-tree container) val nil)
 		(make-pair (make-instance 'map-iterator :node node) success))))
@@ -394,9 +397,9 @@
   (defmethod-overload insert ((container stl::map)
 							  (itr map-const-iterator) (rm remove-reference))
 	(__map-check-iterator-belong itr container)
-	(let ((val (funcall (__rm-ref-closure rm))))
+	(let ((val (funcall (the cl:function (__rm-ref-closure rm)))))
 	  (__map-check-item-pairness val)
-	  (funcall (__rm-ref-closure rm) nil)
+	  (funcall (the cl:function (__rm-ref-closure rm)) nil)
 	  (make-instance 'map-iterator
 					 :node (__rbtree-insert-hint-unique (__assoc-tree container)
 														(__assoc-itr-node itr) val nil))))
@@ -406,6 +409,7 @@
   (defmethod-overload insert ((container stl::map) (il initializer-list))
 	(declare (type initializer-list il))
 	(let ((arr (__initlist-data il)))
+	  (declare (type simple-vector arr))
 	  ;;ToDo : check pair-ness of values in sequence...
 	  (__rbtree-insert-array-unique (__assoc-tree container) arr 0 (length arr) t)
 	  nil)))
@@ -536,6 +540,7 @@
 
   (defmethod value-comp ((container stl::map))
 	(let ((fnc (functor-function (clone (__rbtree-key-comp (__assoc-tree container))))))
+	  (declare (type cl:function fnc))
 	  (lambda (pr1 pr2)
 		(funcall fnc (stl:first pr1) (stl:first pr2))))))
 

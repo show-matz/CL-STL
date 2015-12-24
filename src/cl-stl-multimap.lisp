@@ -121,6 +121,7 @@
 (define-constructor multimap ((il initializer-list))
   (declare (type initializer-list il))
   (let ((arr (__initlist-data il)))
+	(declare (type simple-vector arr))
 	(__create-multimap-with-array #'operator_< arr 0 (length arr))))
 
 ; constructor with initializer list 2
@@ -128,6 +129,7 @@
 (define-constructor multimap ((il initializer-list) (comp cl:function))
   (declare (type initializer-list il))
   (let ((arr (__initlist-data il)))
+	(declare (type simple-vector arr))
 	(__create-multimap-with-array comp arr 0 (length arr))))
 
 ; constructor with initializer list 3
@@ -137,12 +139,13 @@
 									#+cl-stl-0x98 binary-function))
   (declare (type initializer-list il))
   (let ((arr (__initlist-data il)))
+	(declare (type simple-vector arr))
 	(__create-multimap-with-array comp arr 0 (length arr))))
 
 ; move constructor
 #-cl-stl-0x98
 (define-constructor multimap ((arg remove-reference))
-  (let ((cont (funcall (__rm-ref-closure arg))))
+  (let ((cont (funcall (the cl:function (__rm-ref-closure arg)))))
 	(__check-type-of-move-constructor cont multimap)
 	(let ((obj (__create-multimap (key-comp cont))))
 	  (__rbtree-swap (__assoc-tree obj) (__assoc-tree cont))
@@ -223,7 +226,7 @@
 	(let ((tree (__assoc-tree cont))
 		  (arr  (__initlist-data il)))
 	  (declare (type rbtree tree))
-	  (declare (type cl:vector arr))
+	  (declare (type simple-vector arr))
 	  (__rbtree-clear tree)
 	  (__rbtree-insert-array-equal tree arr 0 (length arr) t))
 	cont))
@@ -305,9 +308,9 @@
   ;; insert ( single element by remove reference ) - returns iterator.
   #-cl-stl-0x98
   (defmethod-overload insert ((container multimap) (rm remove-reference))
-	(let ((val (funcall (__rm-ref-closure rm))))
+	(let ((val (funcall (the cl:function (__rm-ref-closure rm)))))
 	  (__map-check-item-pairness val)
-	  (funcall (__rm-ref-closure rm) nil)
+	  (funcall (the cl:function (__rm-ref-closure rm)) nil)
 	  (make-instance 'multimap-iterator
 					 :node (__rbtree-insert-equal (__assoc-tree container) val nil))))
 
@@ -332,9 +335,9 @@
   (defmethod-overload insert ((container multimap)
 							  (itr multimap-const-iterator) (rm remove-reference))
 	(__multimap-check-iterator-belong itr container)
-	(let ((val (funcall (__rm-ref-closure rm))))
+	(let ((val (funcall (the cl:function (__rm-ref-closure rm)))))
 	  (__map-check-item-pairness val)
-	  (funcall (__rm-ref-closure rm) nil)
+	  (funcall (the cl:function (__rm-ref-closure rm)) nil)
 	  (make-instance 'multimap-iterator
 					 :node (__rbtree-insert-hint-equal (__assoc-tree container)
 													   (__assoc-itr-node itr) val nil))))
@@ -345,6 +348,7 @@
 	(declare (type initializer-list il))
 	(let ((arr (__initlist-data il)))
 	  ;;ToDo : check pair-ness of values in sequence...
+	  (declare (type simple-vector arr))
 	  (__rbtree-insert-array-equal (__assoc-tree container) arr 0 (length arr) t)
 	  nil)))
 
@@ -473,6 +477,7 @@
 
   (defmethod value-comp ((container multimap))
 	(let ((fnc (functor-function (clone (__rbtree-key-comp (__assoc-tree container))))))
+	  (declare (type cl:function fnc))
 	  (lambda (pr1 pr2)
 		(funcall fnc (stl:first pr1) (stl:first pr2))))))
 

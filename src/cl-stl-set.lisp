@@ -113,6 +113,7 @@
 (define-constructor set ((il initializer-list))
   (declare (type initializer-list il))
   (let ((arr (__initlist-data il)))
+	(declare (type simple-vector arr))
 	(__create-set-with-array #'operator_< arr 0 (length arr))))
 
 ; constructor with initializer list 2
@@ -120,6 +121,7 @@
 (define-constructor set ((il initializer-list) (comp cl:function))
   (declare (type initializer-list il))
   (let ((arr (__initlist-data il)))
+	(declare (type simple-vector arr))
 	(__create-set-with-array comp arr 0 (length arr))))
 
 ; constructor with initializer list 3
@@ -129,12 +131,13 @@
 							   #+cl-stl-0x98 binary-function))
   (declare (type initializer-list il))
   (let ((arr (__initlist-data il)))
+	(declare (type simple-vector arr))
 	(__create-set-with-array comp arr 0 (length arr))))
 
 ; move constructor
 #-cl-stl-0x98
 (define-constructor set ((arg remove-reference))
-  (let ((cont (funcall (__rm-ref-closure arg))))
+  (let ((cont (funcall (the cl:function (__rm-ref-closure arg)))))
 	(__check-type-of-move-constructor cont stl::set)
 	(let ((obj (__create-set (key-comp cont))))
 	  (__rbtree-swap (__assoc-tree obj) (__assoc-tree cont))
@@ -215,8 +218,8 @@
 	(declare (type initializer-list il))
 	(let ((tree (__assoc-tree cont))
 		  (arr  (__initlist-data il)))
-	  (declare (type rbtree tree))
-	  (declare (type cl:vector arr))
+	  (declare (type rbtree        tree))
+	  (declare (type simple-vector arr))
 	  (__rbtree-clear tree)
 	  (__rbtree-insert-array-unique tree arr 0 (length arr) t))
 	cont))
@@ -298,8 +301,8 @@
   ;; insert ( single element by remove reference ) - returns pair<iterator,bool>.
   #-cl-stl-0x98
   (defmethod-overload insert ((container stl::set) (rm remove-reference))
-	(let ((val (funcall (__rm-ref-closure rm))))
-	  (funcall (__rm-ref-closure rm) nil)
+	(let ((val (funcall (the cl:function (__rm-ref-closure rm)))))
+	  (funcall (the cl:function (__rm-ref-closure rm)) nil)
 	  (multiple-value-bind (node success)
 		  (__rbtree-insert-unique (__assoc-tree container) val nil)
 		(make-pair (make-instance 'set-iterator :node node) success))))
@@ -324,8 +327,8 @@
   (defmethod-overload insert ((container stl::set)
 							  (itr set-const-iterator) (rm remove-reference))
 	(__set-check-iterator-belong itr container)
-	(let ((val (funcall (__rm-ref-closure rm))))
-	  (funcall (__rm-ref-closure rm) nil)
+	(let ((val (funcall (the cl:function (__rm-ref-closure rm)))))
+	  (funcall (the cl:function (__rm-ref-closure rm)) nil)
 	  (make-instance 'set-iterator
 					 :node (__rbtree-insert-hint-unique (__assoc-tree container)
 														(__assoc-itr-node itr) val nil))))
@@ -335,6 +338,7 @@
   (defmethod-overload insert ((container stl::set) (il initializer-list))
 	(declare (type initializer-list il))
 	(let ((arr (__initlist-data il)))
+	  (declare (type simple-vector arr))
 	  (__rbtree-insert-array-unique (__assoc-tree container) arr 0 (length arr) t)
 	  nil)))
 
