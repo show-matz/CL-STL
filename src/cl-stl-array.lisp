@@ -6,11 +6,12 @@
 ;;
 ;;--------------------------------------------------------------------
 #-cl-stl-0x98
-(defclass stl:array (randomaccess-container)
-  ((buffer :type     :simple-vector
-		   :initform nil
-		   :initarg  :buffer
-		   :accessor array-data)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass stl:array (randomaccess-container)
+	((buffer :type     :simple-vector
+			 :initform nil
+			 :initarg  :buffer
+			 :accessor array-data))))
 
 #-cl-stl-0x98
 (defclass array-const-iterator (const-vector-pointer randomaccess-iterator) ())

@@ -7,13 +7,14 @@
 ;; class definition
 ;;
 ;;------------------------------------------------------------------------------
-(defclass pair (clonable)
-  ((first  :initform nil
-		   :initarg  :first
-		   :accessor first)
-   (second :initform nil
-		   :initarg  :second
-		   :accessor second)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass pair (clonable)
+	((first  :initform nil
+			 :initarg  :first
+			 :accessor first)
+	 (second :initform nil
+			 :initarg  :second
+			 :accessor second))))
 
 
 ;;------------------------------------------------------------------------------

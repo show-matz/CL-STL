@@ -29,7 +29,6 @@
 (defclass unary-function  (functor) ())    ; deprecated in 0x11 or later
 (defclass binary-function (functor) ())    ; deprecated in 0x11 or later
 
-
 ;-------------------------------------------------------------------------------
 ;
 ; default methods for functor
@@ -852,10 +851,11 @@
 ; class function
 ;------------------------------------------------------------
 #-cl-stl-0x98
-(defclass function (functor)
-  ((target	:initform nil
-			:initarg  :target
-			:accessor __function-target)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass function (functor)
+	((target :initform nil
+			 :initarg  :target
+			 :accessor __function-target))))
 
 #-cl-stl-0x98
 (declare-constructor function (0 1))

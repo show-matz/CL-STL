@@ -7,10 +7,11 @@
 ;;
 ;;--------------------------------------------------------------------------------
 #-cl-stl-0x98
-(defclass initializer-list ()
-  ((data :type    cl:vector
-		 :initarg :data
-		 :reader  __initlist-data)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass initializer-list ()
+	((data :type    cl:vector
+		   :initarg :data
+		   :reader  __initlist-data))))
 
 
 ;;--------------------------------------------------------------------------------

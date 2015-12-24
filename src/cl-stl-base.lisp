@@ -464,19 +464,20 @@
 ;; internal utilities
 ;;
 ;;------------------------------------------------------------------------------
-(defun __setf-form-p (form)
-  (handler-case
-	  (destructuring-bind (_call (_func (_setf sym)) _newval &rest args) form
-		(declare (ignorable sym _newval args))
-		(when (and (eq _call 'cl:funcall)
-				   (eq _func 'cl:function)
-				   (eq _setf 'cl:setf))
-		  (cadr form)))
-	(error (c) (declare (ignorable c)) nil)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defun __setf-form-p (form)
+	(handler-case
+		(destructuring-bind (_call (_func (_setf sym)) _newval &rest args) form
+		  (declare (ignorable sym _newval args))
+		  (when (and (eq _call 'cl:funcall)
+					 (eq _func 'cl:function)
+					 (eq _setf 'cl:setf))
+			(cadr form)))
+	  (error (c) (declare (ignorable c)) nil)))
 
-(defun __setter-exist-p (form)
-  (handler-case (eval form)
-	(error (c) (declare (ignorable c)) nil)))
+  (defun __setter-exist-p (form)
+	(handler-case (eval form)
+	  (error (c) (declare (ignorable c)) nil))))
 
 (defmacro __check-type-of-move-constructor (cont type &optional (typename type))
   (check-type cont symbol)
@@ -564,11 +565,12 @@
 ;;
 ;;------------------------------------------------------------------------------
 
-(defclass input-iterator (clonable) ())
-(defclass output-iterator (clonable) ())
-(defclass forward-iterator (input-iterator output-iterator) ())
-(defclass bidirectional-iterator (forward-iterator) ())
-(defclass randomaccess-iterator (bidirectional-iterator) ())
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass input-iterator (clonable) ())
+  (defclass output-iterator (clonable) ())
+  (defclass forward-iterator (input-iterator output-iterator) ())
+  (defclass bidirectional-iterator (forward-iterator) ())
+  (defclass randomaccess-iterator (bidirectional-iterator) ()))
 
 
 ;;------------------------------------------------------------------------------

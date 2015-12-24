@@ -43,11 +43,12 @@
 ;;
 ;;------------------------------------------------------------------------------
 #-cl-stl-0x98
-(defclass tuple (clonable)
-  ((items :type     cl:vector
-		  :initform nil
-		  :initarg  :items
-		  :accessor __tuple-items)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defclass tuple (clonable)
+	((items :type     cl:vector
+			:initform nil
+			:initarg  :items
+			:accessor __tuple-items))))
 
 
 #-cl-stl-0x98
