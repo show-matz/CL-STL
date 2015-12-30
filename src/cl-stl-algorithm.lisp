@@ -12338,6 +12338,56 @@
 
 
 
+; first     : randomaccess-iterator
+; last      : randomaccess-iterator
+; gen       : functor
+; returns   : nil.
+(locally (declare (optimize speed))
+
+  ;;PTN; shuffle : 0 -   r
+  (labels ((__shuffle-imp-0 (first last gen)
+			 (declare (type cl:function gen))
+			 (if (_== first last)
+				 nil
+				 (let ((i (1- (the fixnum (_- last first)))))
+				   (declare (type fixnum i))
+				   (for (nil (< 0 i) (decf i))
+					 (let ((n (funcall gen i)))
+					   (multiple-value-bind (v1 v2)
+						   (__swap-2 (_[] first i) (_[] first n))
+						 (setf (_[] first i) v1)
+						 (setf (_[] first n) v2))))))))
+	
+	(defmethod shuffle ((first randomaccess-iterator) (last randomaccess-iterator) gen)
+	  (__shuffle-imp-0 first last (functor-function (clone gen)))))
+
+
+  ;;PTN; shuffle : 1 -   vp
+  (labels ((__shuffle-imp-1 (idx1 idx2 buffer gen)
+			 (declare (type fixnum idx1 idx2))
+			 (declare (type cl:vector buffer))
+			 (declare (type cl:function gen))
+			 (if (= idx1 idx2)
+				 nil
+				 (let ((i (1- (the fixnum (- idx2 idx1)))))
+				   (declare (type fixnum i))
+				   (for (nil (< 0 i) (decf i))
+					 (let ((n (funcall gen i)))
+					   (multiple-value-bind (v1 v2)
+						   (__swap-2 (aref buffer i) (aref buffer n))
+						 (setf (aref buffer i) v1)
+						 (setf (aref buffer n) v2))))))))
+
+	(defmethod shuffle ((first vector-pointer) (last vector-pointer) gen)
+	  ;;(format t "specialized shuffle for vector-pointer is invoked.~%")
+	  (__pointer-check-iterator-range first last)
+	  (__shuffle-imp-1 (opr::vec-ptr-index  first)
+					   (opr::vec-ptr-index  last)
+					   (opr::vec-ptr-buffer first) (functor-function (clone gen))))))
+
+
+
+
 ;; 25.2.12, partitions:
 
 ; first     : input-iterator

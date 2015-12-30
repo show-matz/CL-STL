@@ -321,6 +321,7 @@
 				:rotate
 				:rotate-copy
 				:random-shuffle
+  #-cl-stl-0x98 :shuffle
 				; 25.2.12, partitions:
   #-cl-stl-0x98 :is-partitioned
 				:partition
@@ -1868,7 +1869,20 @@
   nil.
 ")
 
-;ToDo : (defgeneric shuffle (...))   ;ToDo : C++11
+#-cl-stl-0x98 (defgeneric shuffle (first last gen)
+  (:documentation "
+<<signature>>
+  (cl-stl:shuffle first last)
+  (cl-stl:shuffle first last gen)
+
+<<parameters>>
+  first : randomaccess-iterator.
+  last  : randomaccess-iterator.
+  gen   : unary functor.
+
+<<return value>>
+  nil.
+"))
 
 
 ;; 25.2.12, partitions:
