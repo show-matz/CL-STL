@@ -40,30 +40,53 @@
 ;; internal utilities
 ;;
 ;;--------------------------------------------------------------------
-(defmacro __multiset-check-iterator-belong (itr cont)
-  (declare (ignore itr cont))
-  nil)    ;ToDo : temporary...
-;;  #-cl-stl-debug nil
-;;  #+cl-stl-debug
-;;  `(unless (_== ,itr (stl:end ,cont))
-;;	 (unless (do* ((tree  (__assoc-tree ,cont))
-;;				   (node  (multiset-itr-node ,itr))
-;;				   (node1 (__rbtree-lower-bound tree (__rbnode-value node)))
-;;				   (node2 (__rbtree-upper-bound tree (__rbnode-value node))))
-;;				  ((eq node1 node2) nil)
-;;			   (when (eq node1 node)
-;;				 (return t))
-;;			   (setf node1 (__rbnode-next node1)))
-;;	   (error 'undefined-behavior :what ,(format nil "~A is not iterator of ~A." itr cont)))))
+#+cl-stl-debug
+(labels ((__multiset-check-iterator-belong-imp (itr cont)
+		   (let* ((tree (__assoc-tree cont))
+				  (node (__assoc-itr-node itr)))
+			 (if (eq node (__rbtree-end tree))
+				 t
+				 (let ((val (__rbnode-value node)))
+				   (handler-case
+					   (do ((node1 (__rbtree-lower-bound tree val) (__rbnode-increment node1))
+							(node2 (__rbtree-upper-bound tree val)))
+						   ((eq node1 node2) nil)
+						 (when (eq node node1)
+						   (return t)))
+					 (error () nil)))))))
+		   
+  (defun __multiset-check-iterator-belong (itr cont)
+	(unless (__multiset-check-iterator-belong-imp itr cont)
+	  (error 'undefined-behavior :what "Not a iterator of container.")))
 
-;;YET : (defmacro __multiset-check-iterator-range (itr1 itr2)
-;;YET :   (declare (ignorable itr1 itr2))
-;;YET :   #-cl-stl-debug nil
-;;YET :   #+cl-stl-debug
-;;YET :   `(unless (__rbnode-check-reachable (multiset-itr-node ,itr1)
-;;YET : 									 (multiset-itr-node ,itr2))
-;;YET : 	 (error 'undefined-behavior :what ,(format nil "[~A ~A) is not valid range." itr1 itr2))))
-
+  (defun __multiset-check-iterator-range (cont itr1 itr2)
+	(let* ((tree  (__assoc-tree cont))
+		   (nodeZ (__rbtree-end tree))
+		   (node1 (__assoc-itr-node itr1))
+		   (node2 (__assoc-itr-node itr2)))
+	  (if (eq node2 nodeZ)
+		  (if (or (eq node1 nodeZ)
+				  (__multiset-check-iterator-belong-imp itr1 cont))
+			  t
+			  (error 'undefined-behavior :what "Invalid iterator range."))
+		  (if (eq node1 nodeZ)
+			  (error 'undefined-behavior :what "Invalid iterator range.")
+			  (if (handler-case
+					  (let ((val1 (__rbnode-value node1))
+							(val2 (__rbnode-value node2))
+							(comp (functor-function (value-comp cont))))
+						(if (funcall comp val2 val1)
+							nil
+							(do ((nodeA (__rbtree-lower-bound tree val1) (__rbnode-increment nodeA))
+								 (nodeB (__rbtree-upper-bound tree val2)))
+								((eq nodeA nodeB) nil)
+							  (if (eq node1 nodeA)
+								  (return (__multiset-check-iterator-belong-imp itr2 cont))
+								  (when (eq node2 nodeA)
+									(return nil))))))
+					(error () nil))
+				  t
+				  (error 'undefined-behavior :what "Invalid iterator range.")))))))
 
 ;;--------------------------------------------------------------------
 ;;
@@ -319,7 +342,7 @@
 	  (__rbtree-insert-range-equal (__assoc-tree container) itr value t)
 	  (return-from __insert-3 nil))
 	
-	(__multiset-check-iterator-belong itr container)
+	#+cl-stl-debug (__multiset-check-iterator-belong itr container)
 	(make-instance 'multiset-iterator
 				   :node (__rbtree-insert-hint-equal (__assoc-tree container)
 													 (__assoc-itr-node itr) value t)))
@@ -328,7 +351,7 @@
   #-cl-stl-0x98
   (defmethod-overload insert ((container multiset)
 							  (itr multiset-const-iterator) (rm remove-reference))
-	(__multiset-check-iterator-belong itr container)
+	#+cl-stl-debug (__multiset-check-iterator-belong itr container)
 	(let ((val (funcall (the cl:function (__rm-ref-closure rm)))))
 	  (funcall (the cl:function (__rm-ref-closure rm)) nil)
 	  (make-instance 'multiset-iterator
@@ -377,7 +400,7 @@
   ;;returns iterator.
   (defmethod-overload emplace-hint ((container multiset)
 									(itr multiset-const-iterator) new-val)
-	(__multiset-check-iterator-belong itr container)
+	#+cl-stl-debug (__multiset-check-iterator-belong itr container)
 	(make-instance 'multiset-iterator
 				   :node (__rbtree-emplace-hint-equal (__assoc-tree container)
 													  (__assoc-itr-node itr) new-val))))
@@ -390,7 +413,7 @@
   (defmethod-overload erase ((container multiset)
 							 (itr #+cl-stl-0x98 multiset-iterator
 								  #-cl-stl-0x98 multiset-const-iterator))
-	(__multiset-check-iterator-belong itr container)
+	#+cl-stl-debug (__multiset-check-iterator-belong itr container)
 	(let ((node (__rbtree-erase-node (__assoc-tree container) (__assoc-itr-node itr))))
 	  (declare (ignorable node))
 	  #+cl-stl-0x98 nil
@@ -400,8 +423,7 @@
   (defmethod-overload erase ((container multiset)
 							 (first #+cl-stl-0x98 multiset-iterator #-cl-stl-0x98 multiset-const-iterator)
 							 (last  #+cl-stl-0x98 multiset-iterator #-cl-stl-0x98 multiset-const-iterator))
-	(__multiset-check-iterator-belong first container)
-	;;(__multiset-check-iterator-range  first last)         ;ToDo :
+	#+cl-stl-debug (__multiset-check-iterator-range container first last)
 	(let ((node (__rbtree-erase-range (__assoc-tree container)
 									  (__assoc-itr-node first) (__assoc-itr-node last))))
 	  (declare (ignorable node))

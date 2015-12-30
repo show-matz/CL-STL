@@ -40,23 +40,41 @@
 ;; internal utilities
 ;;
 ;;--------------------------------------------------------------------
-(defmacro __set-check-iterator-belong (itr cont)
-  (declare (ignore itr cont))
-  nil)
-;;  #-cl-stl-debug nil
-;;  #+cl-stl-debug
-;;  (let ((g-node (gensym "NODE")))
-;;	`(unless (_== ,itr (stl:end ,cont))
-;;	   (let ((,g-node (set-itr-node ,itr)))
-;;		 (unless (eq ,g-node (__rbtree-find (__assoc-tree ,cont) (__rbnode-value ,g-node)))
-;;		   (error 'undefined-behavior :what ,(format nil "~A is not iterator of ~A." itr cont)))))))
+#+cl-stl-debug
+(labels ((__set-check-iterator-belong-imp (itr cont)
+		   (let* ((tree (__assoc-tree cont))
+				  (node (__assoc-itr-node itr)))
+			 (if (eq node (__rbtree-end tree))
+				 t
+				 (handler-case
+					 (eq node (__rbtree-lower-bound tree (__rbnode-value node)))
+				   (error () nil))))))
 
-;;YET : (defmacro __set-check-iterator-range (itr1 itr2)
-;;YET :   (declare (ignorable itr1 itr2))
-;;YET :   #-cl-stl-debug nil
-;;YET :   #+cl-stl-debug
-;;YET :   `(unless (__rbnode-check-reachable (set-itr-node ,itr1) (set-itr-node ,itr2))
-;;YET : 	 (error 'undefined-behavior :what ,(format nil "[~A ~A) is not valid range." itr1 itr2))))
+  (defun __set-check-iterator-belong (itr cont)
+	(unless (__set-check-iterator-belong-imp itr cont)
+	  (error 'undefined-behavior :what "Not a iterator of container.")))
+
+  (defun __set-check-iterator-range (cont itr1 itr2)
+	(let* ((tree  (__assoc-tree cont))
+		   (nodeZ (__rbtree-end tree))
+		   (node1 (__assoc-itr-node itr1))
+		   (node2 (__assoc-itr-node itr2)))
+	  (if (eq node2 nodeZ)
+		  (if (or (eq node1 nodeZ)
+				  (__set-check-iterator-belong-imp itr1 cont))
+			  t
+			  (error 'undefined-behavior :what "Invalid iterator range."))
+		  (if (eq node1 nodeZ)
+			  (error 'undefined-behavior :what "Invalid iterator range.")
+			  (if (handler-case
+					  (let ((val1 (__rbnode-value node1))
+							(val2 (__rbnode-value node2)))
+						(and (eq node1 (__rbtree-lower-bound tree val1))
+							 (eq node2 (__rbtree-lower-bound tree val2))
+							 (not (functor-call (value-comp cont) val2 val1))))
+					(error () nil))
+				  t
+				  (error 'undefined-behavior :what "Invalid iterator range.")))))))
 
 
 ;;--------------------------------------------------------------------
@@ -317,7 +335,7 @@
 	  (__rbtree-insert-range-unique (__assoc-tree container) itr value t)
 	  (return-from __insert-3 nil))
 	
-	(__set-check-iterator-belong itr container)
+	#+cl-stl-debug (__set-check-iterator-belong itr container)
 	(make-instance 'set-iterator
 				   :node (__rbtree-insert-hint-unique (__assoc-tree container)
 													  (__assoc-itr-node itr) value t)))
@@ -326,7 +344,7 @@
   #-cl-stl-0x98
   (defmethod-overload insert ((container stl::set)
 							  (itr set-const-iterator) (rm remove-reference))
-	(__set-check-iterator-belong itr container)
+	#+cl-stl-debug (__set-check-iterator-belong itr container)
 	(let ((val (funcall (the cl:function (__rm-ref-closure rm)))))
 	  (funcall (the cl:function (__rm-ref-closure rm)) nil)
 	  (make-instance 'set-iterator
@@ -375,7 +393,7 @@
   ;;returns iterator.
   (defmethod-overload emplace-hint ((container stl::set)
 									(itr set-const-iterator) new-val)
-	(__set-check-iterator-belong itr container)
+	#+cl-stl-debug (__set-check-iterator-belong itr container)
 	(make-instance 'set-iterator
 				   :node (__rbtree-emplace-hint-unique (__assoc-tree container)
 													   (__assoc-itr-node itr) new-val))))
@@ -387,7 +405,7 @@
   (defmethod-overload erase ((container stl::set)
 							 (itr #+cl-stl-0x98 set-iterator
 								  #-cl-stl-0x98 set-const-iterator))
-	(__set-check-iterator-belong itr container)
+	#+cl-stl-debug (__set-check-iterator-belong itr container)
 	(let ((node (__rbtree-erase-node (__assoc-tree container) (__assoc-itr-node itr))))
 	  (declare (ignorable node))
 	  #+cl-stl-0x98 nil
@@ -397,8 +415,7 @@
   (defmethod-overload erase ((container stl::set)
 							 (first #+cl-stl-0x98 set-iterator	#-cl-stl-0x98 set-const-iterator)
 							 (last  #+cl-stl-0x98 set-iterator	#-cl-stl-0x98 set-const-iterator))
-	(__set-check-iterator-belong first container)
-	;;(__set-check-iterator-range  first last)         ;ToDo :
+	#+cl-stl-debug (__set-check-iterator-range container first last)
 	(let ((node (__rbtree-erase-range (__assoc-tree container)
 									  (__assoc-itr-node first) (__assoc-itr-node last))))
 	  (declare (ignorable node))

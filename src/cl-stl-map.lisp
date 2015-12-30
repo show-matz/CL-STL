@@ -47,24 +47,43 @@
   `(unless (typep ,sym 'stl:pair)
 	 (error 'type-mismatch :what "Item must be pair.")))
 
-(defmacro __map-check-iterator-belong (itr cont)
-  (declare (ignore itr cont))
-  nil)    ; ToDo : temporary...
-;;  #-cl-stl-debug nil
-;;  #+cl-stl-debug
-;;  (let ((g-node (gensym "NODE")))
-;;	`(unless (_== ,itr (stl:end ,cont))
-;;	   (let ((,g-node (map-itr-node ,itr)))
-;;		 (unless (eq ,g-node (__rbtree-find (__assoc-tree ,cont) (__rbnode-value ,g-node)))
-;;		   (error 'undefined-behavior :what ,(format nil "~A is not iterator of ~A." itr cont)))))))
+#+cl-stl-debug
+(labels ((__map-check-iterator-belong-imp (itr cont)
+		   (let* ((tree (__assoc-tree cont))
+				  (node (__assoc-itr-node itr)))
+			 (if (eq node (__rbtree-end tree))
+				 t
+				 (let ((val (__rbnode-value node)))
+				   (handler-case
+					   (and (typep val 'pair)
+							(eq node (__rbtree-lower-bound tree (stl:first val))))
+					 (error () nil)))))))
 
-;;YET : (defmacro __map-check-iterator-range (itr1 itr2)
-;;YET :   (declare (ignorable itr1 itr2))
-;;YET :   #-cl-stl-debug nil
-;;YET :   #+cl-stl-debug
-;;YET :   `(unless (__rbnode-check-reachable (map-itr-node ,itr1) (map-itr-node ,itr2))
-;;YET : 	 (error 'undefined-behavior :what ,(format nil "[~A ~A) is not valid range." itr1 itr2))))
-
+  (defun __map-check-iterator-belong (itr cont)
+	(unless (__map-check-iterator-belong-imp itr cont)
+	  (error 'undefined-behavior :what "Not a iterator of container.")))
+		
+  (defun __map-check-iterator-range (cont itr1 itr2)
+	(let* ((tree  (__assoc-tree cont))
+		   (nodeZ (__rbtree-end tree))
+		   (node1 (__assoc-itr-node itr1))
+		   (node2 (__assoc-itr-node itr2)))
+	  (if (eq node2 nodeZ)
+		  (if (or (eq node1 nodeZ)
+				  (__map-check-iterator-belong-imp itr1 cont))
+			  t
+			  (error 'undefined-behavior :what "Invalid iterator range."))
+		  (if (eq node1 nodeZ)
+			  (error 'undefined-behavior :what "Invalid iterator range.")
+			  (if (handler-case
+					  (let ((key1 (stl:first (__rbnode-value node1)))
+							(key2 (stl:first (__rbnode-value node2))))
+						(and (eq node1 (__rbtree-lower-bound tree key1))
+							 (eq node2 (__rbtree-lower-bound tree key2))
+							 (not (functor-call (key-comp cont) key2 key1))))
+					(error () nil))
+				  t
+				  (error 'undefined-behavior :what "Invalid iterator range.")))))))
 
 
 ;;--------------------------------------------------------------------
@@ -81,15 +100,21 @@
 
   (defun __create-map-with-range (key-comp itr1 itr2)
 	;; MEMO : key-comp copy in __rbtree-ctor.
+	;; MEMO : [itr1, itr2) is 'input-iterator'...
 	(let ((tree (__rbtree-ctor key-comp #'stl:first)))
-	  ;;ToDo : check pair-ness of values in sequence...
+	  ;;ToDo : check pair-ness of values in sequence... -> Can't check here because sequence is 'input-iterator'.
 	  (__rbtree-insert-range-unique tree itr1 itr2 t)
 	  (make-instance 'stl::map :core tree)))
 
   (defun __create-map-with-array (key-comp arr idx1 idx2)
+	(declare (type cl:vector arr))
+	(declare (type fixnum idx1 idx2))
+	#+cl-stl-debug    ; ToDo : pair-ness check : debug mode only...?
+	(do ((i idx1 (incf i)))
+		((= i idx2) nil)
+	  (__map-check-item-pairness (aref arr i)))
 	;; MEMO : key-comp copy in __rbtree-ctor.
 	(let ((tree (__rbtree-ctor key-comp #'stl:first)))
-	  ;;ToDo : check pair-ness of values in sequence...
 	  (__rbtree-insert-array-unique tree arr idx1 idx2 t)
 	  (make-instance 'stl::map :core tree))))
 
@@ -386,7 +411,7 @@
 	  (__rbtree-insert-range-unique (__assoc-tree container) itr value t)
 	  (return-from __insert-3 nil))
 	
-	(__map-check-iterator-belong itr container)
+	#+cl-stl-debug (__map-check-iterator-belong itr container)
 	(__map-check-item-pairness value)
 	(make-instance 'map-iterator
 				   :node (__rbtree-insert-hint-unique (__assoc-tree container)
@@ -396,7 +421,7 @@
   #-cl-stl-0x98
   (defmethod-overload insert ((container stl::map)
 							  (itr map-const-iterator) (rm remove-reference))
-	(__map-check-iterator-belong itr container)
+	#+cl-stl-debug (__map-check-iterator-belong itr container)
 	(let ((val (funcall (the cl:function (__rm-ref-closure rm)))))
 	  (__map-check-item-pairness val)
 	  (funcall (the cl:function (__rm-ref-closure rm)) nil)
@@ -408,28 +433,36 @@
   #-cl-stl-0x98
   (defmethod-overload insert ((container stl::map) (il initializer-list))
 	(declare (type initializer-list il))
-	(let ((arr (__initlist-data il)))
+	(let* ((arr (__initlist-data il))
+		   (cnt (length arr)))
 	  (declare (type simple-vector arr))
-	  ;;ToDo : check pair-ness of values in sequence...
-	  (__rbtree-insert-array-unique (__assoc-tree container) arr 0 (length arr) t)
+	  (declare (type fixnum cnt))
+	  #+cl-stl-debug    ; ToDo : pair-ness check : debug mode only...?
+	  (do ((i 0 (incf i)))
+		  ((= i cnt) nil)
+		(__map-check-item-pairness (svref arr i)))
+	  (__rbtree-insert-array-unique (__assoc-tree container) arr 0 cnt t)
 	  nil)))
 
 ;; range insert - returns nil.
 (locally (declare (optimize speed))
 
   (defmethod-overload insert ((container stl::map) (itr1 input-iterator) (itr2 input-iterator))
-	;;ToDo : check pair-ness of values in sequence...
+	;;ToDo : check pair-ness of values in sequence... -> Can't check here because sequence is 'input-iterator'.
 	(__rbtree-insert-range-unique (__assoc-tree container) itr1 itr2 t)
 	nil)
 
-  (defmethod-overload insert ((container stl::map) (itr1 map-const-iterator) (itr2 map-const-iterator))
-	;;ToDo : check pair-ness of values in sequence...
+  (defmethod-overload insert ((container stl::map)
+							  (itr1 map-const-iterator) (itr2 map-const-iterator))
 	(__rbtree-insert-range-unique (__assoc-tree container) itr1 itr2 t)
 	nil)
 
   (defmethod-overload insert ((container stl::map) (ptr1 const-vector-pointer) (ptr2 const-vector-pointer))
 	(__pointer-check-iterator-range ptr1 ptr2)
-	;;ToDo : check pair-ness of values in sequence...
+	#+cl-stl-debug    ; ToDo : pair-ness check : debug mode only...?
+	(for-each ptr1 ptr2
+			  (lambda (v)
+				(__map-check-item-pairness v)))
 	(__rbtree-insert-array-unique (__assoc-tree container)
 								  (opr::vec-ptr-buffer ptr1)
 								  (opr::vec-ptr-index  ptr1)
@@ -451,7 +484,7 @@
   ;;returns iterator
   (defmethod-overload emplace-hint ((container stl::map)
 									(itr map-const-iterator) new-val)
-	(__map-check-iterator-belong itr container)
+	#+cl-stl-debug (__map-check-iterator-belong itr container)
 	(__map-check-item-pairness new-val)
 	(make-instance 'map-iterator
 				   :node (__rbtree-emplace-hint-unique (__assoc-tree container)
@@ -465,7 +498,7 @@
   (defmethod-overload erase ((container stl::map)
 							 (itr #+cl-stl-0x98 map-iterator
 								  #-cl-stl-0x98 map-const-iterator))
-	(__map-check-iterator-belong itr container)
+	#+cl-stl-debug (__map-check-iterator-belong itr container)
 	(let ((node (__rbtree-erase-node (__assoc-tree container) (__assoc-itr-node itr))))
 	  (declare (ignorable node))
 	  #+cl-stl-0x98 nil
@@ -475,8 +508,7 @@
   (defmethod-overload erase ((container stl::map)
 							 (first #+cl-stl-0x98 map-iterator #-cl-stl-0x98 map-const-iterator)
 							 (last  #+cl-stl-0x98 map-iterator #-cl-stl-0x98 map-const-iterator))
-	(__map-check-iterator-belong first container)
-	;;(__map-check-iterator-range  first last)         ;ToDo : 
+	#+cl-stl-debug (__map-check-iterator-range  container first last)
 	(let ((node (__rbtree-erase-range (__assoc-tree container)
 									  (__assoc-itr-node first) (__assoc-itr-node last))))
 	  (declare (ignorable node))

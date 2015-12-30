@@ -40,29 +40,56 @@
 ;; internal utilities
 ;;
 ;;--------------------------------------------------------------------
-(defmacro __multimap-check-iterator-belong (itr cont)
-  (declare (ignore itr cont))
-  nil)    ;;ToDo : temporary...
-;;  #-cl-stl-debug nil
-;;  #+cl-stl-debug
-;;  `(unless (_== ,itr (stl:end ,cont))
-;;	 (unless (do* ((tree  (__assoc-tree ,cont))
-;;				   (node  (multimap-itr-node ,itr))
-;;				   (node1 (__rbtree-lower-bound tree (__rbnode-value node)))
-;;				   (node2 (__rbtree-upper-bound tree (__rbnode-value node))))
-;;				  ((eq node1 node2) nil)
-;;			   (when (eq node1 node)
-;;				 (return t))
-;;			   (setf node1 (__rbnode-next node1)))
-;;	   (error 'undefined-behavior :what ,(format nil "~A is not iterator of ~A." itr cont)))))
+#+cl-stl-debug
+(labels ((__multimap-check-iterator-belong-imp (itr cont)
+		   (let* ((tree (__assoc-tree cont))
+				  (node (__assoc-itr-node itr)))
+			 (if (eq node (__rbtree-end tree))
+				 t
+				 (let ((val (__rbnode-value node)))
+				   (if (not (typep val 'pair))
+					   nil
+					   (let ((key (stl:first val)))
+						 (handler-case
+							 (do ((node1 (__rbtree-lower-bound tree key) (__rbnode-increment node1))
+								  (node2 (__rbtree-upper-bound tree key)))
+								 ((eq node1 node2) nil)
+							   (when (eq node node1)
+								 (return t)))
+						   (error () nil)))))))))
+		   
+  (defun __multimap-check-iterator-belong (itr cont)
+	(unless (__multimap-check-iterator-belong-imp itr cont)
+	  (error 'undefined-behavior :what "Not a iterator of container.")))
 
-;;YET : (defmacro __multimap-check-iterator-range (itr1 itr2)
-;;YET :   (declare (ignorable itr1 itr2))
-;;YET :   #-cl-stl-debug nil
-;;YET :   #+cl-stl-debug
-;;YET :   `(unless (__rbnode-check-reachable (multimap-itr-node ,itr1)
-;;YET : 									 (multimap-itr-node ,itr2))
-;;YET : 	 (error 'undefined-behavior :what ,(format nil "[~A ~A) is not valid range." itr1 itr2))))
+  (defun __multimap-check-iterator-range (cont itr1 itr2)
+	(let* ((tree  (__assoc-tree cont))
+		   (nodeZ (__rbtree-end tree))
+		   (node1 (__assoc-itr-node itr1))
+		   (node2 (__assoc-itr-node itr2)))
+	  (if (eq node2 nodeZ)
+		  (if (or (eq node1 nodeZ)
+				  (__multimap-check-iterator-belong-imp itr1 cont))
+			  t
+			  (error 'undefined-behavior :what "Invalid iterator range."))
+		  (if (eq node1 nodeZ)
+			  (error 'undefined-behavior :what "Invalid iterator range.")
+			  (if (handler-case
+					  (let ((key1 (stl:first (__rbnode-value node1)))
+							(key2 (stl:first (__rbnode-value node2)))
+							(comp (functor-function (key-comp cont))))
+						(if (funcall comp key2 key1)
+							nil
+							(do ((nodeA (__rbtree-lower-bound tree key1) (__rbnode-increment nodeA))
+								 (nodeB (__rbtree-upper-bound tree key2)))
+								((eq nodeA nodeB) nil)
+							  (if (eq node1 nodeA)
+								  (return (__multimap-check-iterator-belong-imp itr2 cont))
+								  (when (eq node2 nodeA)
+									(return nil))))))
+					(error () nil))
+				  t
+				  (error 'undefined-behavior :what "Invalid iterator range.")))))))
 
 
 ;;--------------------------------------------------------------------
@@ -79,15 +106,21 @@
 
   (defun __create-multimap-with-range (key-comp itr1 itr2)
 	;; MEMO : key-comp copy in __rbtree-ctor.
+	;; MEMO : [itr1, itr2) is 'input-iterator'...
 	(let ((tree (__rbtree-ctor key-comp #'stl:first)))
-	  ;;ToDo : check pair-ness of values in sequence...
+	  ;;ToDo : check pair-ness of values in sequence... -> Can't check here because sequence is 'input-iterator'.
 	  (__rbtree-insert-range-equal tree itr1 itr2 t)
 	  (make-instance 'multimap :core tree)))
 
   (defun __create-multimap-with-array (key-comp arr idx1 idx2)
+	(declare (type cl:vector arr))
+	(declare (type fixnum idx1 idx2))
+	#+cl-stl-debug    ; ToDo : pair-ness check : debug mode only...?
+	(do ((i idx1 (incf i)))
+		((= i idx2) nil)
+	  (__map-check-item-pairness (aref arr i)))
 	;; MEMO : key-comp copy in __rbtree-ctor.
 	(let ((tree (__rbtree-ctor key-comp #'stl:first)))
-	  ;;ToDo : check pair-ness of values in sequence...
 	  (__rbtree-insert-array-equal tree arr idx1 idx2 t)
 	  (make-instance 'multimap :core tree))))
 
@@ -324,7 +357,7 @@
 	  (__rbtree-insert-range-equal (__assoc-tree container) itr value t)
 	  (return-from __insert-3 nil))
 	
-	(__multimap-check-iterator-belong itr container)
+	#+cl-stl-debug (__multimap-check-iterator-belong itr container)
 	(__map-check-item-pairness value)
 	(make-instance 'multimap-iterator
 				   :node (__rbtree-insert-hint-equal (__assoc-tree container)
@@ -334,7 +367,7 @@
   #-cl-stl-0x98
   (defmethod-overload insert ((container multimap)
 							  (itr multimap-const-iterator) (rm remove-reference))
-	(__multimap-check-iterator-belong itr container)
+	#+cl-stl-debug (__multimap-check-iterator-belong itr container)
 	(let ((val (funcall (the cl:function (__rm-ref-closure rm)))))
 	  (__map-check-item-pairness val)
 	  (funcall (the cl:function (__rm-ref-closure rm)) nil)
@@ -346,29 +379,36 @@
   #-cl-stl-0x98
   (defmethod-overload insert ((container multimap) (il initializer-list))
 	(declare (type initializer-list il))
-	(let ((arr (__initlist-data il)))
-	  ;;ToDo : check pair-ness of values in sequence...
+	(let* ((arr (__initlist-data il))
+		   (cnt (length arr)))
 	  (declare (type simple-vector arr))
-	  (__rbtree-insert-array-equal (__assoc-tree container) arr 0 (length arr) t)
+	  (declare (type fixnum cnt))
+	  #+cl-stl-debug    ; ToDo : pair-ness check : debug mode only...?
+	  (do ((i 0 (incf i)))
+		  ((= i cnt) nil)
+		(__map-check-item-pairness (svref arr i)))
+	  (__rbtree-insert-array-equal (__assoc-tree container) arr 0 cnt t)
 	  nil)))
 
 ;; range insert - returns nil.
 (locally (declare (optimize speed))
 
   (defmethod-overload insert ((container multimap) (itr1 input-iterator) (itr2 input-iterator))
-	;;ToDo : check pair-ness of values in sequence...
+	;;ToDo : check pair-ness of values in sequence... -> Can't check here because sequence is 'input-iterator'.
 	(__rbtree-insert-range-equal (__assoc-tree container) itr1 itr2 t)
 	nil)
 
   (defmethod-overload insert ((container multimap)
 							  (itr1 multimap-const-iterator) (itr2 multimap-const-iterator))
-	;;ToDo : check pair-ness of values in sequence...
 	(__rbtree-insert-range-equal (__assoc-tree container) itr1 itr2 t)
 	nil)
 
   (defmethod-overload insert ((container multimap) (ptr1 const-vector-pointer) (ptr2 const-vector-pointer))
 	(__pointer-check-iterator-range ptr1 ptr2)
-	;;ToDo : check pair-ness of values in sequence...
+	#+cl-stl-debug    ; ToDo : pair-ness check : debug mode only...?
+	(for-each ptr1 ptr2
+			  (lambda (v)
+				(__map-check-item-pairness v)))
 	(__rbtree-insert-array-equal (__assoc-tree container)
 								 (opr::vec-ptr-buffer ptr1)
 								 (opr::vec-ptr-index  ptr1)
@@ -389,7 +429,7 @@
   ;;returns iterator.
   (defmethod-overload emplace-hint ((container multimap)
 									(itr multimap-const-iterator) new-val)
-	(__multimap-check-iterator-belong itr container)
+	#+cl-stl-debug (__multimap-check-iterator-belong itr container)
 	(__map-check-item-pairness new-val)
 	(make-instance 'multimap-iterator
 				   :node (__rbtree-emplace-hint-equal (__assoc-tree container)
@@ -402,7 +442,7 @@
   (defmethod-overload erase ((container multimap)
 							 (itr #+cl-stl-0x98 multimap-iterator
 								  #-cl-stl-0x98 multimap-const-iterator))
-	(__multimap-check-iterator-belong itr container)
+	#+cl-stl-debug (__multimap-check-iterator-belong itr container)
 	(let ((node (__rbtree-erase-node (__assoc-tree container) (__assoc-itr-node itr))))
 	  (declare (ignorable node))
 	  #+cl-stl-0x98 nil
@@ -412,8 +452,7 @@
   (defmethod-overload erase ((container multimap)
 							 (first #+cl-stl-0x98 multimap-iterator #-cl-stl-0x98 multimap-const-iterator)
 							 (last  #+cl-stl-0x98 multimap-iterator #-cl-stl-0x98 multimap-const-iterator))
-	(__multimap-check-iterator-belong first container)
-	;;(__multimap-check-iterator-range  first last)         ;ToDo : 
+	#+cl-stl-debug (__multimap-check-iterator-range container first last)
 	(let ((node (__rbtree-erase-range (__assoc-tree container)
 									  (__assoc-itr-node first) (__assoc-itr-node last))))
 	  (declare (ignorable node))
