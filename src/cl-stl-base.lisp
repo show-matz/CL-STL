@@ -2541,11 +2541,6 @@
 
 
 
-; MEMO : implementation for cons, see cl-stl-utility.lisp    ;ToDo : this comment is obsolete...
-
-
-
-
 ;; operator_* ( for move semantics & operator_= ).
 (progn
   #-cl-stl-0x98

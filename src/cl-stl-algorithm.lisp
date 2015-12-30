@@ -1497,8 +1497,6 @@
 ;;------------------------------------------------------------------------------
 (locally (declare (optimize speed))
 
-  ;; ToDo : expand for 3 sequences... 
-  
   ;; begin1, end1, begin2, end2, and oitr must be bidirectional-iterator
   (defun __merge-backward-0 (begin1 end1 begin2 end2 oitr less-bf)
 	(declare (type cl:function less-bf))
