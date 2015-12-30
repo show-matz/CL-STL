@@ -240,7 +240,7 @@
 	(declare (inline __setf-get-imp))
 	(defmethod-overload (setf get) (new-val (idx integer) (obj tuple))
 	  (__setf-get-imp new-val idx obj))
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod (setf __tie-get) (new-val (idx integer) (obj tuple))
 	  (__setf-get-imp new-val idx obj))))
 
@@ -299,7 +299,7 @@
 		 nil))))
 
 ;; :ignore keyword can use.
-#+cl-stl-extra
+#-cl-stl-noextra
 (progn
   #-cl-stl-0x98
   (defmacro with-tie ((&rest vars) tpl &body body)

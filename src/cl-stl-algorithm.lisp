@@ -526,7 +526,7 @@
 					  ++top)
 					(_= last mid)))))))
   
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __lower-bound-imp-1 (first last val comp)
 	(declare (type cl:list first last))
 	(declare (type cl:function comp))
@@ -585,7 +585,7 @@
 					  (_= top mid)
 					  ++top)))))))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __upper-bound-imp-1 (first last val comp)
 	(declare (type cl:list first last))
 	(declare (type cl:function comp))
@@ -648,7 +648,7 @@
 			++dest))))
 
   ;;IMP; merge : 01 -   i  x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __merge-imp-01 (first1 last1 first2 last2 out less-bf)
 	(declare (type cl:list out))
 	(declare (type cl:function less-bf))
@@ -692,7 +692,7 @@
 			(incf out-idx)))))
 
   ;;IMP; merge : 03 -   i  x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __merge-imp-03 (first1 last1 cons2 last2 oitr less-bf)
 	(declare (type cl:list cons2 last2))
 	(declare (type cl:function less-bf))
@@ -714,7 +714,7 @@
 			++oitr))))
 
   ;;IMP; merge : 04 -   i  x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __merge-imp-04 (first1 last1 cons2 last2 out less-bf)
 	(declare (type cl:list cons2 last2 out))
 	(declare (type cl:function less-bf))
@@ -736,7 +736,7 @@
 			(setf out (cdr out))))))
 
   ;;IMP; merge : 05 -   i  x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __merge-imp-05 (first1 last1 cons2 last2 out-idx out-buf less-bf)
 	(declare (type cl:list cons2 last2))
 	(declare (type fixnum out-idx))
@@ -782,7 +782,7 @@
 			++oitr))))
 
   ;;IMP; merge : 07 -   i  x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __merge-imp-07 (first1 last1 idx2 last2 buffer2 out less-bf)
 	(declare (type fixnum idx2 last2))
 	(declare (type cl:vector buffer2))
@@ -828,7 +828,7 @@
 			(incf out-idx)))))
 
   ;;IMP; merge : 09 -  cci x  i  x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __merge-imp-09 (cons1 last1 first2 last2 oitr less-bf)
 	(declare (type cl:list cons1 last1))
 	(declare (type cl:function less-bf))
@@ -850,7 +850,7 @@
 			++oitr))))
 
   ;;IMP; merge : 10 -  cci x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __merge-imp-10 (cons1 last1 first2 last2 out less-bf)
 	(declare (type cl:list cons1 last1 out))
 	(declare (type cl:function less-bf))
@@ -872,7 +872,7 @@
 			(setf out (cdr out))))))
 
   ;;IMP; merge : 11 -  cci x  i  x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __merge-imp-11 (cons1 last1 first2 last2 out-idx out-buf less-bf)
 	(declare (type cl:list cons1 last1))
 	(declare (type fixnum out-idx))
@@ -896,7 +896,7 @@
 			(incf out-idx)))))
   
   ;;IMP; merge : 12 -  cci x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __merge-imp-12 (cons1 last1 cons2 last2 oitr less-bf)
 	(declare (type cl:list cons1 last1 cons2 last2))
 	(declare (type cl:function less-bf))
@@ -918,7 +918,7 @@
 			++oitr))))
 
   ;;IMP; merge : 13 -  cci x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __merge-imp-13 (cons1 last1 cons2 last2 out less-bf)
 	(declare (type cl:list cons1 last1 cons2 last2 out))
 	(declare (type cl:function less-bf))
@@ -940,7 +940,7 @@
 		(setf out (cdr out)))))
 
   ;;IMP; merge : 14 -  cci x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __merge-imp-14 (cons1 last1 cons2 last2 out-idx out-buf less-bf)
 	(declare (type cl:list     cons1 last1 cons2 last2))
 	(declare (type fixnum      out-idx))
@@ -963,7 +963,7 @@
 		(incf out-idx))))
   
   ;;IMP; merge : 15 -  cci x cvp x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __merge-imp-15 (cons1 last1 idx2 last2 buffer2 oitr less-bf)
 	(declare (type cl:list cons1 last1))
 	(declare (type fixnum idx2 last2))
@@ -987,7 +987,7 @@
 			++oitr))))
 
   ;;IMP; merge : 16 -  cci x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __merge-imp-16 (cons1 last1 idx2 last2 buffer2 out less-bf)
 	(declare (type cl:list cons1 last1 out))
 	(declare (type fixnum idx2 last2))
@@ -1010,7 +1010,7 @@
 		(setf out (cdr out)))))
 
   ;;IMP; merge : 17 -  cci x cvp x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __merge-imp-17 (cons1 last1 idx2 last2 buffer2 out-idx out-buf less-bf)
 	(declare (type cl:list cons1 last1))
 	(declare (type fixnum idx2 last2 out-idx))
@@ -1055,7 +1055,7 @@
 			++oitr))))
 
   ;;IMP; merge : 19 -  cvp x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __merge-imp-19 (idx1 last1 buffer1 first2 last2 out less-bf)
 	(declare (type fixnum idx1 last1))
 	(declare (type cl:vector buffer1))
@@ -1101,7 +1101,7 @@
 			(incf out-idx)))))
   
   ;;IMP; merge : 21 -  cvp x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __merge-imp-21 (idx1 last1 buffer1 cons2 last2 oitr less-bf)
 	(declare (type fixnum idx1 last1))
 	(declare (type cl:list cons2 last2))
@@ -1125,7 +1125,7 @@
 			++oitr))))
 
   ;;IMP; merge : 22 -  cvp x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __merge-imp-22 (idx1 last1 buffer1 cons2 last2 out less-bf)
 	(declare (type fixnum idx1 last1))
 	(declare (type cl:vector buffer1))
@@ -1149,7 +1149,7 @@
 		(setf out (cdr out)))))
 
   ;;IMP; merge : 23 -  cvp x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __merge-imp-23 (idx1 last1 buffer1 cons2 last2 out-idx out-buf less-bf)
 	(declare (type fixnum idx1 last1 out-idx))
 	(declare (type cl:list cons2 last2))
@@ -1194,7 +1194,7 @@
 			++oitr))))
 
   ;;IMP; merge : 25 -  cvp x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __merge-imp-25 (idx1 last1 buffer1 idx2 last2 buffer2 out less-bf)
 	(declare (type fixnum idx1 last1 idx2 last2))
 	(declare (type cl:vector buffer1 buffer2))
@@ -1975,7 +1975,7 @@
 				  (when (imp (_= wk1 itr1) (_= wk2 first2))
 					(_= found itr1))))))))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __find-end-imp-1 (cons1 end1 first2 last2 eql-bf)
 	(declare (type cl:list cons1 end1))
 	(declare (type cl:function eql-bf))
@@ -2024,7 +2024,7 @@
 					(when (imp idx1 (_= wk2 first2))
 					  (setf found idx1)))))))))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __find-end-imp-3 (first1 last1 cons2 end2 eql-bf)
 	(declare (type cl:list cons2 end2))
 	(declare (type cl:function eql-bf))
@@ -2048,7 +2048,7 @@
 				  (when (imp (_= wk1 itr1))
 					(_= found itr1))))))))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __find-end-imp-4 (cons1 end1 cons2 end2 eql-bf)
 	(declare (type cl:list cons1 end1 cons2 end2))
 	(declare (type cl:function eql-bf))
@@ -2074,7 +2074,7 @@
 				(when (imp cns1)
 				  (setf found cns1))))))))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __find-end-imp-5 (begin1 end1 buffer1 cons2 end2 eql-bf)
 	(declare (type fixnum begin1 end1))
 	(declare (type cl:vector buffer1))
@@ -2125,7 +2125,7 @@
 				  (when (imp (_= wk1 itr1))
 					(_= found itr1))))))))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __find-end-imp-7 (cons1 end1 begin2 end2 buffer2 eql-bf)
 	(declare (type cl:list cons1 end1))
 	(declare (type fixnum begin2 end2))
@@ -2193,7 +2193,7 @@
 				(return-from __adjacent-find-imp-0 prv))))))
 
   ;;PTN; adjacent-find : 1 - cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __adjacent-find-imp-1 (cons1 cons2 eql-bf)
 	(declare (type cl:function eql-bf))
 	(let ((chk (cdr cons1)))
@@ -2228,7 +2228,7 @@
 			  (with-operators
 				  (if (funcall comp val *itr) nil t))))))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __binary-search-imp-1 (cons1 cons2 val comp)
 	(declare (type cl:list cons1 cons2))
 	(declare (type cl:function comp))
@@ -2296,7 +2296,7 @@
 			(return-from __find-if-imp-0 itr)))))
 
   ;;IMP; find-if : 1 - cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __find-if-imp-1 (cons1 cons2 pred)
 	(declare (type cl:function pred))
 	(for (nil (not (eq cons1 cons2)) (setf cons1 (cdr cons1)) :returns cons2)
@@ -2425,7 +2425,7 @@
 			(make-pair min max)))))
 
   ;;IMP; minmax-element : 1 -  cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __minmax-element-imp-1 (cons1 cons2 less-bf)
 	(declare (type cl:list cons1 cons2))
 	(declare (type cl:function less-bf))
@@ -2757,7 +2757,7 @@
 					(imp0 first1 last1 first2 last2 pred)))))))
 
   ;;IMP; is-permutation : 1 - cci x  f
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((imp1 (cons1 last1 first2 last2 pred)
 			 (declare (type cl:list cons1 last1))
 			 (declare (type cl:function pred))
@@ -2851,7 +2851,7 @@
 					(imp2 idx1 last1 buf1 itr2 last2 pred)))))))
 
   ;;IMP; is-permutation : 3 -  f  x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((imp3 (first1 last1 cons2 last2 pred)
 			 (declare (type cl:list cons2 last2))
 			 (declare (type cl:function pred))
@@ -2896,7 +2896,7 @@
 					(imp3 itr1 last1 cons2 last2 pred)))))))
 
   ;;IMP; is-permutation : 4 - cci x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((imp4 (cons1 last1 cons2 last2 pred)
 			 (declare (type cl:list cons1 last1 cons2 last2))
 			 (declare (type cl:function pred))
@@ -2939,7 +2939,7 @@
 				(imp4 cons1 last1 cons2 last2 pred))))))
 
   ;;IMP; is-permutation : 5 - cvp x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((imp5 (idx1 last1 buf1 cons2 last2 pred)
 			 (declare (type fixnum idx1 last1))
 			 (declare (type cl:vector buf1))
@@ -3035,7 +3035,7 @@
 					(imp6 itr1 last1 idx2 last2 buf2 pred)))))))
 
   ;;IMP; is-permutation : 7 - cci x cvp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((imp7 (cons1 last1 idx2 last2 buf2 pred)
 			 (declare (type cl:list cons1 last1))
 			 (declare (type fixnum idx2 last2))
@@ -3155,7 +3155,7 @@
 					 (t (_= *dest *itr1) ++itr1 ++itr2 ++dest)))))))))
 
   ;;IMP; set-union : 01 -   i  x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-union-imp-01 (first1 last1 first2 last2 out less-bf)
 	(declare (type cl:list out))
 	(declare (type cl:function less-bf))
@@ -3193,7 +3193,7 @@
 							 (t                           (_= (aref out-buf out-idx) val1) ++itr1 ++itr2 (incf out-idx))))))))))
 
   ;;IMP; set-union : 03 -   i  x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-union-imp-03 (first1 last1 cons2 last2 oitr less-bf)
 	(declare (type cl:list cons2 last2))
 	(declare (type cl:function less-bf))
@@ -3211,7 +3211,7 @@
 							 (t                           (_= *oitr val1) ++itr1 (setf cons2 (cdr cons2)) ++oitr)))))))))
 
   ;;IMP; set-union : 04 -   i  x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-union-imp-04 (first1 last1 cons2 last2 out less-bf)
 	(declare (type cl:list cons2 last2 out))
 	(declare (type cl:function less-bf))
@@ -3229,7 +3229,7 @@
 							 (t                           (_= (car out) val1) ++itr1 (setf cons2 (cdr cons2)) (setf out (cdr out)))))))))))
 
   ;;IMP; set-union : 05 -   i  x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-union-imp-05 (first1 last1 cons2 last2 out-idx out-buf less-bf)
 	(declare (type cl:list cons2 last2))
 	(declare (type fixnum out-idx))
@@ -3267,7 +3267,7 @@
 							 (t                           (_= *oitr val1) ++itr1 (incf idx2) ++oitr)))))))))
 
   ;;IMP; set-union : 07 -   i  x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-union-imp-07 (first1 last1 idx2 last2 buf2 out less-bf)
 	(declare (type fixnum idx2 last2))
 	(declare (type cl:vector buf2))
@@ -3305,7 +3305,7 @@
 							 (t                           (_= (aref out-buf out-idx) val1) ++itr1 (incf idx2) (incf out-idx))))))))))
 
   ;;IMP; set-union : 09 -  cci x  i  x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-union-imp-09 (cons1 last1 first2 last2 oitr less-bf)
 	(declare (type cl:list cons1 last1))
 	(declare (type cl:function less-bf))
@@ -3323,7 +3323,7 @@
 							 (t                           (_= *oitr val1) (setf cons1 (cdr cons1)) ++itr2 ++oitr)))))))))
 
   ;;IMP; set-union : 10 -  cci x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-union-imp-10 (cons1 last1 first2 last2 out less-bf)
 	(declare (type cl:list cons1 last1 out))
 	(declare (type cl:function less-bf))
@@ -3341,7 +3341,7 @@
 							 (t                           (_= (car out) val1) (setf cons1 (cdr cons1)) ++itr2 (setf out (cdr out)))))))))))
 
   ;;IMP; set-union : 11 -  cci x  i  x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-union-imp-11 (cons1 last1 first2 last2 out-idx out-buf less-bf)
 	(declare (type cl:list cons1 last1))
 	(declare (type fixnum out-idx))
@@ -3361,7 +3361,7 @@
 							 (t                           (_= (aref out-buf out-idx) val1) (setf cons1 (cdr cons1)) ++itr2 (incf out-idx))))))))))
 
   ;;IMP; set-union : 12 -  cci x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-union-imp-12 (cons1 last1 cons2 last2 oitr less-bf)
 	(declare (type cl:list cons1 last1 cons2 last2))
 	(declare (type cl:function less-bf))
@@ -3379,7 +3379,7 @@
 							 (t                           (_= *oitr val1) (setf cons1 (cdr cons1)) (setf cons2 (cdr cons2)) ++oitr)))))))))
 
   ;;IMP; set-union : 13 -  cci x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-union-imp-13 (cons1 last1 cons2 last2 out less-bf)
 	(declare (type cl:list cons1 last1 cons2 last2 out))
 	(declare (type cl:function less-bf))
@@ -3396,7 +3396,7 @@
 						 (t                           (_= (car out) val1) (setf cons1 (cdr cons1)) (setf cons2 (cdr cons2)) (setf out (cdr out))))))))))
 
   ;;IMP; set-union : 14 -  cci x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-union-imp-14 (cons1 last1 cons2 last2 out-idx out-buf less-bf)
 	(declare (type cl:list cons1 last1 cons2 last2))
 	(declare (type fixnum out-idx))
@@ -3415,7 +3415,7 @@
 						 (t                           (_= (aref out-buf out-idx) val1) (setf cons1 (cdr cons1)) (setf cons2 (cdr cons2)) (incf out-idx)))))))))
 
   ;;IMP; set-union : 15 -  cci x cvp x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-union-imp-15 (cons1 last1 idx2 last2 buf2 oitr less-bf)
 	(declare (type cl:list cons1 last1))
 	(declare (type fixnum idx2 last2))
@@ -3435,7 +3435,7 @@
 							 (t                           (_= *oitr val1) (setf cons1 (cdr cons1)) (incf idx2) ++oitr)))))))))
 
   ;;IMP; set-union : 16 -  cci x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-union-imp-16 (cons1 last1 idx2 last2 buf2 out less-bf)
 	(declare (type cl:list cons1 last1 out))
 	(declare (type fixnum idx2 last2))
@@ -3455,7 +3455,7 @@
 						 (t                           (_= (car out) val1) (setf cons1 (cdr cons1)) (incf idx2) (setf out (cdr out))))))))))
 
   ;;IMP; set-union : 17 -  cci x cvp x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-union-imp-17 (cons1 last1 idx2 last2 buf2 out-idx out-buf less-bf)
 	(declare (type cl:list cons1 last1))
 	(declare (type fixnum idx2 last2 out-idx))
@@ -3492,7 +3492,7 @@
 							 (t                           (_= *oitr val1) (incf idx1) ++itr2 ++oitr)))))))))
 
   ;;IMP; set-union : 19 -  cvp x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-union-imp-19 (idx1 last1 buf1 first2 last2 out less-bf)
 	(declare (type fixnum idx1 last1))
 	(declare (type cl:vector buf1))
@@ -3530,7 +3530,7 @@
 							 (t                           (_= (aref out-buf out-idx) val1) (incf idx1) ++itr2 (incf out-idx))))))))))
 
   ;;IMP; set-union : 21 -  cvp x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-union-imp-21 (idx1 last1 buf1 cons2 last2 oitr less-bf)
 	(declare (type fixnum idx1 last1))
 	(declare (type cl:vector buf1))
@@ -3550,7 +3550,7 @@
 							 (t                           (_= *oitr val1) (incf idx1) (setf cons2 (cdr cons2)) ++oitr)))))))))
 
   ;;IMP; set-union : 22 -  cvp x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-union-imp-22 (idx1 last1 buf1 cons2 last2 out less-bf)
 	(declare (type fixnum idx1 last1))
 	(declare (type cl:vector buf1))
@@ -3569,7 +3569,7 @@
 						 (t                           (_= (car out) val1) (incf idx1) (setf cons2 (cdr cons2)) (setf out (cdr out))))))))))
 
   ;;IMP; set-union : 23 -  cvp x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-union-imp-23 (idx1 last1 buf1 cons2 last2 out-idx out-buf less-bf)
 	(declare (type fixnum idx1 last1 out-idx))
 	(declare (type cl:vector buf1 out-buf))
@@ -3606,7 +3606,7 @@
 							 (t                           (_= *oitr val1) (incf idx1) (incf idx2) ++oitr)))))))))
 
   ;;IMP; set-union : 25 -  cvp x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-union-imp-25 (idx1 last1 buf1 idx2 last2 buf2 out less-bf)
 	(declare (type fixnum idx1 last1 idx2 last2))
 	(declare (type cl:vector buf1 buf2))
@@ -3662,7 +3662,7 @@
 						(progn ++itr1 ++itr2))))))))
 
   ;;IMP; set-difference : 01 -   i  x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-difference-imp-01 (first1 last1 first2 last2 out less-bf)
 	(declare (type cl:list out))
 	(declare (type cl:function less-bf))
@@ -3710,7 +3710,7 @@
 						(progn ++itr1 ++itr2))))))))
 
   ;;IMP; set-difference : 03 -   i  x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-difference-imp-03 (first1 last1 cons2 last2 oitr less-bf)
 	(declare (type cl:list cons2 last2))
 	(declare (type cl:function less-bf))
@@ -3727,7 +3727,7 @@
 						(progn ++itr1 (setf cons2 (cdr cons2))))))))))
 
   ;;IMP; set-difference : 04 -   i  x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-difference-imp-04 (first1 last1 cons2 last2 out less-bf)
 	(declare (type cl:list cons2 last2 out))
 	(declare (type cl:function less-bf))
@@ -3750,7 +3750,7 @@
 						(progn ++itr1 (setf cons2 (cdr cons2))))))))))
 
   ;;IMP; set-difference : 05 -   i  x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-difference-imp-05 (first1 last1 cons2 last2 out-idx out-buf less-bf)
 	(declare (type cl:list cons2 last2))
 	(declare (type fixnum out-idx))
@@ -3792,7 +3792,7 @@
 						(progn ++itr1 (incf idx2)))))))))
 
   ;;IMP; set-difference : 07 -   i  x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-difference-imp-07 (first1 last1 idx2 last2 buf2 out less-bf)
 	(declare (type fixnum idx2 last2))
 	(declare (type cl:vector buf2))
@@ -3840,7 +3840,7 @@
 						(progn ++itr1 (incf idx2)))))))))
 
   ;;IMP; set-difference : 09 -  cci x  i  x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-difference-imp-09 (cons1 last1 first2 last2 oitr less-bf)
 	(declare (type cl:list cons1 last1))
 	(declare (type cl:function less-bf))
@@ -3863,7 +3863,7 @@
 						(progn (setf cons1 (cdr cons1)) ++itr2))))))))
 
   ;;IMP; set-difference : 10 -  cci x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-difference-imp-10 (cons1 last1 first2 last2 out less-bf)
 	(declare (type cl:list cons1 last1 out))
 	(declare (type cl:function less-bf))
@@ -3886,7 +3886,7 @@
 						(progn (setf cons1 (cdr cons1)) ++itr2))))))))
 
   ;;IMP; set-difference : 11 -  cci x  i  x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-difference-imp-11 (cons1 last1 first2 last2 out-idx out-buf less-bf)
 	(declare (type cl:list cons1 last1))
 	(declare (type fixnum out-idx))
@@ -3911,7 +3911,7 @@
 						(progn (setf cons1 (cdr cons1)) ++itr2))))))))
 
   ;;IMP; set-difference : 12 -  cci x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-difference-imp-12 (cons1 last1 cons2 last2 oitr less-bf)
 	(declare (type cl:list cons1 last1 cons2 last2))
 	(declare (type cl:function less-bf))
@@ -3936,7 +3936,7 @@
 						  (setf cons2 (cdr cons2))))))))))
 
   ;;IMP; set-difference : 13 -  cci x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-difference-imp-13 (cons1 last1 cons2 last2 out less-bf)
 	(declare (type cl:list cons1 last1 cons2 last2 out))
 	(declare (type cl:function less-bf))
@@ -3960,7 +3960,7 @@
 					  (setf cons2 (cdr cons2)))))))))
 
   ;;IMP; set-difference : 14 -  cci x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-difference-imp-14 (cons1 last1 cons2 last2 out-idx out-buf less-bf)
 	(declare (type cl:list cons1 last1 cons2 last2))
 	(declare (type fixnum out-idx))
@@ -3986,7 +3986,7 @@
 					  (setf cons2 (cdr cons2)))))))))
 
   ;;IMP; set-difference : 15 -  cci x cvp x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-difference-imp-15 (cons1 last1 idx2 last2 buf2 oitr less-bf)
 	(declare (type cl:list cons1 last1))
 	(declare (type fixnum idx2 last2))
@@ -4013,7 +4013,7 @@
 						  (incf idx2)))))))))
 
   ;;IMP; set-difference : 16 -  cci x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-difference-imp-16 (cons1 last1 idx2 last2 buf2 out less-bf)
 	(declare (type cl:list cons1 last1 out))
 	(declare (type fixnum idx2 last2))
@@ -4039,7 +4039,7 @@
 					  (incf idx2))))))))
 
   ;;IMP; set-difference : 17 -  cci x cvp x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-difference-imp-17 (cons1 last1 idx2 last2 buf2 out-idx out-buf less-bf)
 	(declare (type cl:list cons1 last1))
 	(declare (type fixnum idx2 last2 out-idx))
@@ -4088,7 +4088,7 @@
 						(progn (incf idx1) ++itr2))))))))
 
   ;;IMP; set-difference : 19 -  cvp x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-difference-imp-19 (idx1 last1 buf1 first2 last2 out less-bf)
 	(declare (type fixnum idx1 last1))
 	(declare (type cl:vector buf1))
@@ -4136,7 +4136,7 @@
 						(progn (incf idx1) ++itr2))))))))
 
   ;;IMP; set-difference : 21 -  cvp x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-difference-imp-21 (idx1 last1 buf1 cons2 last2 oitr less-bf)
 	(declare (type fixnum idx1 last1))
 	(declare (type cl:vector buf1))
@@ -4163,7 +4163,7 @@
 						  (setf cons2 (cdr cons2))))))))))
 
   ;;IMP; set-difference : 22 -  cvp x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-difference-imp-22 (idx1 last1 buf1 cons2 last2 out less-bf)
 	(declare (type fixnum idx1 last1))
 	(declare (type cl:vector buf1))
@@ -4189,7 +4189,7 @@
 					  (setf cons2 (cdr cons2)))))))))
 
   ;;IMP; set-difference : 23 -  cvp x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-difference-imp-23 (idx1 last1 buf1 cons2 last2 out-idx out-buf less-bf)
 	(declare (type fixnum idx1 last1 out-idx))
 	(declare (type cl:list cons2 last2))
@@ -4240,7 +4240,7 @@
 						  (incf idx2)))))))))
 
   ;;IMP; set-difference : 25 -  cvp x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-difference-imp-25 (idx1 last1 src-buf1 idx2 last2 src-buf2 out less-bf)
 	(declare (type fixnum idx1 last1 idx2 last2))
 	(declare (type cl:vector src-buf1 src-buf2))
@@ -4310,7 +4310,7 @@
 					(progn (_= *dest val1) ++itr1 ++itr2 ++dest)))))))
 
   ;;IMP; set-intersection : 01 -   i  x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-intersection-imp-01 (first1 last1 first2 last2 out less-bf)
 	(declare (type cl:list out))
 	(declare (type cl:function less-bf))
@@ -4352,7 +4352,7 @@
 					  ++itr2)))))))
 
   ;;IMP; set-intersection : 03 -   i  x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-intersection-imp-03 (first1 last1 cons2 last2 oitr less-bf)
 	(declare (type cl:list cons2 last2))
 	(declare (type cl:function less-bf))
@@ -4371,7 +4371,7 @@
 					  (setf cons2 (cdr cons2)))))))))
 
   ;;IMP; set-intersection : 04 -   i  x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-intersection-imp-04 (first1 last1 cons2 last2 out less-bf)
 	(declare (type cl:list cons2 last2 out))
 	(declare (type cl:function less-bf))
@@ -4390,7 +4390,7 @@
 					  (setf cons2 (cdr cons2)))))))))
 
   ;;IMP; set-intersection : 05 -   i  x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-intersection-imp-05 (first1 last1 cons2 last2 out-idx out-buf less-bf)
 	(declare (type cl:list cons2 last2))
 	(declare (type fixnum out-idx))
@@ -4430,7 +4430,7 @@
 					  (incf idx2))))))))
 
   ;;IMP; set-intersection : 07 -   i  x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-intersection-imp-07 (first1 last1 idx2 last2 buf2 out less-bf)
 	(declare (type fixnum idx2 last2))
 	(declare (type cl:vector buf2))
@@ -4470,7 +4470,7 @@
 					  (incf idx2))))))))
 
   ;;IMP; set-intersection : 09 -  cci x  i  x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-intersection-imp-09 (cons1 last1 first2 last2 oitr less-bf)
 	(declare (type cl:list cons1 last1))
 	(declare (type cl:function less-bf))
@@ -4489,7 +4489,7 @@
 					  ++itr2)))))))
 
   ;;IMP; set-intersection : 10 -  cci x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-intersection-imp-10 (cons1 last1 first2 last2 out less-bf)
 	(declare (type cl:list cons1 last1 out))
 	(declare (type cl:function less-bf))
@@ -4508,7 +4508,7 @@
 					  ++itr2)))))))
 
   ;;IMP; set-intersection : 11 -  cci x  i  x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-intersection-imp-11 (cons1 last1 first2 last2 out-idx out-buf less-bf)
 	(declare (type cl:list cons1 last1))
 	(declare (type fixnum out-idx))
@@ -4529,7 +4529,7 @@
 					  ++itr2)))))))
 
   ;;IMP; set-intersection : 12 -  cci x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-intersection-imp-12 (cons1 last1 cons2 last2 oitr less-bf)
 	(declare (type cl:list cons1 last1 cons2 last2))
 	(declare (type cl:function less-bf))
@@ -4547,7 +4547,7 @@
 				  (setf cons2 (cdr cons2))))))))
 
   ;;IMP; set-intersection : 13 -  cci x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-intersection-imp-13 (cons1 last1 cons2 last2 out less-bf)
 	(declare (type cl:list cons1 last1 cons2 last2 out))
 	(declare (type cl:function less-bf))
@@ -4565,7 +4565,7 @@
 				  (setf cons2 (cdr cons2))))))))
 
   ;;IMP; set-intersection : 14 -  cci x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-intersection-imp-14 (cons1 last1 cons2 last2 out-idx out-buf less-bf)
 	(declare (type cl:list cons1 last1 cons2 last2))
 	(declare (type fixnum out-idx))
@@ -4585,7 +4585,7 @@
 				  (setf cons2 (cdr cons2))))))))
 
   ;;IMP; set-intersection : 15 -  cci x cvp x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-intersection-imp-15 (cons1 last1 idx2 last2 buffer2 oitr less-bf)
 	(declare (type cl:list cons1 last1))
 	(declare (type fixnum idx2 last2))
@@ -4605,7 +4605,7 @@
 				  (incf idx2)))))))
 
   ;;IMP; set-intersection : 16 -  cci x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-intersection-imp-16 (cons1 last1 idx2 last2 buf2 out less-bf)
 	(declare (type cl:list cons1 last1 out))
 	(declare (type fixnum idx2 last2))
@@ -4625,7 +4625,7 @@
 				  (incf idx2)))))))
 
   ;;IMP; set-intersection : 17 -  cci x cvp x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-intersection-imp-17 (cons1 last1 idx2 last2 src-buf2 out-idx out-buf less-bf)
 	(declare (type cl:list cons1 last1))
 	(declare (type fixnum idx2 last2 out-idx))
@@ -4664,7 +4664,7 @@
 					  ++itr2)))))))
 
   ;;IMP; set-intersection : 19 -  cvp x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-intersection-imp-19 (idx1 last1 buf1 first2 last2 out less-bf)
 	(declare (type fixnum idx1 last1))
 	(declare (type cl:vector buf1))
@@ -4704,7 +4704,7 @@
 					  ++itr2)))))))
 
   ;;IMP; set-intersection : 21 -  cvp x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-intersection-imp-21 (idx1 last1 buf1 cons2 last2 oitr less-bf)
 	(declare (type fixnum idx1 last1))
 	(declare (type cl:vector buf1))
@@ -4724,7 +4724,7 @@
 				  (setf cons2 (cdr cons2))))))))
 
   ;;IMP; set-intersection : 22 -  cvp x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-intersection-imp-22 (idx1 last1 buf1 cons2 last2 out less-bf)
 	(declare (type fixnum idx1 last1))
 	(declare (type cl:vector buf1))
@@ -4744,7 +4744,7 @@
 				  (setf cons2 (cdr cons2))))))))
 
   ;;IMP; set-intersection : 23 -  cvp x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-intersection-imp-23 (idx1 last1 buf1 cons2 last2 out-idx out-buf less-bf)
 	(declare (type fixnum idx1 last1 out-idx))
 	(declare (type cl:vector buf1 out-buf))
@@ -4782,7 +4782,7 @@
 				  (incf idx2)))))))
 
   ;;IMP; set-intersection : 25 -  cvp x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-intersection-imp-25 (idx1 last1 buf1 idx2 last2 buf2 out less-bf)
 	(declare (type fixnum idx1 last1 idx2 last2))
 	(declare (type cl:vector buf1 buf2))
@@ -4842,7 +4842,7 @@
 					 (t ++itr1 ++itr2)))))))))
 
   ;;IMP; set-symmetric-difference : 01 -   i  x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-symmetric-difference-imp-01 (first1 last1 first2 last2 out less-bf)
 	(declare (type cl:list out))
 	(declare (type cl:function less-bf))
@@ -4880,7 +4880,7 @@
 							 (t ++itr1 ++itr2)))))))))
 
   ;;IMP; set-symmetric-difference : 03 -   i  x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-symmetric-difference-imp-03 (first1 last1 cons2 last2 oitr less-bf)
 	(declare (type cl:list cons2 last2))
 	(declare (type cl:function less-bf))
@@ -4898,7 +4898,7 @@
 							 (t ++itr1 (setf cons2 (cdr cons2)))))))))))
 
   ;;IMP; set-symmetric-difference : 04 -   i  x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-symmetric-difference-imp-04 (first1 last1 cons2 last2 out less-bf)
 	(declare (type cl:list cons2 last2 out))
 	(declare (type cl:function less-bf))
@@ -4916,7 +4916,7 @@
 							 (t ++itr1 (setf cons2 (cdr cons2)))))))))))
 
   ;;IMP; set-symmetric-difference : 05 -   i  x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-symmetric-difference-imp-05 (first1 last1 cons2 last2 out-idx out-buf less-bf)
 	(declare (type cl:list cons2 last2))
 	(declare (type fixnum out-idx))
@@ -4954,7 +4954,7 @@
 							 (t ++itr1 (incf idx2))))))))))
 
   ;;IMP; set-symmetric-difference : 07 -   i  x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-symmetric-difference-imp-07 (first1 last1 idx2 last2 src-buf2 out less-bf)
 	(declare (type fixnum idx2 last2))
 	(declare (type cl:vector src-buf2))
@@ -4992,7 +4992,7 @@
 							 (t ++itr1 (incf idx2))))))))))
 
   ;;IMP; set-symmetric-difference : 09 -  cci x  i  x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-symmetric-difference-imp-09 (cons1 last1 first2 last2 oitr less-bf)
 	(declare (type cl:list cons1 last1))
 	(declare (type cl:function less-bf))
@@ -5010,7 +5010,7 @@
 							 (t (setf cons1 (cdr cons1)) ++itr2)))))))))
 
   ;;IMP; set-symmetric-difference : 10 -  cci x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-symmetric-difference-imp-10 (cons1 last1 first2 last2 out less-bf)
 	(declare (type cl:list cons1 last1 out))
 	(declare (type cl:function less-bf))
@@ -5028,7 +5028,7 @@
 							 (t (setf cons1 (cdr cons1)) ++itr2)))))))))
 
   ;;IMP; set-symmetric-difference : 11 -  cci x  i  x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-symmetric-difference-imp-11 (cons1 last1 first2 last2 out-idx out-buf less-bf)
 	(declare (type cl:list cons1 last1))
 	(declare (type fixnum out-idx))
@@ -5048,7 +5048,7 @@
 							 (t (setf cons1 (cdr cons1)) ++itr2)))))))))
 
   ;;IMP; set-symmetric-difference : 12 -  cci x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-symmetric-difference-imp-12 (cons1 last1 cons2 last2 oitr less-bf)
 	(declare (type cl:list cons1 last1 cons2 last2))
 	(declare (type cl:function less-bf))
@@ -5066,7 +5066,7 @@
 							 (t (setf cons1 (cdr cons1)) (setf cons2 (cdr cons2)))))))))))
 
   ;;IMP; set-symmetric-difference : 13 -  cci x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-symmetric-difference-imp-13 (cons1 last1 cons2 last2 out less-bf)
 	(declare (type cl:list cons1 last1 cons2 last2 out))
 	(declare (type cl:function less-bf))
@@ -5083,7 +5083,7 @@
 						 (t (setf cons1 (cdr cons1)) (setf cons2 (cdr cons2))))))))))
 
   ;;IMP; set-symmetric-difference : 14 -  cci x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-symmetric-difference-imp-14 (cons1 last1 cons2 last2 out-idx out-buf less-bf)
 	(declare (type cl:list cons1 last1 cons2 last2))
 	(declare (type fixnum out-idx))
@@ -5102,7 +5102,7 @@
 						 (t (setf cons1 (cdr cons1)) (setf cons2 (cdr cons2))))))))))
 
   ;;IMP; set-symmetric-difference : 15 -  cci x cvp x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-symmetric-difference-imp-15 (cons1 last1 idx2 last2 buf2 oitr less-bf)
 	(declare (type cl:list cons1 last1))
 	(declare (type fixnum idx2 last2))
@@ -5122,7 +5122,7 @@
 							 (t (setf cons1 (cdr cons1)) (incf idx2))))))))))
 
   ;;IMP; set-symmetric-difference : 16 -  cci x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-symmetric-difference-imp-16 (cons1 last1 idx2 last2 buf2 out less-bf)
 	(declare (type cl:list cons1 last1 out))
 	(declare (type fixnum idx2 last2))
@@ -5141,7 +5141,7 @@
 						 (t (setf cons1 (cdr cons1)) (incf idx2)))))))))
 
   ;;IMP; set-symmetric-difference : 17 -  cci x cvp x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-symmetric-difference-imp-17 (cons1 last1 idx2 last2 buf2 out-idx out-buf less-bf)
 	(declare (type cl:list cons1 last1))
 	(declare (type fixnum idx2 last2 out-idx))
@@ -5178,7 +5178,7 @@
 							 (t (incf idx1) ++itr2)))))))))
 
   ;;IMP; set-symmetric-difference : 19 -  cvp x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-symmetric-difference-imp-19 (idx1 last1 src-buf1 first2 last2 out less-bf)
 	(declare (type fixnum idx1 last1))
 	(declare (type cl:vector src-buf1))
@@ -5216,7 +5216,7 @@
 							 (t (incf idx1) ++itr2)))))))))
 
   ;;IMP; set-symmetric-difference : 21 -  cvp x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-symmetric-difference-imp-21 (idx1 last1 buf1 cons2 last2 oitr less-bf)
 	(declare (type fixnum idx1 last1))
 	(declare (type cl:vector buf1))
@@ -5236,7 +5236,7 @@
 							 (t (incf idx1) (setf cons2 (cdr cons2)))))))))))
 
   ;;IMP; set-symmetric-difference : 22 -  cvp x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-symmetric-difference-imp-22 (idx1 last1 buf1 cons2 last2 out less-bf)
 	(declare (type fixnum idx1 last1))
 	(declare (type cl:vector buf1))
@@ -5255,7 +5255,7 @@
 						 (t (incf idx1) (setf cons2 (cdr cons2))))))))))
 
   ;;IMP; set-symmetric-difference : 23 -  cvp x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-symmetric-difference-imp-23 (idx1 last1 buf1 cons2 last2 out-idx out-buf less-bf)
 	(declare (type fixnum idx1 last1 out-idx))
 	(declare (type cl:vector buf1 out-buf))
@@ -5292,7 +5292,7 @@
 							 (t (incf idx1) (incf idx2))))))))))
 
   ;;IMP; set-symmetric-difference : 25 -  cvp x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defun __set-symmetric-difference-imp-25 (idx1 last1 src-buf1 idx2 last2 src-buf2 out less-bf)
 	(declare (type fixnum idx1 last1 idx2 last2))
 	(declare (type cl:vector src-buf1 src-buf2))
@@ -5360,7 +5360,7 @@
 				  (return-from all-of nil)))))))
 
   ;;PTN; all-of : 1 - cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod all-of ((first cons-const-iterator) (last cons-const-iterator) pred)
 	;;(format t "specialized all-of for cons-const-iterator is invoked.~%")
 	(let ((cons1 (__cons-itr-cons first))
@@ -5411,7 +5411,7 @@
 				  (return-from any-of t)))))))
 
   ;;PTN; any-of : 1 - cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod any-of ((first cons-const-iterator) (last cons-const-iterator) pred)
 	;;(format t "specialized any-of for cons-const-iterator is invoked.~%")
 	(let ((cons1 (__cons-itr-cons first))
@@ -5462,7 +5462,7 @@
 				  (return-from none-of nil)))))))
 
   ;;PTN; none-of : 1 - cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod none-of ((first cons-const-iterator) (last cons-const-iterator) pred)
 	;;(format t "specialized none-of for cons-const-iterator is invoked.~%")
 	(let ((cons1 (__cons-itr-cons first))
@@ -5512,7 +5512,7 @@
 				  (funcall fnc *itr)))))))
 
   ;;PTN; for-each : 1 - cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod for-each ((first cons-const-iterator) (last cons-const-iterator) func)
 	;;(format t "specialized for-each for cons-const-iterator is invoked.~%")
 	(let ((fnc (clone func)))
@@ -5558,12 +5558,12 @@
 	(defmethod-overload find ((first input-iterator) (last input-iterator) v)
 	  (__find-imp-0 first last v #'operator_==))
 
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload find ((first input-iterator) (last input-iterator) v eql-bf)
 	  (__find-imp-0 first last v (functor-function (clone eql-bf)))))
 
   ;;PTN; find : 1 - cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__find-imp-1 (cons1 cons2 v eql-bf)
 			 (declare (type cl:function eql-bf))
 			 (for (nil (not (eq cons1 cons2)) (setf cons1 (cdr cons1)) :returns cons2)
@@ -5575,7 +5575,7 @@
 	  (__algo-make-cons-iterator first (__find-imp-1 (__cons-itr-cons first)
 													 (__cons-itr-cons  last) v #'operator_==)))
 
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload find ((first cons-const-iterator) (last cons-const-iterator) v eql-bf)
 	  ;;(format t "specialized find for cons-const-iterator is invoked.~%")
 	  (__algo-make-cons-iterator first
@@ -5598,7 +5598,7 @@
 													 (opr::vec-ptr-index  last)
 													 (opr::vec-ptr-buffer first) v #'operator_==)))
 
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload find ((first const-vector-pointer) (last const-vector-pointer) v eql-bf)
 	  ;;(format t "specialized find for const-vector-pointer is invoked.~%")
 	  (__pointer-check-iterator-range first last)
@@ -5622,7 +5622,7 @@
 		(__find-if-imp-0 first last (functor-function (clone pred)))))
 
   ;;PTN; find-if : 1 - cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod find-if ((first cons-const-iterator) (last cons-const-iterator) pred)
 	;;(format t "specialized find-if for cons-const-iterator is invoked.~%")
 	(if (_== first last)
@@ -5665,7 +5665,7 @@
 				  (return-from find-if-not itr)))))))
 
   ;;PTN; find-if-not : 1 - cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod find-if-not ((first cons-const-iterator) (last cons-const-iterator) pred)
 	;;(format t "specialized find-if-not for cons-const-iterator is invoked.~%")
 	(let ((cons1 (__cons-itr-cons first))
@@ -5717,7 +5717,7 @@
 	(__find-end-imp-0 first1 last1 first2 last2 (functor-function (clone eql-bf))))
 
   ;;PTN; find-end : 1 - cci x  f 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload find-end ((first1 cons-const-iterator)
 								(last1  cons-const-iterator)
 								(first2 forward-iterator) (last2 forward-iterator))
@@ -5726,7 +5726,7 @@
 							   (__find-end-imp-1 (__cons-itr-cons first1)
 												 (__cons-itr-cons  last1) first2 last2 #'operator_==)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload find-end ((first1 cons-const-iterator)
 								(last1  cons-const-iterator)
 								(first2 forward-iterator) (last2 forward-iterator) eql-bf)
@@ -5759,7 +5759,7 @@
 												 first2 last2 (functor-function (clone eql-bf)))))
 
   ;;PTN; find-end : 3 -  f  x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload find-end ((first1 forward-iterator)    (last1 forward-iterator)
 								(first2 cons-const-iterator) (last2 cons-const-iterator))
 	;;(format t "specialized find-end for forward-iterator & cons-const-iterator is invoked.~%")
@@ -5767,7 +5767,7 @@
 					  (__cons-itr-cons first2)
 					  (__cons-itr-cons  last2) #'operator_==))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload find-end ((first1 forward-iterator)    (last1 forward-iterator)
 								(first2 cons-const-iterator) (last2 cons-const-iterator) eql-bf)
 	;;(format t "specialized find-end for forward-iterator & cons-const-iterator is invoked.~%")
@@ -5776,7 +5776,7 @@
 					  (__cons-itr-cons  last2) (functor-function (clone eql-bf))))
 
   ;;PTN; find-end : 4 - cci x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload find-end ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								(first2 cons-const-iterator) (last2 cons-const-iterator))
 	;;(format t "specialized find-end for cons-const-iterator & cons-const-iterator is invoked.~%")
@@ -5786,7 +5786,7 @@
 												 (__cons-itr-cons first2)
 												 (__cons-itr-cons  last2) #'operator_==)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload find-end ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								(first2 cons-const-iterator) (last2 cons-const-iterator) eql-bf)
 	;;(format t "specialized find-end for cons-const-iterator & cons-const-iterator is invoked.~%")
@@ -5797,7 +5797,7 @@
 												 (__cons-itr-cons  last2) (functor-function (clone eql-bf)))))
 
   ;;PTN; find-end : 5 - cvp x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload find-end ((first1 const-vector-pointer) (last1 const-vector-pointer)
 								(first2 cons-const-iterator)  (last2 cons-const-iterator))
 	;;(format t "specialized find-end for const-vector-pointer & cons-const-iterator is invoked.~%")
@@ -5809,7 +5809,7 @@
 												 (__cons-itr-cons     first2)
 												 (__cons-itr-cons      last2) #'operator_==)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload find-end ((first1 const-vector-pointer) (last1 const-vector-pointer)
 								(first2 cons-const-iterator)  (last2 cons-const-iterator) eql-bf)
 	;;(format t "specialized find-end for const-vector-pointer & cons-const-iterator is invoked.~%")
@@ -5841,7 +5841,7 @@
 					  (opr::vec-ptr-buffer first2) (functor-function (clone eql-bf))))
 
   ;;PTN; find-end : 7 - cci x cvp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload find-end ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								(first2 const-vector-pointer) (last2 const-vector-pointer))
 	;;(format t "specialized find-end for cons-const-iterator & const-vector-pointer is invoked.~%")
@@ -5853,7 +5853,7 @@
 												 (opr::vec-ptr-index   last2)
 												 (opr::vec-ptr-buffer first2) #'operator_==)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload find-end ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								(first2 const-vector-pointer) (last2 const-vector-pointer) eql-bf)
 	;;(format t "specialized find-end for cons-const-iterator & const-vector-pointer is invoked.~%")
@@ -5932,7 +5932,7 @@
 		  
 
   ;;PTN; find-first-of : 1 - cci x  f 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__find-first-of-imp-1 (cons1 end1 first2 last2 eql-bf)
 			 (declare (type cl:list cons1 end1))
 			 (declare (type cl:function eql-bf))
@@ -6010,7 +6010,7 @@
 														first2 last2 (functor-function (clone eql-bf))))))
 
   ;;PTN; find-first-of : 3 -  f  x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__find-first-of-imp-3 (first1 last1 cons2 end2 eql-bf)
 			 (declare (type cl:list cons2 end2))
 			 (declare (type cl:function eql-bf))
@@ -6049,7 +6049,7 @@
 
 
   ;;PTN; find-first-of : 4 - cci x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__find-first-of-imp-4 (cons1 end1 cons2 end2 eql-bf)
 			 (declare (type cl:list cons1 end1 cons2 end2))
 			 (declare (type cl:function eql-bf))
@@ -6087,7 +6087,7 @@
 														(__cons-itr-cons  last2) (functor-function (clone eql-bf))))))
 
   ;;PTN; find-first-of : 5 - cvp x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__find-first-of-imp-5 (begin1 end1 buffer1 cons2 end2 eql-bf)
 			 (declare (type fixnum begin1 end1))
 			 (declare (type cl:vector buffer1))
@@ -6174,7 +6174,7 @@
 							 (opr::vec-ptr-buffer first2) (functor-function (clone eql-bf)))))
 
   ;;PTN; find-first-of : 7 - cci x cvp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__find-first-of-imp-7 (cons1 end1 begin2 end2 buffer2 eql-bf)
 			 (declare (type cl:list cons1 end1))
 			 (declare (type fixnum begin2 end2))
@@ -6281,14 +6281,14 @@
 	(__adjacent-find-imp-0 first last (functor-function (clone eql-bf))))
 
   ;;PTN; adjacent-find : 1 - cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload adjacent-find ((first cons-const-iterator) (last cons-const-iterator))
 	;;(format t "specialized adjacent-find for cons-const-iterator is invoked.~%")
 	(__algo-make-cons-iterator first
 							   (__adjacent-find-imp-1 (__cons-itr-cons first)
 													  (__cons-itr-cons  last) #'operator_==)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload adjacent-find ((first cons-const-iterator)
 									 (last  cons-const-iterator) eql-bf)
 	;;(format t "specialized adjacent-find for cons-const-iterator is invoked.~%")
@@ -6339,13 +6339,13 @@
 	(defmethod-overload count ((first input-iterator) (last input-iterator) val)
 	  (__count-imp-0 first last val #'operator_==))
 
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload count ((first input-iterator) (last input-iterator) val eql-bf)
 	  (__count-imp-0 first last val (functor-function (clone eql-bf)))))
 
 
   ;;PTN; count : 1 - cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__count-imp-1 (cons1 cons2 val eql-bf)
 			 (declare (type cl:function eql-bf))
 			 (let ((cnt 0))
@@ -6360,7 +6360,7 @@
 	  (__count-imp-1 (__cons-itr-cons first)
 					 (__cons-itr-cons  last) val #'operator_==))
 
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload count ((first cons-const-iterator)
 							   (last  cons-const-iterator) val eql-bf)
 	  ;;(format t "specialized count for cons-const-iterator is invoked.~%")
@@ -6387,7 +6387,7 @@
 					 (opr::vec-ptr-index  last)
 					 (opr::vec-ptr-buffer first) val #'operator_==))
 
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload count ((first const-vector-pointer)
 							   (last  const-vector-pointer) val eql-bf)
 	  ;;(format t "specialized count for const-vector-pointer is invoked.~%")
@@ -6411,7 +6411,7 @@
 		(__count-if-imp-0 first last (functor-function (clone pred)))))
 
   ;;PTN; count-if : 1 - cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod count-if ((first cons-const-iterator) (last cons-const-iterator) pred)
 	;;(format t "specialized count-if for cons-const-iterator is invoked.~%")
 	(let ((cons1 (__cons-itr-cons first))
@@ -6457,7 +6457,7 @@
 	  (__mismatch-imp-0 first1 last1 first2 (functor-function (clone eql-bf)))))
 
   ;;PTN; mismatch : 1 -  f  x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__mismatch-imp-1 (first1 last1 cns2 eql-bf)
 			 (declare (type cl:list cns2))
 			 (declare (type cl:function eql-bf))
@@ -6510,7 +6510,7 @@
   
 
   ;;PTN; mismatch : 3 - cci x  f
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__mismatch-imp-3 (cns1 last1 first2 eql-bf)
 			 (declare (type cl:list cns1 last1))
 			 (declare (type cl:function eql-bf))
@@ -6535,7 +6535,7 @@
 		(make-pair (__algo-make-cons-iterator first1 cns1) itr2))))
 
   ;;PTN; mismatch : 4 - cci x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__mismatch-imp-4 (cns1 last1 cns2 eql-bf)
 			 (declare (type cl:list cns1 last1 cns2))
 			 (declare (type cl:function eql-bf))
@@ -6564,7 +6564,7 @@
 				   (__algo-make-cons-iterator first2 cns2)))))
 
   ;;PTN; mismatch : 5 - cci x cvp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__mismatch-imp-5 (cns1 last1 idx2 buf2 eql-bf)
 			 (declare (type cl:list cns1 last1))
 			 (declare (type fixnum idx2))
@@ -6627,7 +6627,7 @@
 		(make-pair (__algo-make-vect-iterator first1 idx1) itr2))))
 
   ;;PTN; mismatch : 7 - cvp x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__mismatch-imp-7 (idx1 last1 buf1 cns2 eql-bf)
 			 (declare (type fixnum idx1 last1))
 			 (declare (type cl:vector buf1))
@@ -6726,7 +6726,7 @@
 
 
   ;;PTN; mismatch(0x14) : 1 -  f  x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__mismatch-imp-2 (first1 last1 cons2 last2 eql-bf)
 			 (declare (type cl:list cons2 last2))
 			 (declare (type cl:function eql-bf))
@@ -6787,7 +6787,7 @@
 		(make-pair itr1 (__algo-make-vect-iterator first2 idx2)))))
 
   ;;PTN; mismatch(0x14) : 3 - cci x  f 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__mismatch-imp-3 (cns1 last1 first2 last2 eql-bf)
 			 (declare (type cl:list cns1 last1))
 			 (declare (type cl:function eql-bf))
@@ -6814,7 +6814,7 @@
 		(make-pair (__algo-make-cons-iterator first1 cns1) itr2))))
 
   ;;PTN; mismatch(0x14) : 4 - cci x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__mismatch-imp-4 (cns1 last1 cns2 last2 eql-bf)
 			 (declare (type cl:list cns1 last1 cns2 last2))
 			 (declare (type cl:function eql-bf))
@@ -6846,7 +6846,7 @@
 				   (__algo-make-cons-iterator first2 cns2)))))
 
   ;;PTN; mismatch(0x14) : 5 - cci x cvp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__mismatch-imp-5 (cns1 last1 idx2 last2 buf2 eql-bf)
 			 (declare (type cl:list cns1 last1))
 			 (declare (type fixnum idx2 last2))
@@ -6915,7 +6915,7 @@
 		(make-pair (__algo-make-vect-iterator first1 idx1) itr2))))
 
   ;;PTN; mismatch(0x14) : 7 - cvp x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__mismatch-imp-7 (idx1 last1 buffer1 cns2 last2 eql-bf)
 			 (declare (type fixnum  idx1 last1))
 			 (declare (type cl:vector buffer1))
@@ -7024,7 +7024,7 @@
 	  (__equal-imp-0 first1 last1 first2 (functor-function (clone eql-bf)))))
 
   ;;PTN; equal : 1 - cci x  i 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__equal-imp-1 (cons1 cons2 first2 eql-bf)
 			 (declare (type cl:list cons1 cons2))
 			 (declare (type cl:function eql-bf))
@@ -7072,7 +7072,7 @@
 					 (opr::vec-ptr-buffer first1) first2 (functor-function (clone eql-bf)))))
 
   ;;PTN; equal : 3 -  i  x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__equal-imp-3 (first1 last1 cns2 eql-bf)
 			 (declare (type cl:list     cns2))
 			 (declare (type cl:function eql-bf))
@@ -7092,7 +7092,7 @@
 	  (__equal-imp-3 first1 last1 (__cons-itr-cons first2) (functor-function (clone eql-bf)))))
 
   ;;PTN; equal : 4 - cci x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__equal-imp-4 (cons1 end1 cons2 eql-bf)
 			 (declare (type cl:list     cons1 end1 cons2))
 			 (declare (type cl:function eql-bf))
@@ -7115,7 +7115,7 @@
 					 (__cons-itr-cons first2) (functor-function (clone eql-bf)))))
 
   ;;PTN; equal : 5 - cvp x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__equal-imp-5 (idx1 last1 buffer1 cons2 eql-bf)
 			 (declare (type fixnum idx1 last1))
 			 (declare (type cl:vector   buffer1))
@@ -7167,7 +7167,7 @@
 					 (opr::vec-ptr-buffer first2) (functor-function (clone eql-bf)))))
 
   ;;PTN; equal : 7 - cci x cvp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__equal-imp-7 (cons1 end1 idx2 buffer2 eql-bf)
 			 (declare (type fixnum      idx2))
 			 (declare (type cl:list     cons1 end1))
@@ -7273,7 +7273,7 @@
 
 
   ;;PTN; equal(0x14) : 1 - cci x  i 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__equal-imp-1 (cons1 end1 first2 last2 eql-bf)
 			 (declare (type cl:list     cons1 end1))
 			 (declare (type cl:function eql-bf))
@@ -7335,7 +7335,7 @@
 
 
   ;;PTN; equal(0x14) : 3 -  i  x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__equal-imp-3 (first1 last1 cons2 end2 eql-bf)
 			 (declare (type cl:list cons2 end2))
 			 (declare (type cl:function eql-bf))
@@ -7361,7 +7361,7 @@
 
 
   ;;PTN; equal(0x14) : 4 - cci x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__equal-imp-4 (cons1 end1 cons2 end2 eql-bf)
 			 (declare (type cl:list cons1 end1 cons2 end2))
 			 (declare (type cl:function eql-bf))
@@ -7388,7 +7388,7 @@
 
 
   ;;PTN; equal(0x14) : 5 - cvp x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__equal-imp-5 (idx1 last1 buffer1 cons2 end2 eql-bf)
 			 (declare (type fixnum idx1 last1))
 			 (declare (type cl:vector buffer1))
@@ -7451,7 +7451,7 @@
 
 
   ;;PTN; equal(0x14) : 7 - cci x cvp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__equal-imp-7 (cons1 end1 idx2 last2 buffer2 eql-bf)
 			 (declare (type cl:list cons1 end1))
 			 (declare (type fixnum idx2 last2))
@@ -7533,14 +7533,14 @@
 	(__is-permutation-imp-0a first1 last1 first2 (functor-function (clone pred))))
 
   ;;PTN; is-permutation : 1 - cci x  f
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload is-permutation ((first1 cons-const-iterator)
 									  (last1  cons-const-iterator) (first2 forward-iterator))
 	;;(format t "specialized is-permutation for cons-const-iterator & forward-iterator is invoked.~%")
 	(__is-permutation-imp-1a (__cons-itr-cons first1)
 							 (__cons-itr-cons  last1) first2 #'operator_==))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload is-permutation ((first1 cons-const-iterator)
 									  (last1  cons-const-iterator) (first2 forward-iterator) eql-bf)
 	;;(format t "specialized is-permutation for cons-const-iterator & forward-iterator is invoked.~%")
@@ -7563,14 +7563,14 @@
 							 (opr::vec-ptr-buffer first1) first2 (functor-function (clone eql-bf))))
 
   ;;PTN; is-permutation : 3 -  f  x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload is-permutation ((first1 forward-iterator)
 									  (last1  forward-iterator) (first2 cons-const-iterator))
 	;;(format t "specialized is-permutation for forward-iterator & cons-const-iterator is invoked.~%")
 	(__is-permutation-imp-3a first1 last1
 							 (__cons-itr-cons first2) #'operator_==))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload is-permutation ((first1 forward-iterator)
 									  (last1  forward-iterator) (first2 cons-const-iterator) eql-bf)
 	;;(format t "specialized is-permutation for forward-iterator & cons-const-iterator is invoked.~%")
@@ -7578,7 +7578,7 @@
 							 (__cons-itr-cons first2) (functor-function (clone eql-bf))))
 
   ;;PTN; is-permutation : 4 - cci x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload is-permutation ((first1 cons-const-iterator)
 									  (last1  cons-const-iterator) (first2 cons-const-iterator))
 	;;(format t "specialized is-permutation for cons-const-iterator & cons-const-iterator is invoked.~%")
@@ -7586,7 +7586,7 @@
 							 (__cons-itr-cons  last1)
 							 (__cons-itr-cons first2) #'operator_==))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload is-permutation ((first1 cons-const-iterator)
 									  (last1  cons-const-iterator) (first2 cons-const-iterator) eql-bf)
 	;;(format t "specialized is-permutation for cons-const-iterator & cons-const-iterator is invoked.~%")
@@ -7595,7 +7595,7 @@
 							 (__cons-itr-cons first2) (functor-function (clone eql-bf))))
 
   ;;PTN; is-permutation : 5 - cvp x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload is-permutation ((first1 const-vector-pointer)
 									  (last1  const-vector-pointer) (first2 cons-const-iterator))
 	;;(format t "specialized is-permutation for const-vector-pointer & cons-const-iterator is invoked.~%")
@@ -7605,7 +7605,7 @@
 							 (opr::vec-ptr-buffer first1)
 							 (__cons-itr-cons     first2) #'operator_==))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload is-permutation ((first1 const-vector-pointer)
 									  (last1  const-vector-pointer) (first2 cons-const-iterator) eql-bf)
 	;;(format t "specialized is-permutation for const-vector-pointer & cons-const-iterator is invoked.~%")
@@ -7631,7 +7631,7 @@
 							 (opr::vec-ptr-buffer first2) (functor-function (clone eql-bf))))
 
   ;;PTN; is-permutation : 7 - cci x cvp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload is-permutation ((first1 cons-const-iterator)
 									  (last1  cons-const-iterator) (first2 const-vector-pointer))
 	;;(format t "specialized is-permutation for cons-const-iterator & const-vector-pointer is invoked.~%")
@@ -7640,7 +7640,7 @@
 							 (opr::vec-ptr-index  first2)
 							 (opr::vec-ptr-buffer first2) #'operator_==))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload is-permutation ((first1 cons-const-iterator)
 									  (last1  cons-const-iterator) (first2 const-vector-pointer) eql-bf)
 	;;(format t "specialized is-permutation for cons-const-iterator & const-vector-pointer is invoked.~%")
@@ -7699,14 +7699,14 @@
 	(__is-permutation-imp-0c first1 last1 first2 last2 (functor-function (clone pred))))
 
   ;;PTN; is-permutation(0x14) : 1 - cci x  f
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload is-permutation ((first1 cons-const-iterator) (last1 cons-const-iterator)
 									  (first2 forward-iterator) (last2 forward-iterator))
 	;;(format t "specialized is-permutation for cons-const-iterator & forward-iterator is invoked.~%")
 	(__is-permutation-imp-1b (__cons-itr-cons first1)
 							 (__cons-itr-cons  last1) first2 last2 #'operator_==))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload is-permutation ((first1 cons-const-iterator) (last1 cons-const-iterator)
 									  (first2 forward-iterator) (last2 forward-iterator) eql-bf)
 	;;(format t "specialized is-permutation for cons-const-iterator & forward-iterator is invoked.~%")
@@ -7731,7 +7731,7 @@
 							 (opr::vec-ptr-buffer first1) first2 last2 (functor-function (clone eql-bf))))
 
   ;;PTN; is-permutation(0x14) : 3 -  f  x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload is-permutation ((first1 forward-iterator) (last1 forward-iterator)
 									  (first2 cons-const-iterator) (last2 cons-const-iterator))
 	;;(format t "specialized is-permutation for forward-iterator & cons-const-iterator is invoked.~%")
@@ -7739,7 +7739,7 @@
 							 (__cons-itr-cons first2)
 							 (__cons-itr-cons  last2) #'operator_==))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload is-permutation ((first1 forward-iterator) (last1 forward-iterator)
 									  (first2 cons-const-iterator) (last2 cons-const-iterator) eql-bf)
 	;;(format t "specialized is-permutation for forward-iterator & cons-const-iterator is invoked.~%")
@@ -7748,7 +7748,7 @@
 							 (__cons-itr-cons  last2) (functor-function (clone eql-bf))))
 
   ;;PTN; is-permutation(0x14) : 4 - cci x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload is-permutation ((first1 cons-const-iterator) (last1 cons-const-iterator)
 									  (first2 cons-const-iterator) (last2 cons-const-iterator))
 	;;(format t "specialized is-permutation for cons-const-iterator & cons-const-iterator is invoked.~%")
@@ -7757,7 +7757,7 @@
 							 (__cons-itr-cons first2)
 							 (__cons-itr-cons  last2) #'operator_==))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload is-permutation ((first1 cons-const-iterator) (last1 cons-const-iterator)
 									  (first2 cons-const-iterator) (last2 cons-const-iterator) eql-bf)
 	;;(format t "specialized is-permutation for cons-const-iterator & cons-const-iterator is invoked.~%")
@@ -7767,7 +7767,7 @@
 							 (__cons-itr-cons  last2) (functor-function (clone eql-bf))))
 
   ;;PTN; is-permutation(0x14) : 5 - cvp x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload is-permutation ((first1 const-vector-pointer) (last1 const-vector-pointer)
 									  (first2 cons-const-iterator) (last2 cons-const-iterator))
 	;;(format t "specialized is-permutation for const-vector-pointer & cons-const-iterator is invoked.~%")
@@ -7778,7 +7778,7 @@
 							 (__cons-itr-cons first2)
 							 (__cons-itr-cons  last2) #'operator_==))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload is-permutation ((first1 const-vector-pointer) (last1 const-vector-pointer)
 									  (first2 cons-const-iterator) (last2 cons-const-iterator) eql-bf)
 	;;(format t "specialized is-permutation for const-vector-pointer & cons-const-iterator is invoked.~%")
@@ -7809,7 +7809,7 @@
 							 (opr::vec-ptr-buffer first2) (functor-function (clone eql-bf))))
 
   ;;PTN; is-permutation(0x14) : 7 - cci x cvp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload is-permutation ((first1 cons-const-iterator) (last1 cons-const-iterator)
 									  (first2 const-vector-pointer) (last2 const-vector-pointer))
 	;;(format t "specialized is-permutation for cons-const-iterator & const-vector-pointer is invoked.~%")
@@ -7820,7 +7820,7 @@
 							 (opr::vec-ptr-index  last2)
 							 (opr::vec-ptr-buffer first2) #'operator_==))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload is-permutation ((first1 cons-const-iterator) (last1 cons-const-iterator)
 									  (first2 const-vector-pointer) (last2 const-vector-pointer) eql-bf)
 	;;(format t "specialized is-permutation for cons-const-iterator & const-vector-pointer is invoked.~%")
@@ -7898,7 +7898,7 @@
 
 
   ;;PTN; search : 1 -  f  x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__search-imp-1 (first1 last1 cons2 end2 eql-bf)
 			 (declare (type cl:list cons2 end2))
 			 (declare (type cl:function eql-bf))
@@ -7986,7 +7986,7 @@
 					  (opr::vec-ptr-buffer first2) (functor-function (clone eql-bf)))))
 
   ;;PTN; search : 3 - cci x  f
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__search-imp-3 (cons1 end1 first2 last2 eql-bf)
 			 (declare (type cl:list cons1 end1))
 			 (declare (type cl:function eql-bf))
@@ -8030,7 +8030,7 @@
 
 
   ;;PTN; search : 4 - cci x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__search-imp-4 (cons1 end1 cons2 end2 eql-bf)
 			 (declare (type cl:list cons1 end1 cons2 end2))
 			 (declare (type cl:function eql-bf))
@@ -8076,7 +8076,7 @@
 												 (__cons-itr-cons  last2) (functor-function (clone eql-bf))))))
 
   ;;PTN; search : 5 - cci x cvp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__search-imp-5 (cons1 end1 begin2 end2 buffer2 eql-bf)
 			 (declare (type cl:list cons1 end1))
 			 (declare (type fixnum begin2 end2))
@@ -8173,7 +8173,7 @@
 
 
   ;;PTN; search : 7 - cvp x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__search-imp-7 (begin1 end1 buffer1 cons2 end2 eql-bf)
 			 (declare (type fixnum begin1 end1))
 			 (declare (type cl:vector buffer1))
@@ -8320,7 +8320,7 @@
 
   
   ;;PTN; search-n : 1 - cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__search-n-imp-1 (cons1 cons2 cnt val eql-bf)
 			 (declare (type fixnum cnt))
 			 (declare (type cl:list cons1 cons2))
@@ -8430,7 +8430,7 @@
 	(__copy-imp-0 first last result))
 
   ;;PTN; copy : 1 - cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod copy ((first cons-const-iterator) (last cons-const-iterator) (result output-iterator))
 	;;(format t "specialized copy for cons-const-iterator & output-iterator is invoked.~%")
 	(__copy-imp-1 (__cons-itr-cons first) (__cons-itr-cons last) (clone result)))
@@ -8444,14 +8444,14 @@
 				  (opr::vec-ptr-buffer first) (clone result)))
 
   ;;PTN; copy : 3 -  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod copy ((first input-iterator) (last input-iterator) (result cons-iterator))
 	;;(format t "specialized copy for input-iterator & cons-iterator is invoked.~%")
 	(__algo-make-cons-iterator result
 							   (__copy-imp-3 first last (__cons-itr-cons result))))
 
   ;;PTN; copy : 4 - cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod copy ((first cons-const-iterator) (last cons-const-iterator) (result cons-iterator))
 	;;(format t "specialized copy for cons-const-iterator & cons-iterator is invoked.~%")
 	(__algo-make-cons-iterator result
@@ -8459,7 +8459,7 @@
 											 (__cons-itr-cons  last) (__cons-itr-cons result))))
 
   ;;PTN; copy : 5 - cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod copy ((first const-vector-pointer) (last const-vector-pointer) (result cons-iterator))
 	;;(format t "specialized copy for const-vector-pointer & cons-iterator is invoked.~%")
 	(__pointer-check-iterator-range first last)
@@ -8477,7 +8477,7 @@
 											 (opr::vec-ptr-buffer result))))
 
   ;;PTN; copy : 7 - cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod copy ((first cons-const-iterator) (last cons-const-iterator) (result vector-pointer))
 	;;(format t "specialized copy for cons-const-iterator & vector-pointer is invoked.~%")
 	(__algo-make-vect-iterator result
@@ -8518,7 +8518,7 @@
 				(_= *dest *itr))))))
 
   ;;PTN; copy-n : 1 - cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod copy-n ((first cons-const-iterator) (n integer) (result output-iterator))
 	;;(format t "specialized copy-n for cons-const-iterator & output-iterator is invoked.~%")
 	(__error-unless-non-negative-fixnum copy-n n)
@@ -8544,7 +8544,7 @@
 			(_= *oitr (aref buffer idx))))))
 
   ;;PTN; copy-n : 3 -  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod copy-n ((first input-iterator) (n integer) (result cons-iterator))
 	;;(format t "specialized copy-n for input-iterator & cons-iterator is invoked.~%")
 	(__error-unless-non-negative-fixnum copy-n n)
@@ -8557,7 +8557,7 @@
 			(_= (car dest) *itr)))))
 
   ;;PTN; copy-n : 4 - cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod copy-n ((first cons-const-iterator) (n integer) (result cons-iterator))
 	;;(format t "specialized copy-n for cons-const-iterator & cons-iterator is invoked.~%")
 	(__error-unless-non-negative-fixnum copy-n n)
@@ -8570,7 +8570,7 @@
 		(_= (car dest) (car cns)))))
 
   ;;PTN; copy-n : 5 - cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod copy-n ((first const-vector-pointer) (n integer) (result cons-iterator))
 	;;(format t "specialized copy-n for const-vector-pointer & cons-iterator is invoked.~%")
 	(__error-unless-non-negative-fixnum copy-n n)
@@ -8598,7 +8598,7 @@
 			(_= (aref out-buf out-idx) *itr)))))
 
   ;;PTN; copy-n : 7 - cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod copy-n ((first cons-const-iterator) (n integer) (result vector-pointer))
 	;;(format t "specialized copy-n for cons-const-iterator & vector-pointer is invoked.~%")
 	(__error-unless-non-negative-fixnum copy-n n)
@@ -8653,7 +8653,7 @@
 					  ++dest))))))))
 
   ;;PTN; copy-if : 1 - cci x  o
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod copy-if ((first cons-const-iterator)
 					  (last  cons-const-iterator) (result output-iterator) pred)
 	;;(format t "specialized copy-if for cons-const-iterator & output-iterator is invoked.~%")
@@ -8696,7 +8696,7 @@
 					  ++dest))))))))
 
   ;;PTN; copy-if : 3 -  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod copy-if ((first input-iterator)
 					  (last  input-iterator) (result cons-iterator) pred)
 	;;(format t "specialized copy-if for input-iterator & cons-iterator is invoked.~%")
@@ -8715,7 +8715,7 @@
 
 
   ;;PTN; copy-if : 4 - cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod copy-if ((first cons-const-iterator)
 					  (last  cons-const-iterator) (result cons-iterator) pred)
 	;;(format t "specialized copy-if for cons-const-iterator & cons-iterator is invoked.~%")
@@ -8736,7 +8736,7 @@
 
 
   ;;PTN; copy-if : 5 - cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod copy-if ((first const-vector-pointer)
 					  (last  const-vector-pointer) (result cons-iterator) pred)
 	;;(format t "specialized copy-if for const-vector-pointer & cons-iterator is invoked.~%")
@@ -8780,7 +8780,7 @@
 
 
   ;;PTN; copy-if : 7 - cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod copy-if ((first cons-const-iterator)
 					  (last  cons-const-iterator) (result vector-pointer) pred)
 	;;(format t "specialized copy-if for cons-const-iterator & vector-pointer is invoked.~%")
@@ -8887,7 +8887,7 @@
 	(__move-imp-0 first last result))
 
   ;;PTN; move : 1 - cci x  o
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload move ((first cons-const-iterator)
 							(last  cons-const-iterator) (result output-iterator))
 	(__move-imp-1 (__cons-itr-cons first)
@@ -8903,7 +8903,7 @@
 				  (opr::vec-ptr-buffer first) (clone result)))
 
   ;;PTN; move : 3 -  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload move ((first input-iterator)
 							(last  input-iterator) (result cons-iterator))
 	;;(format t "specialized move for input-iterator & cons-iterator is invoked.~%")
@@ -8912,7 +8912,7 @@
 											 (__cons-itr-cons result))))
 
   ;;PTN; move : 4 - cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload move ((first cons-const-iterator)
 							(last  cons-const-iterator) (result cons-iterator))
 	;;(format t "specialized move for const-vector-pointer & cons-iterator is invoked.~%")
@@ -8922,7 +8922,7 @@
 											 (__cons-itr-cons result))))
 
   ;;PTN; move : 5 - cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload move ((first const-vector-pointer)
 							(last  const-vector-pointer) (result cons-iterator))
 	;;(format t "specialized move for const-vector-pointer & cons-iterator is invoked.~%")
@@ -8943,7 +8943,7 @@
 											 (opr::vec-ptr-buffer result))))
 
   ;;PTN; move : 7 - cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload move ((first cons-const-iterator)
 							(last  cons-const-iterator) (result vector-pointer))
 	;;(format t "specialized move for const-vector-pointer & vector-pointer is invoked.~%")
@@ -9050,7 +9050,7 @@
   (defmethod-overload swap ((str1 cl:string) (str2 cl:string))
 	(values str2 str1)))
 
-#+cl-stl-extra
+#-cl-stl-noextra
 (locally (declare (optimize speed))
   (labels ((imp (lst1 lst2)
 			 (stl:swap (car lst1) (car lst2))
@@ -9089,7 +9089,7 @@
 	(__swap-ranges-imp-0 first1 last1 first2))
 
   ;;PTN; swap-ranges : 1 -  ci x  f 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod swap-ranges ((first1 cons-iterator)
 						  (last1  cons-iterator) (first2 forward-iterator))
 	;;(format t "specialized swap-ranges for cons-iterator & forward-iterator is invoked.~%")
@@ -9106,7 +9106,7 @@
 						 (opr::vec-ptr-buffer first1) first2))
 
   ;;PTN; swap-ranges : 3 -  f  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod swap-ranges ((first1 forward-iterator)
 						  (last1  forward-iterator) (first2 cons-iterator))
 	;;(format t "specialized swap-ranges for forward-iterator & cons-iterator is invoked.~%")
@@ -9116,7 +9116,7 @@
 
 
   ;;PTN; swap-ranges : 4 -  ci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod swap-ranges ((first1 cons-iterator)
 						  (last1  cons-iterator) (first2 cons-iterator))
 	;;(format t "specialized swap-ranges for cons-iterator & cons-iterator is invoked.~%")
@@ -9126,7 +9126,7 @@
 													(__cons-itr-cons first2))))
 
   ;;PTN; swap-ranges : 5 -  vp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod swap-ranges ((first1 vector-pointer)
 						  (last1  vector-pointer) (first2 cons-iterator))
 	;;(format t "specialized swap-ranges for vector-pointer & cons-iterator is invoked.~%")
@@ -9147,7 +9147,7 @@
 													(opr::vec-ptr-buffer first2))))
 
   ;;PTN; swap-ranges : 7 -  ci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod swap-ranges ((first1 cons-iterator)
 						  (last1  cons-iterator) (first2 vector-pointer))
 	;;(format t "specialized swap-ranges for cons-iterator & vector-pointer is invoked.~%")
@@ -9184,7 +9184,7 @@
 	  nil))
 
   ;;PTN; iter-swap : 1 -  ci <- commented out.
-  ;;#+(or cl-stl-extra (not cl-stl-0x98))
+  ;;#-(and cl-stl-noextra cl-stl-0x98)
   ;;(defmethod iter-swap ((a cons-iterator) (b cons-iterator))
   ;;  (with-operators
   ;;	(swap *a *b)
@@ -9219,7 +9219,7 @@
 
 
   ;;PTN; transform : 1 - cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload transform ((first cons-const-iterator)
 								 (last  cons-const-iterator) (result output-iterator) op)
 	;;(format t "specialized transform for cons-const-iterator & output-iterator is invoked.~%" ')
@@ -9257,7 +9257,7 @@
 
 
   ;;PTN; transform : 3 -  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload transform ((first input-iterator)
 								 (last  input-iterator) (result cons-iterator) op)
 	;;(format t "specialized transform for input-iterator & cons-iterator is invoked.~%" ')
@@ -9274,7 +9274,7 @@
 
 
   ;;PTN; transform : 4 - cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload transform ((first cons-const-iterator)
 								 (last  cons-const-iterator) (result cons-iterator) op)
 	;;(format t "specialized transform for cons-const-iterator & cons-iterator is invoked.~%" ')
@@ -9294,7 +9294,7 @@
 
   
   ;;PTN; transform : 5 - cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload transform ((first const-vector-pointer)
 								 (last  const-vector-pointer) (result cons-iterator) op)
 	;;(format t "specialized transform for const-vector-pointer & cons-iterator is invoked.~%" ')
@@ -9334,7 +9334,7 @@
 
 
   ;;PTN; transform : 7 - cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload transform ((first cons-const-iterator)
 								 (last  cons-const-iterator) (result vector-pointer) op)
 	;;(format t "specialized transform for cons-const-iterator & vector-pointer is invoked.~%" ')
@@ -9399,7 +9399,7 @@
 				(_= *dest (funcall bf *itr1 *itr2)))))))
 
   ;;PTN; transform : 01 -  i  x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload transform ((first1 input-iterator) (last1 input-iterator)
 								 (first2 input-iterator) (result cons-iterator) binary-op)
 	;;(format t "specialized transform for input-iterator & input-iterator & cons-iterator is invoked.~%")
@@ -9438,7 +9438,7 @@
 				(_= (aref out-buf out-idx) (funcall bf *itr1 *itr2)))))))
 
   ;;PTN; transform : 03 -  i  x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload transform ((first1 input-iterator) (last1 input-iterator)
 								 (first2 cons-const-iterator) (result output-iterator) binary-op)
 	;;(format t "specialized transform for input-iterator & cons-const-iterator & output-iterator is invoked.~%")
@@ -9454,7 +9454,7 @@
 				   (_= *oitr (funcall bf *itr1 (car cons2))))))))
 
   ;;PTN; transform : 04 -  i  x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload transform ((first1 input-iterator) (last1 input-iterator)
 								 (first2 cons-const-iterator) (result cons-iterator) binary-op)
 	;;(format t "specialized transform for input-iterator & cons-const-iterator & cons-iterator is invoked.~%")
@@ -9473,7 +9473,7 @@
 				(_= (car out) (funcall bf *itr1 (car cons2))))))))
 
   ;;PTN; transform : 05 -  i  x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload transform ((first1 input-iterator) (last1 input-iterator)
 								 (first2 cons-const-iterator) (result vector-pointer) binary-op)
 	;;(format t "specialized transform for input-iterator & cons-const-iterator & vector-pointer is invoked.~%")
@@ -9512,7 +9512,7 @@
 				   (_= *oitr (funcall bf *itr1 (aref buf2 idx2))))))))
 
   ;;PTN; transform : 07 -  i  x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload transform ((first1 input-iterator) (last1 input-iterator)
 								 (first2 const-vector-pointer) (result cons-iterator) binary-op)
 	;;(format t "specialized transform for input-iterator & const-vector-pointer & cons-iterator is invoked.~%")
@@ -9555,7 +9555,7 @@
 				(_= (aref out-buf out-idx) (funcall bf *itr1 (aref buf2 idx2))))))))
 
   ;;PTN; transform : 09 - cci x  i  x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload transform ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								 (first2 input-iterator) (result output-iterator) binary-op)
 	;;(format t "specialized transform2 for cons-const-iterator & input-iterator & output-iterator is invoked.~%")
@@ -9573,7 +9573,7 @@
 				  (_= *oitr (funcall bf (car cons1) *itr2))))))))
 
   ;;PTN; transform : 10 - cci x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload transform ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								 (first2 input-iterator) (result cons-iterator) binary-op)
 	;;(format t "specialized transform2 for cons-const-iterator & input-iterator & cons-iterator is invoked.~%")
@@ -9594,7 +9594,7 @@
 				  (_= (car out) (funcall bf (car cons1) *itr2))))))))
 
   ;;PTN; transform : 11 - cci x  i  x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload transform ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								 (first2 input-iterator) (result vector-pointer) binary-op)
 	;;(format t "specialized transform2 for cons-const-iterator & input-iterator & vector-pointer is invoked.~%")
@@ -9617,7 +9617,7 @@
 				  (_= (aref out-buf out-idx) (funcall bf (car cons1) *itr2))))))))
 
   ;;PTN; transform : 12 - cci x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload transform ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								 (first2 cons-const-iterator) (result output-iterator) binary-op)
 	;;(format t "specialized transform2 for cons-const-iterator & cons-const-iterator & output-iterator is invoked.~%")
@@ -9637,7 +9637,7 @@
 				  (_= *oitr (funcall bf (car cons1) (car cons2)))))))))
 
   ;;PTN; transform : 13 - cci x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload transform ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								 (first2 cons-const-iterator) (result cons-iterator) binary-op)
 	;;(format t "specialized transform2 for cons-const-iterator & cons-const-iterator & cons-iterator is invoked.~%")
@@ -9659,7 +9659,7 @@
 				  (_= (car out) (funcall bf (car cons1) (car cons2)))))))))
 
   ;;PTN; transform : 14 - cci x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload transform ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								 (first2 cons-const-iterator) (result vector-pointer) binary-op)
 	;;(format t "specialized transform2 for cons-const-iterator & cons-const-iterator & vector-pointer is invoked.~%")
@@ -9684,7 +9684,7 @@
 				  (_= (aref out-buf out-idx) (funcall bf (car cons1) (car cons2)))))))))
 
   ;;PTN; transform : 15 - cci x cvp x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload transform ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								 (first2 const-vector-pointer) (result output-iterator) binary-op)
 	;;(format t "specialized transform2 for cons-const-iterator & const-vector-pointer & output-iterator is invoked.~%")
@@ -9705,7 +9705,7 @@
 				  (_= *oitr (funcall bf (car cons1) (aref buf2 idx2)))))))))
 
   ;;PTN; transform : 16 - cci x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload transform ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								 (first2 const-vector-pointer) (result cons-iterator) binary-op)
 	;;(format t "specialized transform2 for cons-const-iterator & const-vector-pointer & cons-iterator is invoked.~%")
@@ -9730,7 +9730,7 @@
 				  (_= (car out) (funcall bf (car cons1) (aref buf2 idx2)))))))))
 
   ;;PTN; transform : 17 - cci x cvp x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload transform ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								 (first2 const-vector-pointer) (result vector-pointer) binary-op)
 	;;(format t "specialized transform2 for cons-const-iterator & const-vector-pointer & vector-pointer is invoked.~%")
@@ -9774,7 +9774,7 @@
 				  (_= *oitr (funcall bf (aref buf1 idx1) *itr2))))))))
 
   ;;PTN; transform : 19 - cvp x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload transform ((first1 const-vector-pointer) (last1 const-vector-pointer)
 								 (first2 input-iterator) (result cons-iterator) binary-op)
 	;;(format t "specialized transform2 for const-vector-pointer & input-iterator & cons-iterator is invoked.~%")
@@ -9822,7 +9822,7 @@
 				  (_= (aref out-buf out-idx) (funcall bf (aref buf1 idx1) *itr2))))))))
 
   ;;PTN; transform : 21 - cvp x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload transform ((first1 const-vector-pointer) (last1 const-vector-pointer)
 								 (first2 cons-const-iterator) (result output-iterator) binary-op)
 	;;(format t "specialized transform2 for const-vector-pointer & cons-const-iterator & output-iterator is invoked.~%")
@@ -9844,7 +9844,7 @@
 				  (_= *oitr (funcall bf (aref buf1 idx1) (car cons2)))))))))
 
   ;;PTN; transform : 22 - cvp x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload transform ((first1 const-vector-pointer) (last1 const-vector-pointer)
 								 (first2 cons-const-iterator) (result cons-iterator) binary-op)
 	;;(format t "specialized transform2 for const-vector-pointer & cons-const-iterator & cons-iterator is invoked.~%")
@@ -9868,7 +9868,7 @@
 				  (_= (car out) (funcall bf (aref buf1 idx1) (car cons2)))))))))
 
   ;;PTN; transform : 23 - cvp x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload transform ((first1 const-vector-pointer) (last1 const-vector-pointer)
 								 (first2 cons-const-iterator) (result vector-pointer) binary-op)
 	;;(format t "specialized transform2 for const-vector-pointer & cons-const-iterator & vector-pointer is invoked.~%")
@@ -9916,7 +9916,7 @@
 				  (_= *oitr (funcall bf (aref buf1 idx1) (aref buf2 idx2)))))))))
 
   ;;PTN; transform : 25 - cvp x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload transform ((first1 const-vector-pointer) (last1 const-vector-pointer)
 								 (first2 const-vector-pointer) (result cons-iterator) binary-op)
 	;;(format t "specialized transform2 for const-vector-pointer & const-vector-pointer & cons-iterator is invoked.~%")
@@ -9990,14 +9990,14 @@
 							   (last  forward-iterator) old-val new-val)
 	(__replace-imp-0 first last old-val new-val #'operator_==))
 
-  #+cl-stl-extra
+  #-cl-stl-noextra
   (defmethod-overload replace ((first forward-iterator)
 							   (last  forward-iterator) old-val new-val eql-bf)
 	(__replace-imp-0 first last old-val new-val (functor-function (clone eql-bf)))))
 
 
   ;;PTN; replace : 1 -  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__replace-imp-1 (cons1 cons2 old-val new-val eql-bf)
 			 (declare (type cl:function eql-bf))
 			 (for (nil (not (eq cons1 cons2)) (setf cons1 (cdr cons1)))
@@ -10010,7 +10010,7 @@
 	  (__replace-imp-1 (__cons-itr-cons first)
 					   (__cons-itr-cons  last) old-val new-val #'operator_==))
 
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload replace ((first cons-iterator)
 								 (last  cons-iterator) old-val new-val eql-bf)
 	  ;;(format t "specialized replace for cons-iterator is invoked.~%")
@@ -10036,7 +10036,7 @@
 					   (opr::vec-ptr-index  last)
 					   (opr::vec-ptr-buffer first) old-val new-val #'operator_==))
 
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload replace ((first vector-pointer)
 								 (last  vector-pointer) old-val new-val eql-bf)
 	  ;;(format t "specialized replace for vector-pointer is invoked.~%")
@@ -10066,7 +10066,7 @@
 				  (_= *itr new-val)))))))
 
   ;;PTN; replace-if : 1 -  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod replace-if ((first cons-iterator) (last cons-iterator) pred new-val)
 	  ;;(format t "specialized replace-if for cons-iterator is invoked.~%")
 	  (let ((cons1 (__cons-itr-cons first))
@@ -10123,14 +10123,14 @@
 									  (last   input-iterator) (result output-iterator) old-val new-val)
 	  (__replace-copy-imp-0 first last result old-val new-val #'operator_==))
 
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload replace-copy ((first  input-iterator)
 									  (last   input-iterator) (result output-iterator) old-val new-val eql-bf)
 	  (__replace-copy-imp-0 first last result old-val new-val (functor-function (clone eql-bf)))))
 
 
   ;;PTN; replace-copy : 1 -  cci x  o
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__replace-copy-imp-1 (cons1 end1 oitr old-val new-val eql-bf)
 			 (declare (type cl:list cons1 end1))
 			 (declare (type cl:function eql-bf))
@@ -10147,7 +10147,7 @@
 	  (__replace-copy-imp-1 (__cons-itr-cons first)
 							(__cons-itr-cons  last) (clone result) old-val new-val #'operator_==))
 
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload replace-copy ((first cons-const-iterator)
 									  (last  cons-const-iterator) (result output-iterator) old-val new-val eql-bf)
 	  ;;(format t "specialized replace-copy for cons-const-iterator & output-iterator is invoked.~%")
@@ -10176,7 +10176,7 @@
 							(opr::vec-ptr-index  last)
 							(opr::vec-ptr-buffer first) (clone result) old-val new-val #'operator_==))
 
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload replace-copy ((first const-vector-pointer)
 									  (last  const-vector-pointer) (result output-iterator) old-val new-val eql-bf)
 	  ;;(format t "specialized replace-copy for const-vector-pointer & output-iterator is invoked.~%")
@@ -10188,7 +10188,7 @@
 
 
   ;;PTN; replace-copy : 3 -   i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__replace-copy-imp-3 (first last out-cns old-val new-val eql-bf)
 			 (declare (type cl:list out-cns))
 			 (declare (type cl:function eql-bf))
@@ -10206,7 +10206,7 @@
 								 (__replace-copy-imp-3 first last
 													   (__cons-itr-cons result) old-val new-val #'operator_==)))
 
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload replace-copy ((first  input-iterator)
 									  (last   input-iterator) (result cons-iterator) old-val new-val eql-bf)
 	  ;;(format t "specialized replace-copy for input-iterator & cons-iterator is invoked.~%")
@@ -10216,7 +10216,7 @@
 
 
   ;;PTN; replace-copy : 4 -  cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__replace-copy-imp-4 (cons1 end1 out-cns old-val new-val eql-bf)
 			 (declare (type cl:list cons1 end1 out-cns))
 			 (declare (type cl:function eql-bf))
@@ -10235,7 +10235,7 @@
 													   (__cons-itr-cons   last)
 													   (__cons-itr-cons result) old-val new-val #'operator_==)))
 
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload replace-copy ((first  cons-const-iterator)
 									  (last   cons-const-iterator) (result cons-iterator) old-val new-val eql-bf)
 	  ;;(format t "specialized replace-copy for cons-const-iterator & cons-iterator is invoked.~%")
@@ -10247,7 +10247,7 @@
 
 
   ;;PTN; replace-copy : 5 -  cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__replace-copy-imp-5 (idx1 idx2 src-buf out-cns old-val new-val eql-bf)
 			 (declare (type fixnum idx1 idx2))
 			 (declare (type cl:list out-cns))
@@ -10269,7 +10269,7 @@
 													   (opr::vec-ptr-buffer first)
 													   (__cons-itr-cons result) old-val new-val #'operator_==)))
 
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload replace-copy ((first  const-vector-pointer)
 									  (last   const-vector-pointer) (result cons-iterator) old-val new-val eql-bf)
 	  ;;(format t "specialized replace-copy for const-vector-pointer & cons-iterator is invoked.~%")
@@ -10302,7 +10302,7 @@
 													   (opr::vec-ptr-index  result)
 													   (opr::vec-ptr-buffer result) old-val new-val #'operator_==)))
 
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload replace-copy ((first  input-iterator)
 									  (last   input-iterator) (result vector-pointer) old-val new-val eql-bf)
 	  ;;(format t "specialized replace-copy for input-iterator & vector-pointer is invoked.~%")
@@ -10314,7 +10314,7 @@
 
 
   ;;PTN; replace-copy : 7 -  cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__replace-copy-imp-7 (cons1 end1 out-idx out-buf old-val new-val eql-bf)
 			 (declare (type cl:list cons1 end1))
 			 (declare (type fixnum out-idx))
@@ -10335,7 +10335,7 @@
 													   (opr::vec-ptr-index  result)
 													   (opr::vec-ptr-buffer result) old-val new-val #'operator_==)))
 
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload replace-copy ((first  cons-const-iterator)
 									  (last   cons-const-iterator) (result vector-pointer) old-val new-val eql-bf)
 	  ;;(format t "specialized replace-copy for cons-const-iterator & vector-pointer is invoked.~%")
@@ -10368,7 +10368,7 @@
 													   (opr::vec-ptr-index  result)
 													   (opr::vec-ptr-buffer result) old-val new-val #'operator_==)))
 
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload replace-copy ((first  const-vector-pointer)
 									  (last   const-vector-pointer) (result vector-pointer) old-val new-val eql-bf)
 	  ;;(format t "specialized replace-copy for const-vector-pointer & vector-pointer is invoked.~%")
@@ -10406,7 +10406,7 @@
 
 
   ;;PTN; replace-copy-if : 1 -  cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod replace-copy-if ((first cons-const-iterator)
 							  (last  cons-const-iterator) (result output-iterator) pred new-val)
 	;;(format t "specialized replace-copy-if for cons-const-iterator & output-iterator is invoked.~%")
@@ -10446,7 +10446,7 @@
 
 
   ;;PTN; replace-copy-if : 3 -   i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod replace-copy-if ((first input-iterator)
 							  (last  input-iterator) (result cons-iterator) pred new-val)
 	;;(format t "specialized replace-copy-if for input-iterator & cons-iterator is invoked.~%")
@@ -10465,7 +10465,7 @@
 
 
   ;;PTN; replace-copy-if : 4 -  cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod replace-copy-if ((first cons-const-iterator)
 							  (last  cons-const-iterator) (result cons-iterator) pred new-val)
 	;;(format t "specialized replace-copy-if for cons-const-iterator & cons-iterator is invoked.~%")
@@ -10488,7 +10488,7 @@
 
   
   ;;PTN; replace-copy-if : 5 -  cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod replace-copy-if ((first const-vector-pointer)
 							  (last  const-vector-pointer) (result cons-iterator) pred new-val)
 	;;(format t "specialized replace-copy-if for const-vector-pointer & cons-iterator is invoked.~%")
@@ -10532,7 +10532,7 @@
 
 
   ;;PTN; replace-copy-if : 7 -  cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod replace-copy-if ((first cons-const-iterator)
 							  (last  cons-const-iterator) (result vector-pointer) pred new-val)
 	;;(format t "specialized replace-copy-if for cons-const-iterator & vector-pointer is invoked.~%")
@@ -10596,7 +10596,7 @@
 			  (_= *itr value)))))
 
   ;;PTN; fill : 1 -   ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload fill ((first cons-iterator) (last cons-iterator) v)
 	;;(format t "specialized fill for cons-iterator is invoked.~%")
 	(let ((cons1 (__cons-itr-cons first))
@@ -10637,7 +10637,7 @@
 			  (_= *itr v)))))
 
   ;;PTN; fill-n : 1 -   ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod fill-n ((first cons-iterator) (n integer) v)
 	;;(format t "specialized fill-n for cons-iterator is invoked.~%")
 	(declare (type fixnum n))
@@ -10685,7 +10685,7 @@
 				(_= *itr (funcall gen)))))))
 
   ;;PTN; generate : 1 -   ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod generate ((first cons-iterator) (last cons-iterator) gen)
 	;; MEMO : in 0x98, gen must be function...
 	;;(format t "specialized generate for cons-iterator is invoked.~%")
@@ -10741,7 +10741,7 @@
 				(_= *itr (funcall gen)))))))
 
   ;;PTN; generate-n : 1 -   ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod generate-n ((first cons-iterator) (n integer) gen)
 	;; MEMO : gen must be function in 0x98.
 	;;(format t "specialized generate-n for cons-iterator is invoked.~%")
@@ -10818,12 +10818,12 @@
 	(defmethod-overload remove ((first forward-iterator) (last forward-iterator) value)
 	  (__remove-imp-0 first last value #'operator_==))
 
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload remove ((first forward-iterator) (last forward-iterator) value eql-bf)
 	  (__remove-imp-0 first last value eql-bf)))
 
   ;;PTN; remove : 1 -   ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__remove-imp-1 (cons1 cons2 val eql-bf)
 			 (declare (type cl:list cons1 cons2))
 			 (if (eq cons1 cons2)
@@ -10853,7 +10853,7 @@
 								 (__remove-imp-1 (__cons-itr-cons first)
 												 (__cons-itr-cons  last) val #'operator_==)))
 
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload remove ((first cons-iterator) (last cons-iterator) val eql-bf)
 	  ;;(format t "specialized remove for cons-iterator is invoked.~%")
 	  (__algo-make-cons-iterator first
@@ -10893,7 +10893,7 @@
 												 (opr::vec-ptr-index  last)
 												 (opr::vec-ptr-buffer first) val #'operator_==)))
 
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload remove ((first vector-pointer) (last vector-pointer) val eql-bf)
 	  ;;(format t "specialized remove for vector-pointer is invoked.~%")
 	  (__pointer-check-iterator-range first last)
@@ -10936,7 +10936,7 @@
 						  ++out)))))))))
 
   ;;PTN; remove-if : 1 -   ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload remove-if ((first cons-iterator) (last cons-iterator) pred)
 	;;(format t "specialized remove-if for cons-iterator is invoked.~%" ')
 	(let ((cons1 (__cons-itr-cons first))
@@ -11022,14 +11022,14 @@
 									 (last  input-iterator) (result output-iterator) val)
 	  (__remove-copy-imp-0 first last result val #'operator_==))
 
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload remove-copy ((first input-iterator)
 									 (last  input-iterator) (result output-iterator) val eql-bf)
 	  (__remove-copy-imp-0 first last result val (functor-function (clone eql-bf)))))
 
 
   ;;PTN; remove-copy : 1 -  cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__remove-copy-imp-1 (cons1 end1 oitr val eql-bf)
 			 (declare (type cl:list cons1 end1))
 			 (declare (type cl:function eql-bf))
@@ -11045,7 +11045,7 @@
 	  ;;(format t "specialized remove-copy for cons-const-iterator & output-iterator is invoked.~%")
 	  (__remove-copy-imp-1 (__cons-itr-cons first)
 						   (__cons-itr-cons  last) (clone result) val #'operator_==))
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload remove-copy ((first cons-const-iterator)
 									 (last  cons-const-iterator) (result output-iterator) val eql-bf)
 	  ;;(format t "specialized remove-copy for cons-const-iterator & output-iterator is invoked.~%")
@@ -11073,7 +11073,7 @@
 						   (opr::vec-ptr-index  last)
 						   (opr::vec-ptr-buffer first)
 						   (clone result) val #'operator_==))
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload remove-copy ((first const-vector-pointer)
 									 (last  const-vector-pointer) (result output-iterator) val eql-bf)
 	  ;;(format t "specialized remove-copy for const-vector-pointer & output-iterator is invoked.~%")
@@ -11085,7 +11085,7 @@
 
   
   ;;PTN; remove-copy : 3 -   i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__remove-copy-imp-3 (first1 last1 out val eql-bf)
 			 (declare (type cl:list out))
 			 (declare (type cl:function eql-bf))
@@ -11102,7 +11102,7 @@
 	  (__algo-make-cons-iterator result
 								 (__remove-copy-imp-3 first last
 													  (__cons-itr-cons result) val #'operator_==)))
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload remove-copy ((first input-iterator)
 									 (last  input-iterator) (result cons-iterator) val eql-bf)
 	  ;;(format t "specialized remove-copy for input-iterator & cons-iterator is invoked.~%")
@@ -11112,7 +11112,7 @@
 													  val (functor-function (clone eql-bf))))))
   
   ;;PTN; remove-copy : 4 -  cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__remove-copy-imp-4 (cons1 end1 out val eql-bf)
 			 (declare (type cl:list cons1 end1 out))
 			 (declare (type cl:function eql-bf))
@@ -11129,7 +11129,7 @@
 								 (__remove-copy-imp-4 (__cons-itr-cons  first)
 													  (__cons-itr-cons   last)
 													  (__cons-itr-cons result) val #'operator_==)))
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload remove-copy ((first cons-const-iterator)
 									 (last  cons-const-iterator) (result cons-iterator) val eql-bf)
 	  ;;(format t "specialized remove-copy for cons-const-iterator & cons-iterator is invoked.~%")
@@ -11140,7 +11140,7 @@
 													  val (functor-function (clone eql-bf))))))
   
   ;;PTN; remove-copy : 5 -  cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__remove-copy-imp-5 (idx1 idx2 src-buf out val eql-bf)
 			 (declare (type fixnum idx1 idx2))
 			 (declare (type cl:vector src-buf))
@@ -11161,7 +11161,7 @@
 													  (opr::vec-ptr-index  last)
 													  (opr::vec-ptr-buffer first)
 													  (__cons-itr-cons    result) val #'operator_==)))
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload remove-copy ((first const-vector-pointer)
 									 (last  const-vector-pointer) (result cons-iterator) val eql-bf)
 	  ;;(format t "specialized remove-copy for const-vector-pointer & cons-iterator is invoked.~%")
@@ -11193,7 +11193,7 @@
 													  (opr::vec-ptr-index  result)
 													  (opr::vec-ptr-buffer result) val #'operator_==)))
 
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload remove-copy ((first input-iterator)
 									 (last  input-iterator) (result vector-pointer) val eql-bf)
 	  ;;(format t "specialized remove-copy for input-iterator & vector-pointer is invoked.~%")
@@ -11204,7 +11204,7 @@
 													  val (functor-function (clone eql-bf))))))
   
   ;;PTN; remove-copy : 7 -  cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__remove-copy-imp-7 (cons1 end1 out-idx out-buf val eql-bf)
 			 (declare (type cl:list cons1 end1))
 			 (declare (type fixnum out-idx))
@@ -11225,7 +11225,7 @@
 													  (opr::vec-ptr-index  result)
 													  (opr::vec-ptr-buffer result) val #'operator_==)))
 
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload remove-copy ((first cons-const-iterator)
 									 (last  cons-const-iterator) (result vector-pointer) val eql-bf)
 	  ;;(format t "specialized remove-copy for cons-const-iterator & vector-pointer is invoked.~%")
@@ -11257,7 +11257,7 @@
 													  (opr::vec-ptr-index  result)
 													  (opr::vec-ptr-buffer result) val #'operator_==)))
 
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload remove-copy ((first const-vector-pointer)
 									 (last  const-vector-pointer) (result vector-pointer) val eql-bf)
 	  ;;(format t "specialized remove-copy for const-vector-pointer & vector-pointer is invoked.~%")
@@ -11293,7 +11293,7 @@
 
 
   ;;PTN; remove-copy-if : 1 -  cci x  o
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod remove-copy-if ((first cons-const-iterator)
 							 (last  cons-const-iterator) (result output-iterator) pred)
 	;;(format t "specialized remove-copy-if for cons-const-iterator & output-iterator is invoked.~%")
@@ -11336,7 +11336,7 @@
 					  ++oitr))))))))
 
   ;;PTN; remove-copy-if : 3 -   i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod remove-copy-if ((first input-iterator) (last input-iterator) (result cons-iterator) pred)
 	;;(format t "specialized remove-copy-if for input-iterator & cons-iterator is invoked.~%")
 	(with-operators
@@ -11355,7 +11355,7 @@
 
 
   ;;PTN; remove-copy-if : 4 -  cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod remove-copy-if ((first cons-const-iterator)
 							 (last  cons-const-iterator) (result cons-iterator) pred)
 	;;(format t "specialized remove-copy-if for cons-const-iterator & cons-iterator is invoked.~%")
@@ -11377,7 +11377,7 @@
 
   
   ;;PTN; remove-copy-if : 5 -  cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod remove-copy-if ((first const-vector-pointer)
 							 (last  const-vector-pointer) (result cons-iterator) pred)
 	;;(format t "specialized remove-copy-if for const-vector-pointer & cons-iterator is invoked.~%")
@@ -11422,7 +11422,7 @@
 
 
   ;;PTN; remove-copy-if : 7 -  cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod remove-copy-if ((first cons-const-iterator)
 							 (last  cons-const-iterator) (result vector-pointer) pred)
 	;;(format t "specialized remove-copy-if for cons-const-iterator & vector-pointer is invoked.~%")
@@ -11506,7 +11506,7 @@
 	  (__unique-imp-0 first last pred)))
 
   ;;PTN; unique : 1 -   ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__unique-imp-1 (cons1 cons2 eql-bf)
 			 (declare (type cl:list cons1 cons2))
 			 (if (eq cons1 cons2)
@@ -11617,7 +11617,7 @@
 
 
   ;;PTN; unique-copy : 1 -  cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__unique-copy-imp-1 (cons1 end1 oitr eql-bf)
 			 (declare (type cl:list cons1 end1))
 			 (declare (type cl:function eql-bf))
@@ -11681,7 +11681,7 @@
 						   (clone result) (functor-function (clone pred)))))
 
   ;;PTN; unique-copy : 3 -   i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__unique-copy-imp-3 (first last out eql-bf)
 			 (declare (type cl:list out))
 			 (declare (type cl:function eql-bf))
@@ -11714,7 +11714,7 @@
 
 
   ;;PTN; unique-copy : 4 -  cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__unique-copy-imp-4 (cons1 cons2 out eql-bf)
 			 (declare (type cl:list cons1 cons2 out))
 			 (declare (type cl:function eql-bf))
@@ -11747,7 +11747,7 @@
 
   
   ;;PTN; unique-copy : 5 -  cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__unique-copy-imp-5 (idx1 idx2 src-buf out eql-bf)
 			 (declare (type fixnum idx1 idx2))
 			 (declare (type cl:vector src-buf))
@@ -11822,7 +11822,7 @@
 
 
   ;;PTN; unique-copy : 7 -  cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__unique-copy-imp-7 (cons1 cons2 out-idx out-buf eql-bf)
 			 (declare (type cl:list cons1 cons2))
 			 (declare (type fixnum out-idx))
@@ -11957,7 +11957,7 @@
 			(_= *oitr (aref buf idx2))))))
 
   ;;PTN; reverse-copy : 2 -   b  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod reverse-copy ((first bidirectional-iterator)
 						   (last  bidirectional-iterator) (result cons-iterator))
 	;;(format t "specialized reverse-copy for bidirectional-iterator & cons-iterator is invoked.~%")
@@ -11970,7 +11970,7 @@
 			(_= (car out) *itr)))))
 
   ;;PTN; reverse-copy : 3 -  cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod reverse-copy ((first const-vector-pointer)
 						   (last  const-vector-pointer) (result cons-iterator))
 	;;(format t "specialized reverse-copy for const-vector-pointer & cons-iterator is invoked.~%")
@@ -12126,7 +12126,7 @@
 								   (rotatef len1 len2)))))))))))
 
   ;;PTN; rotate : 1 -   ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod rotate ((first cons-iterator) (middle cons-iterator) (last cons-iterator))
 	(format t "specialized rotate for cons-iterator is invoked.~%")
 	(let ((cons (__rotate-imp-1 (__cons-itr-cons  first)
@@ -12166,7 +12166,7 @@
 	(__copy-imp-0 first middle (__copy-imp-0 middle last result)))
 
   ;;PTN; rotate-copy : 1 -  cci x  o
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod rotate-copy ((first  cons-const-iterator)
 						  (middle cons-const-iterator)
 						  (last   cons-const-iterator) (result output-iterator))
@@ -12192,7 +12192,7 @@
 					(__copy-imp-2 idx2 idx3 buffer (clone result)))))
 
   ;;PTN; rotate-copy : 3 -   f  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod rotate-copy ((first  forward-iterator)
 						  (middle forward-iterator)
 						  (last   forward-iterator) (result cons-iterator))
@@ -12203,7 +12203,7 @@
 														   (__cons-itr-cons result)))))
   
   ;;PTN; rotate-copy : 4 -  cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod rotate-copy ((first  cons-const-iterator)
 						  (middle cons-const-iterator)
 						  (last   cons-const-iterator) (result cons-iterator))
@@ -12217,7 +12217,7 @@
 															 (__cons-itr-cons result))))))
   
   ;;PTN; rotate-copy : 5 -  cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod rotate-copy ((first  const-vector-pointer)
 						  (middle const-vector-pointer)
 						  (last   const-vector-pointer) (result cons-iterator))
@@ -12245,7 +12245,7 @@
 	  (__algo-make-vect-iterator result out-idx)))
 
   ;;PTN; rotate-copy : 7 -  cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod rotate-copy ((first  cons-const-iterator)
 						  (middle cons-const-iterator)
 						  (last   cons-const-iterator) (result vector-pointer))
@@ -12365,7 +12365,7 @@
 				(imp-t @~first))))))
 
   ;;PTN; is-partitioned : 1 -  cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod is-partitioned ((first cons-const-iterator) (last cons-const-iterator) pred)
 	;;(format t "specialized is-partitioned for cons-const-iterator is invoked.~%")
 	(let ((cons1 (__cons-itr-cons first))
@@ -12464,7 +12464,7 @@
 							(swap *itr1 *itr2))))))))))
 
   ;;PTN; partition : 1 -   ci  [0x11]
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod partition ((first cons-iterator) (last cons-iterator) pred)
 	;;(format t "specialized partition for cons-iterator is invoked.~%")
 	(labels ((__partition-imp-1 (cons1 cons2)
@@ -12591,7 +12591,7 @@
 
 
   ;;PTN; partition-copy : 01 -   i  x  o  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod partition-copy ((first input-iterator) (last input-iterator)
 							 (result-true output-iterator) (result-false cons-iterator) pred-uf)
 	;;(format t "specialized partition-copy for input-iterator & output-iterator & cons-iterator is invoked.~%")
@@ -12632,7 +12632,7 @@
 					  (progn (_= (aref nil-buf nil-idx) val) (incf nil-idx)))))))))
 
   ;;PTN; partition-copy : 03 -   i  x  ci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod partition-copy ((first input-iterator) (last input-iterator)
 							 (result-true cons-iterator) (result-false output-iterator) pred-uf)
 	;;(format t "specialized partition-copy for input-iterator & cons-iterator & output-iterator is invoked.~%")
@@ -12652,7 +12652,7 @@
 					  (progn (_= *nil-out    val) ++nil-out))))))))
 
   ;;PTN; partition-copy : 04 -   i  x  ci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod partition-copy ((first input-iterator) (last input-iterator)
 							 (result-true cons-iterator) (result-false cons-iterator) pred-uf)
 	;;(format t "specialized partition-copy for input-iterator & cons-iterator & cons-iterator is invoked.~%")
@@ -12673,7 +12673,7 @@
 					  (progn (_= (car nil-cns) val) (setf nil-cns (cdr nil-cns))))))))))
 
   ;;PTN; partition-copy : 05 -   i  x  ci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod partition-copy ((first input-iterator) (last input-iterator)
 							 (result-true cons-iterator) (result-false vector-pointer) pred-uf)
 	;;(format t "specialized partition-copy for input-iterator & cons-iterator & vector-pointer is invoked.~%")
@@ -12718,7 +12718,7 @@
 					  (progn (_= *nil-out            val) ++nil-out))))))))
 
   ;;PTN; partition-copy : 07 -   i  x  vp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod partition-copy ((first input-iterator) (last input-iterator)
 							 (result-true vector-pointer) (result-false cons-iterator) pred-uf)
 	;;(format t "specialized partition-copy for input-iterator & vector-pointer & cons-iterator is invoked.~%")
@@ -12765,7 +12765,7 @@
 					  (progn (_= (aref nil-buf nil-idx) val) (incf nil-idx)))))))))
   
   ;;PTN; partition-copy : 09 -  cci x  o  x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod partition-copy ((first cons-const-iterator) (last cons-const-iterator)
 							 (result-true output-iterator) (result-false output-iterator) pred-uf)
 	;;(format t "specialized partition-copy for cons-const-iterator & output-iterator & output-iterator is invoked.~%")
@@ -12786,7 +12786,7 @@
 						 (progn (_= *nil-out val) ++nil-out)))))))))
 
   ;;PTN; partition-copy : 10 -  cci x  o  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod partition-copy ((first cons-const-iterator) (last cons-const-iterator)
 							 (result-true output-iterator) (result-false cons-iterator) pred-uf)
 	;;(format t "specialized partition-copy for cons-const-iterator & output-iterator & cons-iterator is invoked.~%")
@@ -12809,7 +12809,7 @@
 						(progn (_= (car nil-cns) val) (setf nil-cns (cdr nil-cns)))))))))))
 
   ;;PTN; partition-copy : 11 -  cci x  o  x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod partition-copy ((first cons-const-iterator) (last cons-const-iterator)
 							 (result-true output-iterator) (result-false vector-pointer) pred-uf)
 	;;(format t "specialized partition-copy for cons-const-iterator & output-iterator & vector-pointer is invoked.~%")
@@ -12834,7 +12834,7 @@
 						(progn (_= (aref nil-buf nil-idx) val) (incf nil-idx))))))))))
 
   ;;PTN; partition-copy : 12 -  cci x  ci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod partition-copy ((first cons-const-iterator) (last cons-const-iterator)
 							 (result-true cons-iterator) (result-false output-iterator) pred-uf)
 	;;(format t "specialized partition-copy for cons-const-iterator & cons-iterator & output-iterator is invoked.~%")
@@ -12857,7 +12857,7 @@
 						(progn (_= *nil-out    val) ++nil-out)))))))))
 
   ;;PTN; partition-copy : 13 -  cci x  ci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod partition-copy ((first cons-const-iterator) (last cons-const-iterator)
 							 (result-true cons-iterator) (result-false cons-iterator) pred-uf)
 	;;(format t "specialized partition-copy for cons-const-iterator & cons-iterator & cons-iterator is invoked.~%")
@@ -12881,7 +12881,7 @@
 						(progn (_= (car nil-cns) val) (setf nil-cns (cdr nil-cns)))))))))))
 
   ;;PTN; partition-copy : 14 -  cci x  ci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod partition-copy ((first cons-const-iterator) (last cons-const-iterator)
 							 (result-true cons-iterator) (result-false vector-pointer) pred-uf)
 	;;(format t "specialized partition-copy for cons-const-iterator & cons-iterator & vector-pointer is invoked.~%")
@@ -12908,7 +12908,7 @@
 						(progn (_= (aref nil-buf nil-idx) val) (incf nil-idx))))))))))
 
   ;;PTN; partition-copy : 15 -  cci x  vp x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod partition-copy ((first cons-const-iterator) (last cons-const-iterator)
 							 (result-true vector-pointer) (result-false output-iterator) pred-uf)
 	;;(format t "specialized partition-copy for cons-const-iterator & vector-pointer & output-iterator is invoked.~%")
@@ -12933,7 +12933,7 @@
 						(progn (_= *nil-out           val) ++nil-out)))))))))
 
   ;;PTN; partition-copy : 16 -  cci x  vp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod partition-copy ((first cons-const-iterator) (last cons-const-iterator)
 							 (result-true vector-pointer) (result-false cons-iterator) pred-uf)
 	;;(format t "specialized partition-copy for cons-const-iterator & vector-pointer & cons-iterator is invoked.~%")
@@ -12960,7 +12960,7 @@
 						(progn (_= (car  nil-cns)     val) (setf nil-cns (cdr nil-cns)))))))))))
 
   ;;PTN; partition-copy : 17 -  cci x  vp x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod partition-copy ((first cons-const-iterator) (last cons-const-iterator)
 							 (result-true vector-pointer) (result-false vector-pointer) pred-uf)
 	;;(format t "specialized partition-copy for cons-const-iterator & vector-pointer & vector-pointer is invoked.~%")
@@ -13011,7 +13011,7 @@
 
   
   ;;PTN; partition-copy : 19 -  cvp x  o  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod partition-copy ((first const-vector-pointer) (last const-vector-pointer)
 							 (result-true output-iterator) (result-false cons-iterator) pred-uf)
 	;;(format t "specialized partition-copy for const-vector-pointer & output-iterator & cons-iterator is invoked.~%")
@@ -13063,7 +13063,7 @@
 						(progn (_= (aref nil-buf nil-idx) val) (incf nil-idx))))))))))
   
   ;;PTN; partition-copy : 21 -  cvp x  ci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod partition-copy ((first const-vector-pointer) (last const-vector-pointer)
 							 (result-true cons-iterator) (result-false output-iterator) pred-uf)
 	;;(format t "specialized partition-copy for const-vector-pointer & cons-iterator & output-iterator is invoked.~%")
@@ -13089,7 +13089,7 @@
 						(progn (_= *nil-out    val) ++nil-out)))))))))
 
   ;;PTN; partition-copy : 22 -  cvp x  ci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod partition-copy ((first const-vector-pointer) (last const-vector-pointer)
 							 (result-true cons-iterator) (result-false cons-iterator) pred-uf)
 	;;(format t "specialized partition-copy for const-vector-pointer & cons-iterator & cons-iterator is invoked.~%")
@@ -13116,7 +13116,7 @@
 						(progn (_= (car nil-cns) val) (setf nil-cns (cdr nil-cns)))))))))))
 
   ;;PTN; partition-copy : 23 -  cvp x  ci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod partition-copy ((first const-vector-pointer) (last const-vector-pointer)
 							 (result-true cons-iterator) (result-false vector-pointer) pred-uf)
 	;;(format t "specialized partition-copy for const-vector-pointer & cons-iterator & vector-pointer is invoked.~%")
@@ -13171,7 +13171,7 @@
 						(progn (_= *nil-out           val) ++nil-out)))))))))
 
   ;;PTN; partition-copy : 25 -  cvp x  vp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod partition-copy ((first const-vector-pointer) (last const-vector-pointer)
 							 (result-true vector-pointer) (result-false cons-iterator) pred-uf)
 	;;(format t "specialized partition-copy for const-vector-pointer & vector-pointer & cons-iterator is invoked.~%")
@@ -13257,7 +13257,7 @@
 					(setf dist (- dist half 1)))))))))
 
   ;;PTN; partition-point : 1 -  cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod partition-point ((first cons-const-iterator) (last cons-const-iterator) pred)
 	(format t "specialized partition-point for cons-const-iterator is invoked.~%")
 	(let ((cons1 (__cons-itr-cons first))
@@ -13517,14 +13517,14 @@
 
 
   ;;PTN; partial-sort-copy : 1 -  cci x  r 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload partial-sort-copy ((first cons-const-iterator) (last cons-const-iterator)
 										 (result-first randomaccess-iterator) (result-last randomaccess-iterator))
 	;;(format t "specialized partial-sort-copy for cons-const-iterator & randomaccess-iterator is invoked.~%")
 	(__partial-sort-copy-imp-1 (__cons-itr-cons first)
 							   (__cons-itr-cons  last) result-first result-last #'operator_<))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload partial-sort-copy ((first cons-const-iterator) (last cons-const-iterator)
 										 (result-first randomaccess-iterator) (result-last randomaccess-iterator) comp)
 	;;(format t "specialized partial-sort-copy for cons-const-iterator & randomaccess-iterator is invoked.~%")
@@ -13570,7 +13570,7 @@
 														  (opr::vec-ptr-buffer result-first) (functor-function (clone comp)))))
 
   ;;PTN; partial-sort-copy : 4 -  cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload partial-sort-copy ((first cons-const-iterator) (last cons-const-iterator)
 										 (result-first vector-pointer) (result-last vector-pointer))
 	;;(format t "specialized partial-sort-copy for cons-const-iterator & vector-pointer is invoked.~%")
@@ -13582,7 +13582,7 @@
 														  (opr::vec-ptr-index  result-last)
 														  (opr::vec-ptr-buffer result-first) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload partial-sort-copy ((first cons-const-iterator) (last cons-const-iterator)
 										 (result-first vector-pointer) (result-last vector-pointer) comp)
 	;;(format t "specialized partial-sort-copy for cons-const-iterator & vector-pointer is invoked.~%")
@@ -13641,13 +13641,13 @@
 
 
   ;;PTN; is-sorted : 1 -  cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload is-sorted ((first cons-const-iterator) (last cons-const-iterator))
 	;;(format t "specialized is-sorted for cons-const-iterator is invoked.~%")
 	(let ((cons2 (__cons-itr-cons last)))
 	  (eq cons2 (__is-sorted-until-imp-1 (__cons-itr-cons first) cons2 #'operator_<))))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload is-sorted ((first cons-const-iterator) (last cons-const-iterator) comp)
 	;;(format t "specialized is-sorted for cons-const-iterator is invoked.~%")
 	(let ((cons2 (__cons-itr-cons last)))
@@ -13689,13 +13689,13 @@
 	(__is-sorted-until-imp-0 first last (functor-function (clone comp))))
   
   ;;PTN; is-sorted-until : 1 -  cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload is-sorted-until ((first cons-const-iterator) (last cons-const-iterator))
 	;;(format t "specialized is-sorted-until for cons-const-iterator is invoked.~%")
 	(__algo-make-cons-iterator first
 							   (__is-sorted-until-imp-1 (__cons-itr-cons first)
 														(__cons-itr-cons  last) #'operator_<)))
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload is-sorted-until ((first cons-const-iterator)
 									   (last  cons-const-iterator) comp)
 	;;(format t "specialized is-sorted-until for cons-const-iterator is invoked.~%")
@@ -13815,14 +13815,14 @@
 	(__lower-bound-imp-0 first last val (functor-function (clone comp))))
 
   ;;PTN; lower-bound : 1 -  cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload lower-bound ((first cons-const-iterator) (last cons-const-iterator) val)
 	;;(format t "specialized lower-bound for cons-const-iterator is invoked.~%")
 	(__algo-make-cons-iterator first
 							   (__lower-bound-imp-1 (__cons-itr-cons first)
 													(__cons-itr-cons  last) val #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload lower-bound ((first cons-const-iterator) (last cons-const-iterator) val comp)
 	;;(format t "specialized lower-bound for cons-const-iterator is invoked.~%")
 	(__algo-make-cons-iterator first
@@ -13864,14 +13864,14 @@
 	(__upper-bound-imp-0 first last val (functor-function (clone comp))))
 
   ;;PTN; upper-bound : 1 -  cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload upper-bound ((first cons-const-iterator) (last cons-const-iterator) val)
 	;;(format t "specialized upper-bound for cons-const-iterator is invoked.~%")
 	(__algo-make-cons-iterator first
 							   (__upper-bound-imp-1 (__cons-itr-cons first)
 													(__cons-itr-cons  last) val #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload upper-bound ((first cons-const-iterator) (last cons-const-iterator) val comp)
 	;;(format t "specialized upper-bound for cons-const-iterator is invoked.~%")
 	(__algo-make-cons-iterator first
@@ -13917,7 +13917,7 @@
 
 
   ;;PTN; equal-range : 1 -  cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload equal-range ((first cons-const-iterator) (last cons-const-iterator) val)
 	;;(format t "specialized equal-range for cons-const-iterator is invoked.~%")
 	(let ((cons1 (__cons-itr-cons first))
@@ -13925,7 +13925,7 @@
 	  (make-pair (__algo-make-cons-iterator first (__lower-bound-imp-1 cons1 cons2 val #'operator_<))
 				 (__algo-make-cons-iterator first (__upper-bound-imp-1 cons1 cons2 val #'operator_<)))))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload equal-range ((first cons-const-iterator) (last cons-const-iterator) val comp)
 	;;(format t "specialized equal-range for cons-const-iterator is invoked.~%")
 	(let ((cons1 (__cons-itr-cons first))
@@ -13972,13 +13972,13 @@
 
 
   ;;PTN; binary-search : 1 -  cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload binary-search ((first cons-const-iterator) (last cons-const-iterator) val)
 	;;(format t "specialized binary-search for cons-const-iterator is invoked.~%")
 	(__binary-search-imp-1 (__cons-itr-cons first)
 						   (__cons-itr-cons  last) val #'operator_<))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload binary-search ((first cons-const-iterator) (last cons-const-iterator) val comp)
 	;;(format t "specialized binary-search for cons-const-iterator is invoked.~%")
 	(__binary-search-imp-1 (__cons-itr-cons first)
@@ -14025,7 +14025,7 @@
 
 
   ;;PTN; merge : 01 -   i  x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 input-iterator) (last1 input-iterator)
 							 (first2 input-iterator) (last2 input-iterator) (result cons-iterator))
 	;;(format t "specialized merge for input-iterator & input-iterator & cons-iterator is invoked.~%" ')
@@ -14033,7 +14033,7 @@
 							   (__merge-imp-01 first1 last1 first2 last2
 											   (__cons-itr-cons result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 input-iterator) (last1 input-iterator)
 							 (first2 input-iterator) (last2 input-iterator) (result cons-iterator) comp)
 	;;(format t "specialized merge for input-iterator & input-iterator & cons-iterator is invoked.~%" ')
@@ -14059,7 +14059,7 @@
 											   (opr::vec-ptr-buffer result) (functor-function (clone comp)))))
 
   ;;PTN; merge : 03 -   i  x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 input-iterator) (last1 input-iterator)
 							 (first2 cons-const-iterator) (last2 cons-const-iterator) (result output-iterator))
 	;;(format t "specialized merge for input-iterator & cons-const-iterator & output-iterator is invoked.~%" ')
@@ -14067,7 +14067,7 @@
 					(__cons-itr-cons first2)
 					(__cons-itr-cons  last2) (clone result) #'operator_<))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 input-iterator) (last1 input-iterator)
 							 (first2 cons-const-iterator) (last2 cons-const-iterator) (result output-iterator) comp)
 	;;(format t "specialized merge for input-iterator & cons-const-iterator & output-iterator is invoked.~%" ')
@@ -14076,7 +14076,7 @@
 					(__cons-itr-cons  last2) (clone result) (functor-function (clone comp))))
 
   ;;PTN; merge : 04 -   i  x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 input-iterator) (last1 input-iterator)
 							 (first2 cons-const-iterator) (last2 cons-const-iterator) (result cons-iterator))
 	;;(format t "specialized merge for input-iterator & cons-const-iterator & cons-iterator is invoked.~%" ')
@@ -14086,7 +14086,7 @@
 											   (__cons-itr-cons  last2)
 											   (__cons-itr-cons result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 input-iterator) (last1 input-iterator)
 							 (first2 cons-const-iterator) (last2 cons-const-iterator) (result cons-iterator) comp)
 	;;(format t "specialized merge for input-iterator & cons-const-iterator & cons-iterator is invoked.~%" ')
@@ -14097,7 +14097,7 @@
 											   (__cons-itr-cons result) (functor-function (clone comp)))))
 
   ;;PTN; merge : 05 -   i  x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 input-iterator) (last1 input-iterator)
 							 (first2 cons-const-iterator) (last2 cons-const-iterator) (result vector-pointer))
 	;;(format t "specialized merge for input-iterator & cons-const-iterator & vector-pointer is invoked.~%" ')
@@ -14108,7 +14108,7 @@
 											   (opr::vec-ptr-index  result)
 											   (opr::vec-ptr-buffer result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 input-iterator) (last1 input-iterator)
 							 (first2 cons-const-iterator) (last2 cons-const-iterator) (result vector-pointer) comp)
 	;;(format t "specialized merge for input-iterator & cons-const-iterator & vector-pointer is invoked.~%" ')
@@ -14139,7 +14139,7 @@
 					(opr::vec-ptr-buffer first2) (clone result) (functor-function (clone comp))))
 
   ;;PTN; merge : 07 -   i  x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 input-iterator) (last1 input-iterator)
 							 (first2 const-vector-pointer) (last2 const-vector-pointer) (result cons-iterator))
 	;;(format t "specialized merge for input-iterator & const-vector-pointer & cons-iterator is invoked.~%" ')
@@ -14151,7 +14151,7 @@
 											   (opr::vec-ptr-buffer first2)
 											   (__cons-itr-cons     result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 input-iterator) (last1 input-iterator)
 							 (first2 const-vector-pointer) (last2 const-vector-pointer) (result cons-iterator) comp)
 	;;(format t "specialized merge for input-iterator & const-vector-pointer & cons-iterator is invoked.~%" ')
@@ -14189,14 +14189,14 @@
 											   (opr::vec-ptr-buffer result) (functor-function (clone comp)))))
   
   ;;PTN; merge : 09 -  cci x  i  x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 cons-const-iterator) (last1 cons-const-iterator)
 							 (first2 input-iterator) (last2 input-iterator) (result output-iterator))
 	;;(format t "specialized merge for const-vector-pointer & input-iterator & output-iterator is invoked.~%" ')
 	(__merge-imp-09 (__cons-itr-cons first1)
 					(__cons-itr-cons  last1) first2 last2 (clone result) #'operator_<))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 cons-const-iterator) (last1 cons-const-iterator)
 							 (first2 input-iterator) (last2 input-iterator) (result output-iterator) comp)
 	;;(format t "specialized merge for const-vector-pointer & input-iterator & output-iterator is invoked.~%" ')
@@ -14204,7 +14204,7 @@
 					(__cons-itr-cons  last1) first2 last2 (clone result) (functor-function (clone comp))))
 
   ;;PTN; merge : 10 -  cci x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 cons-const-iterator) (last1 cons-const-iterator)
 							 (first2 input-iterator) (last2 input-iterator) (result cons-iterator))
 	;;(format t "specialized merge for const-vector-pointer & input-iterator & cons-iterator is invoked.~%" ')
@@ -14214,7 +14214,7 @@
 											   first2 last2
 											   (__cons-itr-cons     result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 cons-const-iterator) (last1 cons-const-iterator)
 							 (first2 input-iterator) (last2 input-iterator) (result cons-iterator) comp)
 	;;(format t "specialized merge for const-vector-pointer & input-iterator & cons-iterator is invoked.~%" ')
@@ -14225,7 +14225,7 @@
 											   (__cons-itr-cons result) (functor-function (clone comp)))))
 
   ;;PTN; merge : 11 -  cci x  i  x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 cons-const-iterator) (last1 cons-const-iterator)
 							 (first2 input-iterator) (last2 input-iterator) (result vector-pointer))
 	;;(format t "specialized merge for const-vector-pointer & input-iterator & vector-pointer is invoked.~%" ')
@@ -14236,7 +14236,7 @@
 											   (opr::vec-ptr-index  result)
 											   (opr::vec-ptr-buffer result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 cons-const-iterator) (last1 cons-const-iterator)
 							 (first2 input-iterator) (last2 input-iterator) (result vector-pointer) comp)
 	;;(format t "specialized merge for const-vector-pointer & input-iterator & vector-pointer is invoked.~%" ')
@@ -14248,7 +14248,7 @@
 											   (opr::vec-ptr-buffer result) (functor-function (clone comp)))))
 
   ;;PTN; merge : 12 -  cci x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 cons-const-iterator) (last1 cons-const-iterator)
 							 (first2 cons-const-iterator) (last2 cons-const-iterator) (result output-iterator))
 	;;(format t "specialized merge for const-vector-pointer & cons-const-iterator & output-iterator is invoked.~%" ')
@@ -14257,7 +14257,7 @@
 					(__cons-itr-cons first2)
 					(__cons-itr-cons  last2) (clone result) #'operator_<))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 cons-const-iterator) (last1 cons-const-iterator)
 							 (first2 cons-const-iterator) (last2 cons-const-iterator) (result output-iterator) comp)
 	;;(format t "specialized merge for const-vector-pointer & cons-const-iterator & output-iterator is invoked.~%" ')
@@ -14267,7 +14267,7 @@
 					(__cons-itr-cons  last2) (clone result) (functor-function (clone comp))))
 
   ;;PTN; merge : 13 -  cci x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 cons-const-iterator) (last1 cons-const-iterator)
 							 (first2 cons-const-iterator) (last2 cons-const-iterator) (result cons-iterator))
 	;;(format t "specialized merge for const-vector-pointer & cons-const-iterator & cons-iterator is invoked.~%" ')
@@ -14278,7 +14278,7 @@
 											   (__cons-itr-cons  last2)
 											   (__cons-itr-cons result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 cons-const-iterator) (last1 cons-const-iterator)
 							 (first2 cons-const-iterator) (last2 cons-const-iterator) (result cons-iterator) comp)
 	;;(format t "specialized merge for const-vector-pointer & cons-const-iterator & cons-iterator is invoked.~%" ')
@@ -14290,7 +14290,7 @@
 											   (__cons-itr-cons result) (functor-function (clone comp)))))
 
   ;;PTN; merge : 14 -  cci x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 cons-const-iterator) (last1 cons-const-iterator)
 							 (first2 cons-const-iterator) (last2 cons-const-iterator) (result vector-pointer))
 	;;(format t "specialized merge for const-vector-pointer & cons-const-iterator & vector-pointer is invoked.~%" ')
@@ -14302,7 +14302,7 @@
 											   (opr::vec-ptr-index  result)
 											   (opr::vec-ptr-buffer result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 cons-const-iterator) (last1 cons-const-iterator)
 							 (first2 cons-const-iterator) (last2 cons-const-iterator) (result vector-pointer) comp)
 	;;(format t "specialized merge for const-vector-pointer & cons-const-iterator & vector-pointer is invoked.~%" ')
@@ -14315,7 +14315,7 @@
 											   (opr::vec-ptr-buffer result) (functor-function (clone comp)))))
 
   ;;PTN; merge : 15 -  cci x cvp x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 cons-const-iterator) (last1 cons-const-iterator)
 							 (first2 const-vector-pointer) (last2 const-vector-pointer) (result output-iterator))
 	;;(format t "specialized merge for const-vector-pointer & const-vector-pointer & output-iterator is invoked.~%" ')
@@ -14326,7 +14326,7 @@
 					(opr::vec-ptr-index   last2)
 					(opr::vec-ptr-buffer first2) (clone result) #'operator_<))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 cons-const-iterator) (last1 cons-const-iterator)
 							 (first2 const-vector-pointer) (last2 const-vector-pointer) (result output-iterator) comp)
 	;;(format t "specialized merge for const-vector-pointer & const-vector-pointer & output-iterator is invoked.~%" ')
@@ -14338,7 +14338,7 @@
 					(opr::vec-ptr-buffer first2) (clone result) (functor-function (clone comp))))
 
   ;;PTN; merge : 16 -  cci x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 cons-const-iterator) (last1 cons-const-iterator)
 							 (first2 const-vector-pointer) (last2 const-vector-pointer) (result cons-iterator))
 	;;(format t "specialized merge for const-vector-pointer & const-vector-pointer & cons-iterator is invoked.~%" ')
@@ -14351,7 +14351,7 @@
 											   (opr::vec-ptr-buffer first2)
 											   (__cons-itr-cons     result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 cons-const-iterator) (last1 cons-const-iterator)
 							 (first2 const-vector-pointer) (last2 const-vector-pointer) (result cons-iterator) comp)
 	;;(format t "specialized merge for const-vector-pointer & const-vector-pointer & cons-iterator is invoked.~%" ')
@@ -14365,7 +14365,7 @@
 											   (__cons-itr-cons     result) (functor-function (clone comp)))))
 
   ;;PTN; merge : 17 -  cci x cvp x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 cons-const-iterator) (last1 cons-const-iterator)
 							 (first2 const-vector-pointer) (last2 const-vector-pointer) (result vector-pointer))
 	;;(format t "specialized merge for const-vector-pointer & const-vector-pointer & vector-pointer is invoked.~%" ')
@@ -14379,7 +14379,7 @@
 											   (opr::vec-ptr-index  result)
 											   (opr::vec-ptr-buffer result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 cons-const-iterator) (last1 cons-const-iterator)
 							 (first2 const-vector-pointer) (last2 const-vector-pointer) (result vector-pointer) comp)
 	;;(format t "specialized merge for const-vector-pointer & const-vector-pointer & vector-pointer is invoked.~%" ')
@@ -14411,7 +14411,7 @@
 					(opr::vec-ptr-buffer first1) first2 last2 (clone result) (functor-function (clone comp))))
 
   ;;PTN; merge : 19 -  cvp x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 const-vector-pointer) (last1 const-vector-pointer)
 							 (first2 input-iterator) (last2 input-iterator) (result cons-iterator))
 	;;(format t "specialized merge for const-vector-pointer & input-iterator & cons-iterator is invoked.~%" ')
@@ -14423,7 +14423,7 @@
 											   first2 last2
 											   (__cons-itr-cons     result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 const-vector-pointer) (last1 const-vector-pointer)
 							 (first2 input-iterator) (last2 input-iterator) (result cons-iterator) comp)
 	;;(format t "specialized merge for const-vector-pointer & input-iterator & cons-iterator is invoked.~%" ')
@@ -14461,7 +14461,7 @@
 											   (opr::vec-ptr-buffer result) (functor-function (clone comp)))))
 
   ;;PTN; merge : 21 -  cvp x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 const-vector-pointer) (last1 const-vector-pointer)
 							 (first2 cons-const-iterator) (last2 cons-const-iterator) (result output-iterator))
 	;;(format t "specialized merge for const-vector-pointer & cons-const-iterator & output-iterator is invoked.~%" ')
@@ -14472,7 +14472,7 @@
 					(__cons-itr-cons     first2)
 					(__cons-itr-cons      last2) (clone result) #'operator_<))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 const-vector-pointer) (last1 const-vector-pointer)
 							 (first2 cons-const-iterator) (last2 cons-const-iterator) (result output-iterator) comp)
 	;;(format t "specialized merge for const-vector-pointer & cons-const-iterator & output-iterator is invoked.~%" ')
@@ -14484,7 +14484,7 @@
 					(__cons-itr-cons      last2) (clone result) (functor-function (clone comp))))
 
   ;;PTN; merge : 22 -  cvp x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 const-vector-pointer) (last1 const-vector-pointer)
 							 (first2 cons-const-iterator) (last2 cons-const-iterator) (result cons-iterator))
 	;;(format t "specialized merge for const-vector-pointer & cons-const-iterator & cons-iterator is invoked.~%" ')
@@ -14497,7 +14497,7 @@
 											   (__cons-itr-cons     last2)
 											   (__cons-itr-cons     result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 const-vector-pointer) (last1 const-vector-pointer)
 							 (first2 cons-const-iterator) (last2 cons-const-iterator) (result cons-iterator) comp)
 	;;(format t "specialized merge for const-vector-pointer & cons-const-iterator & cons-iterator is invoked.~%" ')
@@ -14511,7 +14511,7 @@
 											   (__cons-itr-cons     result) (functor-function (clone comp)))))
 
   ;;PTN; merge : 23 -  cvp x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 const-vector-pointer) (last1 const-vector-pointer)
 							 (first2 cons-const-iterator) (last2 cons-const-iterator) (result vector-pointer))
 	;;(format t "specialized merge for const-vector-pointer & cons-const-iterator & vector-pointer is invoked.~%" ')
@@ -14525,7 +14525,7 @@
 											   (opr::vec-ptr-index  result)
 											   (opr::vec-ptr-buffer result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 const-vector-pointer) (last1 const-vector-pointer)
 							 (first2 cons-const-iterator) (last2 cons-const-iterator) (result vector-pointer) comp)
 	;;(format t "specialized merge for const-vector-pointer & cons-const-iterator & vector-pointer is invoked.~%" ')
@@ -14565,7 +14565,7 @@
 					(opr::vec-ptr-buffer first2) (clone result) (functor-function (clone comp))))
 
   ;;PTN; merge : 25 -  cvp x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 const-vector-pointer) (last1 const-vector-pointer)
 							 (first2 const-vector-pointer) (last2 const-vector-pointer) (result cons-iterator))
 	;;(format t "specialized merge for const-vector-pointer & const-vector-pointer & cons-iterator is invoked.~%" ')
@@ -14580,7 +14580,7 @@
 											   (opr::vec-ptr-buffer first2)
 											   (__cons-itr-cons     result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload merge ((first1 const-vector-pointer) (last1 const-vector-pointer)
 							 (first2 const-vector-pointer) (last2 const-vector-pointer) (result cons-iterator) comp)
 	;;(format t "specialized merge for const-vector-pointer & const-vector-pointer & cons-iterator is invoked.~%" ')
@@ -14738,7 +14738,7 @@
 
 
   ;;PTN; includes : 1 -  cci x  i
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__includes-imp-1 (cons1 end1 first2 last2 less-bf)
 			 (declare (type cl:list cons1 end1))
 			 (declare (type cl:function less-bf))
@@ -14811,7 +14811,7 @@
 						(opr::vec-ptr-buffer first1) first2 last2 (functor-function (clone comp)))))
 
   ;;PTN; includes : 3 -   i  x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__includes-imp-3 (first1 last1 cons2 end2 less-bf)
 			 (declare (type cl:list cons2 end2))
 			 (declare (type cl:function less-bf))
@@ -14845,7 +14845,7 @@
 						(__cons-itr-cons  last2) (functor-function (clone comp)))))
 
   ;;PTN; includes : 4 -  cci x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__includes-imp-4 (cons1 end1 cons2 end2 less-bf)
 			 (declare (type cl:list cons1 end1 cons2 end2))
 			 (declare (type cl:function less-bf))
@@ -14873,7 +14873,7 @@
 
 
   ;;PTN; includes : 5 -  cvp x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__includes-imp-8 (idx1 last1 buffer1 cons2 end2 less-bf)
 			 (declare (type fixnum idx1 last1))
 			 (declare (type cl:vector buffer1))
@@ -14950,7 +14950,7 @@
 
 
   ;;PTN; includes : 7 -  cci x cvp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__includes-imp-7 (cons1 end1 idx2 last2 buffer2 less-bf)
 			 (declare (type cl:list cons1 end1))
 			 (declare (type fixnum idx2 last2))
@@ -15047,7 +15047,7 @@
 
 
   ;;PTN; set-union : 01 -   i  x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 input-iterator) (last1 input-iterator)
 								 (first2 input-iterator) (last2 input-iterator) (result cons-iterator))
 	;;(format t "specialized set-union for input-iterator & input-iterator & cons-iterator is invoked.~%")
@@ -15055,7 +15055,7 @@
 							   (__set-union-imp-01 first1 last1 first2 last2
 												   (__cons-itr-cons result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 input-iterator) (last1 input-iterator)
 								 (first2 input-iterator) (last2 input-iterator) (result cons-iterator) comp)
 	;;(format t "specialized set-union for input-iterator & input-iterator & cons-iterator is invoked.~%")
@@ -15081,7 +15081,7 @@
 												   (opr::vec-ptr-buffer result) (functor-function (clone comp)))))
 
   ;;PTN; set-union : 03 -   i  x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 input-iterator) (last1 input-iterator)
 								 (first2 cons-const-iterator) (last2 cons-const-iterator) (result output-iterator))
 	;;(format t "specialized set-union for input-iterator & cons-const-iterator & output-iterator is invoked.~%")
@@ -15089,7 +15089,7 @@
 						(__cons-itr-cons first2)
 						(__cons-itr-cons  last2) (clone result) #'operator_<))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 input-iterator) (last1 input-iterator)
 								 (first2 cons-const-iterator) (last2 cons-const-iterator) (result output-iterator) comp)
 	;;(format t "specialized set-union for input-iterator & cons-const-iterator & output-iterator is invoked.~%")
@@ -15098,7 +15098,7 @@
 						(__cons-itr-cons  last2) (clone result) (functor-function (clone comp))))
 
   ;;PTN; set-union : 04 -   i  x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 input-iterator) (last1 input-iterator)
 								 (first2 cons-const-iterator) (last2 cons-const-iterator) (result cons-iterator))
 	;;(format t "specialized set-union for input-iterator & cons-const-iterator & cons-iterator is invoked.~%")
@@ -15108,7 +15108,7 @@
 												   (__cons-itr-cons  last2)
 												   (__cons-itr-cons result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 input-iterator) (last1 input-iterator)
 								 (first2 cons-const-iterator) (last2 cons-const-iterator) (result cons-iterator) comp)
 	;;(format t "specialized set-union for input-iterator & cons-const-iterator & cons-iterator is invoked.~%")
@@ -15119,7 +15119,7 @@
 												   (__cons-itr-cons result) (functor-function (clone comp)))))
 
   ;;PTN; set-union : 05 -   i  x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 input-iterator) (last1 input-iterator)
 								 (first2 cons-const-iterator) (last2 cons-const-iterator) (result vector-pointer))
 	;;(format t "specialized set-union for input-iterator & cons-const-iterator & vector-pointer is invoked.~%")
@@ -15130,7 +15130,7 @@
 												   (opr::vec-ptr-index  result)
 												   (opr::vec-ptr-buffer result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 input-iterator) (last1 input-iterator)
 								 (first2 cons-const-iterator) (last2 cons-const-iterator) (result vector-pointer) comp)
 	;;(format t "specialized set-union for input-iterator & cons-const-iterator & vector-pointer is invoked.~%")
@@ -15161,7 +15161,7 @@
 						(opr::vec-ptr-buffer first2) (clone result) (functor-function (clone comp))))
 
   ;;PTN; set-union : 07 -   i  x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 input-iterator) (last1 input-iterator)
 								 (first2 const-vector-pointer) (last2 const-vector-pointer) (result cons-iterator))
 	;;(format t "specialized set-union for input-iterator & const-vector-pointer & cons-iterator is invoked.~%")
@@ -15173,7 +15173,7 @@
 												   (opr::vec-ptr-buffer first2)
 												   (__cons-itr-cons     result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 input-iterator) (last1 input-iterator)
 								 (first2 const-vector-pointer) (last2 const-vector-pointer) (result cons-iterator) comp)
 	;;(format t "specialized set-union for input-iterator & const-vector-pointer & cons-iterator is invoked.~%")
@@ -15211,14 +15211,14 @@
 												   (opr::vec-ptr-buffer result) (functor-function (clone comp)))))
 
   ;;PTN; set-union : 09 -  cci x  i  x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								 (first2 input-iterator) (last2 input-iterator) (result output-iterator))
 	;;(format t "specialized set-union for const-vector-pointer & input-iterator & output-iterator is invoked.~%")
 	(__set-union-imp-09 (__cons-itr-cons first1)
 						(__cons-itr-cons  last1) first2 last2 (clone result) #'operator_<))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								 (first2 input-iterator) (last2 input-iterator) (result output-iterator) comp)
 	;;(format t "specialized set-union for const-vector-pointer & input-iterator & output-iterator is invoked.~%")
@@ -15226,7 +15226,7 @@
 						(__cons-itr-cons  last1) first2 last2 (clone result) (functor-function (clone comp))))
 
   ;;PTN; set-union : 10 -  cci x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								 (first2 input-iterator) (last2 input-iterator) (result cons-iterator))
 	;;(format t "specialized set-union for const-vector-pointer & input-iterator & cons-iterator is invoked.~%")
@@ -15236,7 +15236,7 @@
 												   first2 last2
 												   (__cons-itr-cons result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								 (first2 input-iterator) (last2 input-iterator) (result cons-iterator) comp)
 	;;(format t "specialized set-union for const-vector-pointer & input-iterator & cons-iterator is invoked.~%")
@@ -15247,7 +15247,7 @@
 												   (__cons-itr-cons result) (functor-function (clone comp)))))
 
   ;;PTN; set-union : 11 -  cci x  i  x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								 (first2 input-iterator) (last2 input-iterator) (result vector-pointer))
 	;;(format t "specialized set-union for const-vector-pointer & input-iterator & vector-pointer is invoked.~%")
@@ -15258,7 +15258,7 @@
 												   (opr::vec-ptr-index  result)
 												   (opr::vec-ptr-buffer result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								 (first2 input-iterator) (last2 input-iterator) (result vector-pointer) comp)
 	;;(format t "specialized set-union for const-vector-pointer & input-iterator & vector-pointer is invoked.~%")
@@ -15270,7 +15270,7 @@
 												   (opr::vec-ptr-buffer result) (functor-function (clone comp)))))
 
   ;;PTN; set-union : 12 -  cci x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								 (first2 cons-const-iterator) (last2 cons-const-iterator) (result output-iterator))
 	;;(format t "specialized set-union for const-vector-pointer & cons-const-iterator & output-iterator is invoked.~%")
@@ -15279,7 +15279,7 @@
 						(__cons-itr-cons first2)
 						(__cons-itr-cons  last2) (clone result) #'operator_<))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								 (first2 cons-const-iterator) (last2 cons-const-iterator) (result output-iterator) comp)
 	;;(format t "specialized set-union for const-vector-pointer & cons-const-iterator & output-iterator is invoked.~%")
@@ -15289,7 +15289,7 @@
 						(__cons-itr-cons  last2) (clone result) (functor-function (clone comp))))
 
   ;;PTN; set-union : 13 -  cci x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								 (first2 cons-const-iterator) (last2 cons-const-iterator) (result cons-iterator))
 	;;(format t "specialized set-union for const-vector-pointer & cons-const-iterator & cons-iterator is invoked.~%")
@@ -15300,7 +15300,7 @@
 												   (__cons-itr-cons  last2)
 												   (__cons-itr-cons result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								 (first2 cons-const-iterator) (last2 cons-const-iterator) (result cons-iterator) comp)
 	;;(format t "specialized set-union for const-vector-pointer & cons-const-iterator & cons-iterator is invoked.~%")
@@ -15312,7 +15312,7 @@
 												   (__cons-itr-cons result) (functor-function (clone comp)))))
 
   ;;PTN; set-union : 14 -  cci x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								 (first2 cons-const-iterator) (last2 cons-const-iterator) (result vector-pointer))
 	;;(format t "specialized set-union for const-vector-pointer & cons-const-iterator & vector-pointer is invoked.~%")
@@ -15324,7 +15324,7 @@
 												   (opr::vec-ptr-index  result)
 												   (opr::vec-ptr-buffer result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								 (first2 cons-const-iterator) (last2 cons-const-iterator) (result vector-pointer) comp)
 	;;(format t "specialized set-union for const-vector-pointer & cons-const-iterator & vector-pointer is invoked.~%")
@@ -15337,7 +15337,7 @@
 												   (opr::vec-ptr-buffer result) (functor-function (clone comp)))))
 
   ;;PTN; set-union : 15 -  cci x cvp x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								 (first2 const-vector-pointer) (last2 const-vector-pointer) (result output-iterator))
 	;;(format t "specialized set-union for const-vector-pointer & const-vector-pointer & output-iterator is invoked.~%")
@@ -15348,7 +15348,7 @@
 						(opr::vec-ptr-index   last2)
 						(opr::vec-ptr-buffer first2) (clone result) #'operator_<))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								 (first2 const-vector-pointer) (last2 const-vector-pointer) (result output-iterator) comp)
 	;;(format t "specialized set-union for const-vector-pointer & const-vector-pointer & output-iterator is invoked.~%")
@@ -15360,7 +15360,7 @@
 						(opr::vec-ptr-buffer first2) (clone result) (functor-function (clone comp))))
 
   ;;PTN; set-union : 16 -  cci x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								 (first2 const-vector-pointer) (last2 const-vector-pointer) (result cons-iterator))
 	;;(format t "specialized set-union for const-vector-pointer & const-vector-pointer & cons-iterator is invoked.~%")
@@ -15373,7 +15373,7 @@
 												   (opr::vec-ptr-buffer first2)
 												   (__cons-itr-cons     result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								 (first2 const-vector-pointer) (last2 const-vector-pointer) (result cons-iterator) comp)
 	;;(format t "specialized set-union for const-vector-pointer & const-vector-pointer & cons-iterator is invoked.~%")
@@ -15387,7 +15387,7 @@
 												   (__cons-itr-cons     result) (functor-function (clone comp)))))
 
   ;;PTN; set-union : 17 -  cci x cvp x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								 (first2 const-vector-pointer) (last2 const-vector-pointer) (result vector-pointer))
 	;;(format t "specialized set-union for const-vector-pointer & const-vector-pointer & vector-pointer is invoked.~%")
@@ -15401,7 +15401,7 @@
 												   (opr::vec-ptr-index  result)
 												   (opr::vec-ptr-buffer result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 cons-const-iterator) (last1 cons-const-iterator)
 								 (first2 const-vector-pointer) (last2 const-vector-pointer) (result vector-pointer) comp)
 	;;(format t "specialized set-union for const-vector-pointer & const-vector-pointer & vector-pointer is invoked.~%")
@@ -15433,7 +15433,7 @@
 						(opr::vec-ptr-buffer first1) first2 last2 (clone result) (functor-function (clone comp))))
 
   ;;PTN; set-union : 19 -  cvp x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 const-vector-pointer) (last1 const-vector-pointer)
 								 (first2 input-iterator) (last2 input-iterator) (result cons-iterator))
 	;;(format t "specialized set-union for const-vector-pointer & input-iterator & cons-iterator is invoked.~%")
@@ -15445,7 +15445,7 @@
 												   first2 last2
 												   (__cons-itr-cons     result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 const-vector-pointer) (last1 const-vector-pointer)
 								 (first2 input-iterator) (last2 input-iterator) (result cons-iterator) comp)
 	;;(format t "specialized set-union for const-vector-pointer & input-iterator & cons-iterator is invoked.~%")
@@ -15483,7 +15483,7 @@
 												   (opr::vec-ptr-buffer result) (functor-function (clone comp)))))
 
   ;;PTN; set-union : 21 -  cvp x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 const-vector-pointer) (last1 const-vector-pointer)
 								 (first2 cons-const-iterator) (last2 cons-const-iterator) (result output-iterator))
 	;;(format t "specialized set-union for const-vector-pointer & cons-const-iterator & output-iterator is invoked.~%")
@@ -15494,7 +15494,7 @@
 						(__cons-itr-cons     first2)
 						(__cons-itr-cons      last2) (clone result) #'operator_<))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 const-vector-pointer) (last1 const-vector-pointer)
 								 (first2 cons-const-iterator) (last2 cons-const-iterator) (result output-iterator) comp)
 	;;(format t "specialized set-union for const-vector-pointer & cons-const-iterator & output-iterator is invoked.~%")
@@ -15506,7 +15506,7 @@
 						(__cons-itr-cons      last2) (clone result) (functor-function (clone comp))))
 
   ;;PTN; set-union : 22 -  cvp x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 const-vector-pointer) (last1 const-vector-pointer)
 								 (first2 cons-const-iterator) (last2 cons-const-iterator) (result cons-iterator))
 	;;(format t "specialized set-union for const-vector-pointer & cons-const-iterator & cons-iterator is invoked.~%")
@@ -15519,7 +15519,7 @@
 												   (__cons-itr-cons      last2)
 												   (__cons-itr-cons     result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 const-vector-pointer) (last1 const-vector-pointer)
 								 (first2 cons-const-iterator) (last2 cons-const-iterator) (result cons-iterator) comp)
 	;;(format t "specialized set-union for const-vector-pointer & cons-const-iterator & cons-iterator is invoked.~%")
@@ -15533,7 +15533,7 @@
 												   (__cons-itr-cons     result) (functor-function (clone comp)))))
 
   ;;PTN; set-union : 23 -  cvp x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 const-vector-pointer) (last1 const-vector-pointer)
 								 (first2 cons-const-iterator) (last2 cons-const-iterator) (result vector-pointer))
 	;;(format t "specialized set-union for const-vector-pointer & cons-const-iterator & vector-pointer is invoked.~%")
@@ -15547,7 +15547,7 @@
 												   (opr::vec-ptr-index  result)
 												   (opr::vec-ptr-buffer result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 const-vector-pointer) (last1 const-vector-pointer)
 								 (first2 cons-const-iterator) (last2 cons-const-iterator) (result vector-pointer) comp)
 	;;(format t "specialized set-union for const-vector-pointer & cons-const-iterator & vector-pointer is invoked.~%")
@@ -15587,7 +15587,7 @@
 						(opr::vec-ptr-buffer first2) (clone result) (functor-function (clone comp))))
 
   ;;PTN; set-union : 25 -  cvp x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 const-vector-pointer) (last1 const-vector-pointer)
 								 (first2 const-vector-pointer) (last2 const-vector-pointer) (result cons-iterator))
 	;;(format t "specialized set-union for const-vector-pointer & const-vector-pointer & cons-iterator is invoked.~%")
@@ -15602,7 +15602,7 @@
 												   (opr::vec-ptr-buffer first2)
 												   (__cons-itr-cons     result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-union ((first1 const-vector-pointer) (last1 const-vector-pointer)
 								 (first2 const-vector-pointer) (last2 const-vector-pointer) (result cons-iterator) comp)
 	;;(format t "specialized set-union for const-vector-pointer & const-vector-pointer & cons-iterator is invoked.~%")
@@ -15671,7 +15671,7 @@
 
 
   ;;PTN; set-intersection : 01 -   i  x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 input-iterator) (last1 input-iterator)
 										(first2 input-iterator) (last2 input-iterator) (result cons-iterator))
 	;;(format t "specialized sffet-intersection for input-iterator & input-iterator & cons-iterator is invoked.~%")
@@ -15679,7 +15679,7 @@
 							   (__set-intersection-imp-01 first1 last1 first2 last2
 														  (__cons-itr-cons result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 input-iterator) (last1 input-iterator)
 										(first2 input-iterator) (last2 input-iterator) (result cons-iterator) comp)
 	;;(format t "specialized set-intersection for input-iterator & input-iterator & cons-iterator is invoked.~%")
@@ -15706,7 +15706,7 @@
 
 
   ;;PTN; set-intersection : 03 -   i  x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 input-iterator) (last1 input-iterator)
 										(first2 cons-const-iterator) (last2 cons-const-iterator) (result output-iterator))
 	;;(format t "specialized set-intersection for input-iterator & cons-const-iterator & output-iterator is invoked.~%")
@@ -15714,7 +15714,7 @@
 							   (__cons-itr-cons    first2)
 							   (__cons-itr-cons     last2) (clone result) #'operator_<))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 input-iterator) (last1 input-iterator)
 										(first2 cons-const-iterator) (last2 cons-const-iterator) (result output-iterator) comp)
 	;;(format t "specialized set-intersection for input-iterator & cons-const-iterator & output-iterator is invoked.~%")
@@ -15724,7 +15724,7 @@
 
 
   ;;PTN; set-intersection : 04 -   i  x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 input-iterator) (last1 input-iterator)
 										(first2 cons-const-iterator) (last2 cons-const-iterator) (result cons-iterator))
 	;;(format t "specialized sffet-intersection for input-iterator & cons-const-iterator & cons-iterator is invoked.~%")
@@ -15734,7 +15734,7 @@
 														  (__cons-itr-cons     last2)
 														  (__cons-itr-cons    result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 input-iterator) (last1 input-iterator)
 										(first2 cons-const-iterator) (last2 cons-const-iterator) (result cons-iterator) comp)
 	;;(format t "specialized set-intersection for input-iterator & cons-const-iterator & cons-iterator is invoked.~%")
@@ -15745,7 +15745,7 @@
 														  (__cons-itr-cons    result) (functor-function (clone comp)))))
 
   ;;PTN; set-intersection : 05 -   i  x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 input-iterator) (last1 input-iterator)
 										(first2 cons-const-iterator) (last2 cons-const-iterator) (result vector-pointer))
 	;;(format t "specialized sffet-intersection for input-iterator & cons-const-iterator & vector-pointer is invoked.~%")
@@ -15756,7 +15756,7 @@
 														  (opr::vec-ptr-index  result)
 														  (opr::vec-ptr-buffer result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 input-iterator) (last1 input-iterator)
 										(first2 cons-const-iterator) (last2 cons-const-iterator) (result vector-pointer) comp)
 	;;(format t "specialized set-intersection for input-iterator & cons-const-iterator & vector-pointer is invoked.~%")
@@ -15788,7 +15788,7 @@
 
 
   ;;PTN; set-intersection : 07 -   i  x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 input-iterator) (last1 input-iterator)
 										(first2 const-vector-pointer) (last2 const-vector-pointer) (result cons-iterator))
 	;;(format t "specialized sffet-intersection for input-iterator & const-vector-pointer & cons-iterator is invoked.~%")
@@ -15800,7 +15800,7 @@
 														  (opr::vec-ptr-buffer first2)
 														  (__cons-itr-cons     result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 input-iterator) (last1 input-iterator)
 										(first2 const-vector-pointer) (last2 const-vector-pointer) (result cons-iterator) comp)
 	;;(format t "specialized set-intersection for input-iterator & const-vector-pointer & cons-iterator is invoked.~%")
@@ -15838,14 +15838,14 @@
 														  (opr::vec-ptr-buffer result) (functor-function (clone comp)))))
 
   ;;PTN; set-intersection : 09 -  cci x  i  x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 cons-const-iterator) (last1 cons-const-iterator)
 										(first2 input-iterator) (last2 input-iterator) (result output-iterator))
 	;;(format t "specialized set-intersection for const-vector-pointer & input-iterator & output-iterator is invoked.~%")
 	(__set-intersection-imp-09 (__cons-itr-cons first1)
 							   (__cons-itr-cons  last1) first2 last2 (clone result) #'operator_<))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 cons-const-iterator) (last1 cons-const-iterator)
 										(first2 input-iterator) (last2 input-iterator) (result output-iterator) comp)
 	;;(format t "specialized set-intersection for const-vector-pointer & input-iterator & output-iterator is invoked.~%")
@@ -15854,7 +15854,7 @@
 							   first2 last2 (clone result) (functor-function (clone comp))))
 
   ;;PTN; set-intersection : 10 -  cci x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 cons-const-iterator) (last1 cons-const-iterator)
 										(first2 input-iterator) (last2 input-iterator) (result cons-iterator))
 	;;(format t "specialized set-intersection for const-vector-pointer & input-iterator & cons-iterator is invoked.~%")
@@ -15864,7 +15864,7 @@
 														  first2 last2
 														  (__cons-itr-cons result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 cons-const-iterator) (last1 cons-const-iterator)
 										(first2 input-iterator) (last2 input-iterator) (result cons-iterator) comp)
 	;;(format t "specialized set-intersection for const-vector-pointer & input-iterator & cons-iterator is invoked.~%")
@@ -15875,7 +15875,7 @@
 														  (__cons-itr-cons result) (functor-function (clone comp)))))
 
   ;;PTN; set-intersection : 11 -  cci x  i  x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 cons-const-iterator) (last1 cons-const-iterator)
 										(first2 input-iterator) (last2 input-iterator) (result vector-pointer))
 	;;(format t "specialized set-intersection for const-vector-pointer & input-iterator & vector-pointer is invoked.~%")
@@ -15886,7 +15886,7 @@
 														  (opr::vec-ptr-index  result)
 														  (opr::vec-ptr-buffer result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 cons-const-iterator) (last1 cons-const-iterator)
 										(first2 input-iterator) (last2 input-iterator) (result vector-pointer) comp)
 	;;(format t "specialized set-intersection for const-vector-pointer & input-iterator & vector-pointer is invoked.~%")
@@ -15898,7 +15898,7 @@
 														  (opr::vec-ptr-buffer result) (functor-function (clone comp)))))
 
   ;;PTN; set-intersection : 12 -  cci x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 cons-const-iterator) (last1 cons-const-iterator)
 										(first2 cons-const-iterator) (last2 cons-const-iterator) (result output-iterator))
 	;;(format t "specialized set-intersection for const-vector-pointer & const-vector-pointer & output-iterator is invoked.~%")
@@ -15907,7 +15907,7 @@
 							   (__cons-itr-cons first2)
 							   (__cons-itr-cons  last2) (clone result) #'operator_<))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 cons-const-iterator) (last1 cons-const-iterator)
 										(first2 cons-const-iterator) (last2 cons-const-iterator) (result output-iterator) comp)
 	;;(format t "specialized set-intersection for const-vector-pointer & const-vector-pointer & output-iterator is invoked.~%")
@@ -15917,7 +15917,7 @@
 							   (__cons-itr-cons  last2) (clone result) (functor-function (clone comp))))
 
   ;;PTN; set-intersection : 13 -  cci x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 cons-const-iterator) (last1 cons-const-iterator)
 										(first2 cons-const-iterator) (last2 cons-const-iterator) (result cons-iterator))
 	;;(format t "specialized set-intersection for const-vector-pointer & const-vector-pointer & cons-iterator is invoked.~%")
@@ -15928,7 +15928,7 @@
 														  (__cons-itr-cons  last2)
 														  (__cons-itr-cons result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 cons-const-iterator) (last1 cons-const-iterator)
 										(first2 cons-const-iterator) (last2 cons-const-iterator) (result cons-iterator) comp)
 	;;(format t "specialized set-intersection for const-vector-pointer & const-vector-pointer & cons-iterator is invoked.~%")
@@ -15940,7 +15940,7 @@
 														  (__cons-itr-cons result) (functor-function (clone comp)))))
 
   ;;PTN; set-intersection : 14 -  cci x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 cons-const-iterator) (last1 cons-const-iterator)
 										(first2 cons-const-iterator) (last2 cons-const-iterator) (result vector-pointer))
 	;;(format t "specialized set-intersection for const-vector-pointer & const-vector-pointer & vector-pointer is invoked.~%")
@@ -15952,7 +15952,7 @@
 														  (opr::vec-ptr-index  result)
 														  (opr::vec-ptr-buffer result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 cons-const-iterator) (last1 cons-const-iterator)
 										(first2 cons-const-iterator) (last2 cons-const-iterator) (result vector-pointer) comp)
 	;;(format t "specialized set-intersection for const-vector-pointer & const-vector-pointer & vector-pointer is invoked.~%")
@@ -15965,7 +15965,7 @@
 														  (opr::vec-ptr-buffer result) (functor-function (clone comp)))))
   
   ;;PTN; set-intersection : 15 -  cci x cvp x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 cons-const-iterator) (last1 cons-const-iterator)
 										(first2 const-vector-pointer) (last2 const-vector-pointer) (result output-iterator))
 	;;(format t "specialized set-intersection for const-vector-pointer & const-vector-pointer & output-iterator is invoked.~%")
@@ -15976,7 +15976,7 @@
 							   (opr::vec-ptr-index   last2)
 							   (opr::vec-ptr-buffer first2) (clone result) #'operator_<))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 cons-const-iterator) (last1 cons-const-iterator)
 										(first2 const-vector-pointer) (last2 const-vector-pointer) (result output-iterator) comp)
 	;;(format t "specialized set-intersection for const-vector-pointer & const-vector-pointer & output-iterator is invoked.~%")
@@ -15988,7 +15988,7 @@
 							   (opr::vec-ptr-buffer first2) (clone result) (functor-function (clone comp))))
 
   ;;PTN; set-intersection : 16 -  cci x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 cons-const-iterator) (last1 cons-const-iterator)
 										(first2 const-vector-pointer) (last2 const-vector-pointer) (result cons-iterator))
 	;;(format t "specialized set-intersection for const-vector-pointer & const-vector-pointer & cons-iterator is invoked.~%")
@@ -16001,7 +16001,7 @@
 														  (opr::vec-ptr-buffer first2)
 														  (__cons-itr-cons     result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 cons-const-iterator) (last1 cons-const-iterator)
 										(first2 const-vector-pointer) (last2 const-vector-pointer) (result cons-iterator) comp)
 	;;(format t "specialized set-intersection for const-vector-pointer & const-vector-pointer & cons-iterator is invoked.~%")
@@ -16015,7 +16015,7 @@
 														  (__cons-itr-cons     result) (functor-function (clone comp)))))
 
   ;;PTN; set-intersection : 17 -  cci x cvp x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 cons-const-iterator) (last1 cons-const-iterator)
 										(first2 const-vector-pointer) (last2 const-vector-pointer) (result vector-pointer))
 	;;(format t "specialized set-intersection for const-vector-pointer & const-vector-pointer & vector-pointer is invoked.~%")
@@ -16029,7 +16029,7 @@
 														  (opr::vec-ptr-index  result)
 														  (opr::vec-ptr-buffer result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 cons-const-iterator) (last1 cons-const-iterator)
 										(first2 const-vector-pointer) (last2 const-vector-pointer) (result vector-pointer) comp)
 	;;(format t "specialized set-intersection for const-vector-pointer & const-vector-pointer & vector-pointer is invoked.~%")
@@ -16062,7 +16062,7 @@
 							   first2 last2 (clone result) (functor-function (clone comp))))
 
   ;;PTN; set-intersection : 19 -  cvp x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 const-vector-pointer) (last1 const-vector-pointer)
 										(first2 input-iterator) (last2 input-iterator) (result cons-iterator))
 	;;(format t "specialized set-intersection for const-vector-pointer & input-iterator & cons-iterator is invoked.~%")
@@ -16074,7 +16074,7 @@
 														  first2 last2
 														  (__cons-itr-cons     result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 const-vector-pointer) (last1 const-vector-pointer)
 										(first2 input-iterator) (last2 input-iterator) (result cons-iterator) comp)
 	;;(format t "specialized set-intersection for const-vector-pointer & input-iterator & cons-iterator is invoked.~%")
@@ -16112,7 +16112,7 @@
 														  (opr::vec-ptr-buffer result) (functor-function (clone comp)))))
 
   ;;PTN; set-intersection : 21 -  cvp x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 const-vector-pointer) (last1 const-vector-pointer)
 										(first2 cons-const-iterator) (last2 cons-const-iterator) (result output-iterator))
 	;;(format t "specialized set-intersection for const-vector-pointer & const-vector-pointer & output-iterator is invoked.~%")
@@ -16123,7 +16123,7 @@
 							   (__cons-itr-cons     first2)
 							   (__cons-itr-cons      last2) (clone result) #'operator_<))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 const-vector-pointer) (last1 const-vector-pointer)
 										(first2 cons-const-iterator) (last2 cons-const-iterator) (result output-iterator) comp)
 	;;(format t "specialized set-intersection for const-vector-pointer & const-vector-pointer & output-iterator is invoked.~%")
@@ -16135,7 +16135,7 @@
 							   (__cons-itr-cons      last2) (clone result) (functor-function (clone comp))))
 
   ;;PTN; set-intersection : 22 -  cvp x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 const-vector-pointer) (last1 const-vector-pointer)
 										(first2 cons-const-iterator) (last2 cons-const-iterator) (result cons-iterator))
 	;;(format t "specialized set-intersection for const-vector-pointer & const-vector-pointer & cons-iterator is invoked.~%")
@@ -16148,7 +16148,7 @@
 														  (__cons-itr-cons      last2)
 														  (__cons-itr-cons     result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 const-vector-pointer) (last1 const-vector-pointer)
 										(first2 cons-const-iterator) (last2 cons-const-iterator) (result cons-iterator) comp)
 	;;(format t "specialized set-intersection for const-vector-pointer & const-vector-pointer & cons-iterator is invoked.~%")
@@ -16162,7 +16162,7 @@
 														  (__cons-itr-cons     result) (functor-function (clone comp)))))
 
   ;;PTN; set-intersection : 23 -  cvp x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 const-vector-pointer) (last1 const-vector-pointer)
 										(first2 cons-const-iterator) (last2 cons-const-iterator) (result vector-pointer))
 	;;(format t "specialized set-intersection for const-vector-pointer & const-vector-pointer & vector-pointer is invoked.~%")
@@ -16176,7 +16176,7 @@
 														  (opr::vec-ptr-index  result)
 														  (opr::vec-ptr-buffer result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 const-vector-pointer) (last1 const-vector-pointer)
 										(first2 cons-const-iterator) (last2 cons-const-iterator) (result vector-pointer) comp)
 	;;(format t "specialized set-intersection for const-vector-pointer & const-vector-pointer & vector-pointer is invoked.~%")
@@ -16216,7 +16216,7 @@
 							   (opr::vec-ptr-buffer first2) (clone result) (functor-function (clone comp))))
 
   ;;PTN; set-intersection : 25 -  cvp x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 const-vector-pointer) (last1 const-vector-pointer)
 										(first2 const-vector-pointer) (last2 const-vector-pointer) (result cons-iterator))
 	;;(format t "specialized set-intersection for const-vector-pointer & const-vector-pointer & cons-iterator is invoked.~%")
@@ -16231,7 +16231,7 @@
 														  (opr::vec-ptr-buffer first2)
 														  (__cons-itr-cons     result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-intersection ((first1 const-vector-pointer) (last1 const-vector-pointer)
 										(first2 const-vector-pointer) (last2 const-vector-pointer) (result cons-iterator) comp)
 	;;(format t "specialized set-intersection for const-vector-pointer & const-vector-pointer & cons-iterator is invoked.~%")
@@ -16300,7 +16300,7 @@
 	(__set-difference-imp-00 first1 last1 first2 last2 result (functor-function (clone comp))))
 
   ;;PTN; set-difference : 01 -   i  x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 input-iterator) (last1 input-iterator)
 									  (first2 input-iterator) (last2 input-iterator) (result cons-iterator))
 	;;(format t "specialized set-difference for input-iterator & input-iterator & cons-iterator is invoked.~%")
@@ -16308,7 +16308,7 @@
 							   (__set-difference-imp-01 first1 last1 first2 last2
 														(__cons-itr-cons result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 input-iterator) (last1 input-iterator)
 									  (first2 input-iterator) (last2 input-iterator) (result cons-iterator) comp)
 	;;(format t "specialized set-difference for input-iterator & input-iterator & cons-iterator is invoked.~%")
@@ -16334,7 +16334,7 @@
 														(opr::vec-ptr-buffer result) (functor-function (clone comp)))))
 
   ;;PTN; set-difference : 03 -   i  x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 input-iterator) (last1 input-iterator)
 									  (first2 cons-const-iterator) (last2 cons-const-iterator) (result output-iterator))
 	;;(format t "specialized set-difference for input-iterator & cons-const-iterator & output-iterator is invoked.~%")
@@ -16342,7 +16342,7 @@
 							 (__cons-itr-cons first2)
 							 (__cons-itr-cons  last2) (clone result) #'operator_<))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 input-iterator) (last1 input-iterator)
 									  (first2 cons-const-iterator) (last2 cons-const-iterator) (result output-iterator) comp)
 	;;(format t "specialized set-difference for input-iterator & cons-const-iterator & output-iterator is invoked.~%")
@@ -16351,7 +16351,7 @@
 							 (__cons-itr-cons  last2) (clone result) (functor-function (clone comp))))
 
   ;;PTN; set-difference : 04 -   i  x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 input-iterator) (last1 input-iterator)
 									  (first2 cons-const-iterator) (last2 cons-const-iterator) (result cons-iterator))
 	;;(format t "specialized set-difference for input-iterator & cons-const-iterator & cons-iterator is invoked.~%")
@@ -16361,7 +16361,7 @@
 														(__cons-itr-cons  last2)
 														(__cons-itr-cons result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 input-iterator) (last1 input-iterator)
 									  (first2 cons-const-iterator) (last2 cons-const-iterator) (result cons-iterator) comp)
 	;;(format t "specialized set-difference for input-iterator & cons-const-iterator & cons-iterator is invoked.~%")
@@ -16372,7 +16372,7 @@
 														(__cons-itr-cons result) (functor-function (clone comp)))))
 
   ;;PTN; set-difference : 05 -   i  x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 input-iterator) (last1 input-iterator)
 									  (first2 cons-const-iterator) (last2 cons-const-iterator) (result vector-pointer))
 	;;(format t "specialized set-difference for input-iterator & cons-const-iterator & vector-pointer is invoked.~%")
@@ -16383,7 +16383,7 @@
 														(opr::vec-ptr-index  result)
 														(opr::vec-ptr-buffer result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 input-iterator) (last1 input-iterator)
 									  (first2 cons-const-iterator) (last2 cons-const-iterator) (result vector-pointer) comp)
 	;;(format t "specialized set-difference for input-iterator & cons-const-iterator & vector-pointer is invoked.~%")
@@ -16414,7 +16414,7 @@
 							 (opr::vec-ptr-buffer first2) (clone result) (functor-function (clone comp))))
 
   ;;PTN; set-difference : 07 -   i  x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 input-iterator) (last1 input-iterator)
 									  (first2 const-vector-pointer) (last2 const-vector-pointer) (result cons-iterator))
 	;;(format t "specialized set-difference for input-iterator & const-vector-pointer & cons-iterator is invoked.~%")
@@ -16426,7 +16426,7 @@
 														(opr::vec-ptr-buffer first2)
 														(__cons-itr-cons     result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 input-iterator) (last1 input-iterator)
 									  (first2 const-vector-pointer) (last2 const-vector-pointer) (result cons-iterator) comp)
 	;;(format t "specialized set-difference for input-iterator & const-vector-pointer & cons-iterator is invoked.~%")
@@ -16464,14 +16464,14 @@
 														(opr::vec-ptr-buffer result) (functor-function (clone comp)))))
 
   ;;PTN; set-difference : 09 -  cci x  i  x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 									  (first2 input-iterator) (last2 input-iterator) (result output-iterator))
 	;;(format t "specialized set-difference for const-vector-pointer & input-iterator & output-iterator is invoked.~%")
 	(__set-difference-imp-09 (__cons-itr-cons first1)
 							 (__cons-itr-cons  last1) first2 last2 (clone result) #'operator_<))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 									  (first2 input-iterator) (last2 input-iterator) (result output-iterator) comp)
 	;;(format t "specialized set-difference for const-vector-pointer & input-iterator & output-iterator is invoked.~%")
@@ -16480,7 +16480,7 @@
 							 first2 last2 (clone result) (functor-function (clone comp))))
 
   ;;PTN; set-difference : 10 -  cci x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 									  (first2 input-iterator) (last2 input-iterator) (result cons-iterator))
 	;;(format t "specialized set-difference for const-vector-pointer & input-iterator & cons-iterator is invoked.~%")
@@ -16490,7 +16490,7 @@
 														first2 last2
 														(__cons-itr-cons     result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 									  (first2 input-iterator) (last2 input-iterator) (result cons-iterator) comp)
 	;;(format t "specialized set-difference for const-vector-pointer & input-iterator & cons-iterator is invoked.~%")
@@ -16501,7 +16501,7 @@
 														(__cons-itr-cons     result) (functor-function (clone comp)))))
 
   ;;PTN; set-difference : 11 -  cci x  i  x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 									  (first2 input-iterator) (last2 input-iterator) (result vector-pointer))
 	;;(format t "specialized set-difference for const-vector-pointer & input-iterator & vector-pointer is invoked.~%")
@@ -16512,7 +16512,7 @@
 														(opr::vec-ptr-index  result)
 														(opr::vec-ptr-buffer result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 									  (first2 input-iterator) (last2 input-iterator) (result vector-pointer) comp)
 	;;(format t "specialized set-difference for const-vector-pointer & input-iterator & vector-pointer is invoked.~%")
@@ -16524,7 +16524,7 @@
 														(opr::vec-ptr-buffer result) (functor-function (clone comp)))))
 
   ;;PTN; set-difference : 12 -  cci x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 									  (first2 cons-const-iterator) (last2 cons-const-iterator)
 									  (result output-iterator))
@@ -16534,7 +16534,7 @@
 							 (__cons-itr-cons first2)
 							 (__cons-itr-cons  last2) (clone result) #'operator_<))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 									  (first2 cons-const-iterator) (last2 cons-const-iterator)
 									  (result output-iterator) comp)
@@ -16545,7 +16545,7 @@
 							 (__cons-itr-cons  last2) (clone result) (functor-function (clone comp))))
 
   ;;PTN; set-difference : 13 -  cci x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 									  (first2 cons-const-iterator) (last2 cons-const-iterator) (result cons-iterator))
 	;;(format t "specialized set-difference for const-vector-pointer & cons-const-iterator & cons-iterator is invoked.~%")
@@ -16556,7 +16556,7 @@
 														(__cons-itr-cons  last2)
 														(__cons-itr-cons result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 									  (first2 cons-const-iterator) (last2 cons-const-iterator) (result cons-iterator) comp)
 	;;(format t "specialized set-difference for const-vector-pointer & cons-const-iterator & cons-iterator is invoked.~%")
@@ -16568,7 +16568,7 @@
 														(__cons-itr-cons result) (functor-function (clone comp)))))
 
   ;;PTN; set-difference : 14 -  cci x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 									  (first2 cons-const-iterator) (last2 cons-const-iterator) (result vector-pointer))
 	;;(format t "specialized set-difference for const-vector-pointer & cons-const-iterator & vector-pointer is invoked.~%")
@@ -16580,7 +16580,7 @@
 														(opr::vec-ptr-index  result)
 														(opr::vec-ptr-buffer result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 									  (first2 cons-const-iterator) (last2 cons-const-iterator)
 									  (result vector-pointer) comp)
@@ -16594,7 +16594,7 @@
 														(opr::vec-ptr-buffer result) (functor-function (clone comp)))))
 
   ;;PTN; set-difference : 15 -  cci x cvp x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 									  (first2 const-vector-pointer) (last2 const-vector-pointer)
 									  (result output-iterator))
@@ -16606,7 +16606,7 @@
 							 (opr::vec-ptr-index   last2)
 							 (opr::vec-ptr-buffer first2) (clone result) #'operator_<))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 									  (first2 const-vector-pointer) (last2 const-vector-pointer)
 									  (result output-iterator) comp)
@@ -16619,7 +16619,7 @@
 							 (opr::vec-ptr-buffer first2) (clone result) (functor-function (clone comp))))
 
   ;;PTN; set-difference : 16 -  cci x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 									  (first2 const-vector-pointer) (last2 const-vector-pointer) (result cons-iterator))
 	;;(format t "specialized set-difference for const-vector-pointer & const-vector-pointer & cons-iterator is invoked.~%")
@@ -16632,7 +16632,7 @@
 														(opr::vec-ptr-buffer first2)
 														(__cons-itr-cons     result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 									  (first2 const-vector-pointer) (last2 const-vector-pointer) (result cons-iterator) comp)
 	;;(format t "specialized set-difference for const-vector-pointer & const-vector-pointer & cons-iterator is invoked.~%")
@@ -16646,7 +16646,7 @@
 														(__cons-itr-cons     result) (functor-function (clone comp)))))
 
   ;;PTN; set-difference : 17 -  cci x cvp x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 									  (first2 const-vector-pointer) (last2 const-vector-pointer) (result vector-pointer))
 	;;(format t "specialized set-difference for const-vector-pointer & const-vector-pointer & vector-pointer is invoked.~%")
@@ -16660,7 +16660,7 @@
 														(opr::vec-ptr-index  result)
 														(opr::vec-ptr-buffer result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 									  (first2 const-vector-pointer) (last2 const-vector-pointer)
 									  (result vector-pointer) comp)
@@ -16694,7 +16694,7 @@
 							 first2 last2 (clone result) (functor-function (clone comp))))
 
   ;;PTN; set-difference : 19 -  cvp x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 const-vector-pointer) (last1 const-vector-pointer)
 									  (first2 input-iterator) (last2 input-iterator) (result cons-iterator))
 	;;(format t "specialized set-difference for const-vector-pointer & input-iterator & cons-iterator is invoked.~%")
@@ -16706,7 +16706,7 @@
 														first2 last2
 														(__cons-itr-cons     result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 const-vector-pointer) (last1 const-vector-pointer)
 									  (first2 input-iterator) (last2 input-iterator) (result cons-iterator) comp)
 	;;(format t "specialized set-difference for const-vector-pointer & input-iterator & cons-iterator is invoked.~%")
@@ -16744,7 +16744,7 @@
 														(opr::vec-ptr-buffer result) (functor-function (clone comp)))))
 
   ;;PTN; set-difference : 21 -  cvp x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 const-vector-pointer) (last1 const-vector-pointer)
 									  (first2 cons-const-iterator) (last2 cons-const-iterator)
 									  (result output-iterator))
@@ -16756,7 +16756,7 @@
 							 (__cons-itr-cons     first2)
 							 (__cons-itr-cons      last2) (clone result) #'operator_<))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 const-vector-pointer) (last1 const-vector-pointer)
 									  (first2 cons-const-iterator) (last2 cons-const-iterator)
 									  (result output-iterator) comp)
@@ -16769,7 +16769,7 @@
 							 (__cons-itr-cons      last2) (clone result) (functor-function (clone comp))))
 
   ;;PTN; set-difference : 22 -  cvp x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 const-vector-pointer) (last1 const-vector-pointer)
 									  (first2 cons-const-iterator) (last2 cons-const-iterator) (result cons-iterator))
 	;;(format t "specialized set-difference for const-vector-pointer & cons-const-iterator & cons-iterator is invoked.~%")
@@ -16782,7 +16782,7 @@
 														(__cons-itr-cons      last2)
 														(__cons-itr-cons     result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 const-vector-pointer) (last1 const-vector-pointer)
 									  (first2 cons-const-iterator) (last2 cons-const-iterator) (result cons-iterator) comp)
 	;;(format t "specialized set-difference for const-vector-pointer & cons-const-iterator & cons-iterator is invoked.~%")
@@ -16796,7 +16796,7 @@
 														(__cons-itr-cons     result) (functor-function (clone comp)))))
 
   ;;PTN; set-difference : 23 -  cvp x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 const-vector-pointer) (last1 const-vector-pointer)
 									  (first2 cons-const-iterator) (last2 cons-const-iterator) (result vector-pointer))
 	;;(format t "specialized set-difference for const-vector-pointer & cons-const-iterator & vector-pointer is invoked.~%")
@@ -16810,7 +16810,7 @@
 														(opr::vec-ptr-index  result)
 														(opr::vec-ptr-buffer result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 const-vector-pointer) (last1 const-vector-pointer)
 									  (first2 cons-const-iterator) (last2 cons-const-iterator)
 									  (result vector-pointer) comp)
@@ -16853,7 +16853,7 @@
 							 (opr::vec-ptr-buffer first2) (clone result) (functor-function (clone comp))))
 
   ;;PTN; set-difference : 25 -  cvp x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 const-vector-pointer) (last1 const-vector-pointer)
 									  (first2 const-vector-pointer) (last2 const-vector-pointer) (result cons-iterator))
 	;;(format t "specialized set-difference for const-vector-pointer & const-vector-pointer & cons-iterator is invoked.~%")
@@ -16868,7 +16868,7 @@
 														(opr::vec-ptr-buffer first2)
 														(__cons-itr-cons     result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-difference ((first1 const-vector-pointer) (last1 const-vector-pointer)
 									  (first2 const-vector-pointer) (last2 const-vector-pointer) (result cons-iterator) comp)
 	;;(format t "specialized set-difference for const-vector-pointer & const-vector-pointer & cons-iterator is invoked.~%")
@@ -16936,7 +16936,7 @@
 	(__set-symmetric-difference-imp-00 first1 last1 first2 last2 result (functor-function (clone comp))))
 
   ;;PTN; set-symmetric-difference : 01 -   i  x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 input-iterator) (last1 input-iterator)
 												(first2 input-iterator) (last2 input-iterator) (result cons-iterator))
 	;;(format t "specialized set-symmetric-difference for input-iterator & input-iterator & cons-iterator is invoked.~%")
@@ -16944,7 +16944,7 @@
 							   (__set-symmetric-difference-imp-01 first1 last1 first2 last2
 																  (__cons-itr-cons result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 input-iterator) (last1 input-iterator)
 												(first2 input-iterator) (last2 input-iterator) (result cons-iterator) comp)
 	;;(format t "specialized set-symmetric-difference for input-iterator & input-iterator & cons-iterator is invoked.~%")
@@ -16970,7 +16970,7 @@
 																  (opr::vec-ptr-buffer result) (functor-function (clone comp)))))
 
   ;;PTN; set-symmetric-difference : 03 -   i  x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 input-iterator) (last1 input-iterator)
 												(first2 cons-const-iterator) (last2 cons-const-iterator) (result output-iterator))
 	;;(format t "specialized set-symmetric-difference for input-iterator & cons-const-iterator & output-iterator is invoked.~%")
@@ -16978,7 +16978,7 @@
 									   (__cons-itr-cons first2)
 									   (__cons-itr-cons  last2) (clone result) #'operator_<))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 input-iterator) (last1 input-iterator)
 												(first2 cons-const-iterator) (last2 cons-const-iterator) (result output-iterator) comp)
 	;;(format t "specialized set-symmetric-difference for input-iterator & cons-const-iterator & output-iterator is invoked.~%")
@@ -16988,7 +16988,7 @@
 
 
   ;;PTN; set-symmetric-difference : 04 -   i  x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 input-iterator) (last1 input-iterator)
 												(first2 cons-const-iterator) (last2 cons-const-iterator) (result cons-iterator))
 	;;(format t "specialized set-symmetric-difference for input-iterator & cons-const-iterator & cons-iterator is invoked.~%")
@@ -16998,7 +16998,7 @@
 																  (__cons-itr-cons  last2)
 																  (__cons-itr-cons result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 input-iterator) (last1 input-iterator)
 												(first2 cons-const-iterator) (last2 cons-const-iterator) (result cons-iterator) comp)
 	;;(format t "specialized set-symmetric-difference for input-iterator & cons-const-iterator & cons-iterator is invoked.~%")
@@ -17009,7 +17009,7 @@
 																  (__cons-itr-cons result) (functor-function (clone comp)))))
 
   ;;PTN; set-symmetric-difference : 05 -   i  x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 input-iterator) (last1 input-iterator)
 												(first2 cons-const-iterator) (last2 cons-const-iterator) (result vector-pointer))
 	;;(format t "specialized set-symmetric-difference for input-iterator & cons-const-iterator & vector-pointer is invoked.~%")
@@ -17020,7 +17020,7 @@
 																  (opr::vec-ptr-index  result)
 																  (opr::vec-ptr-buffer result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 input-iterator) (last1 input-iterator)
 												(first2 cons-const-iterator) (last2 cons-const-iterator) (result vector-pointer) comp)
 	;;(format t "specialized set-symmetric-difference for input-iterator & cons-const-iterator & vector-pointer is invoked.~%")
@@ -17052,7 +17052,7 @@
 
 
   ;;PTN; set-symmetric-difference : 07 -   i  x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 input-iterator) (last1 input-iterator)
 												(first2 const-vector-pointer) (last2 const-vector-pointer) (result cons-iterator))
 	;;(format t "specialized set-symmetric-difference for input-iterator & const-vector-pointer & cons-iterator is invoked.~%")
@@ -17064,7 +17064,7 @@
 																  (opr::vec-ptr-buffer first2)
 																  (__cons-itr-cons     result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 input-iterator) (last1 input-iterator)
 												(first2 const-vector-pointer) (last2 const-vector-pointer) (result cons-iterator) comp)
 	;;(format t "specialized set-symmetric-difference for input-iterator & const-vector-pointer & cons-iterator is invoked.~%")
@@ -17102,14 +17102,14 @@
 																  (opr::vec-ptr-buffer result) (functor-function (clone comp)))))
 
   ;;PTN; set-symmetric-difference : 09 -  cci x  i  x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 												(first2 input-iterator) (last2 input-iterator) (result output-iterator))
 	;;(format t "specialized set-symmetric-difference for cons-const-iterator & input-iterator & output-iterator is invoked.~%")
 	(__set-symmetric-difference-imp-09 (__cons-itr-cons first1)
 									   (__cons-itr-cons  last1) first2 last2 (clone result) #'operator_<))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 												(first2 input-iterator) (last2 input-iterator) (result output-iterator) comp)
 	;;(format t "specialized set-symmetric-difference for cons-const-iterator & input-iterator & output-iterator is invoked.~%")
@@ -17119,7 +17119,7 @@
 
 
   ;;PTN; set-symmetric-difference : 10 -  cci x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 												(first2 input-iterator) (last2 input-iterator) (result cons-iterator))
 	;;(format t "specialized set-symmetric-difference for cons-const-iterator & input-iterator & cons-iterator is invoked.~%")
@@ -17129,7 +17129,7 @@
 																  first2 last2
 																  (__cons-itr-cons result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 												(first2 input-iterator) (last2 input-iterator) (result cons-iterator) comp)
 	;;(format t "specialized set-symmetric-difference for cons-const-iterator & input-iterator & cons-iterator is invoked.~%")
@@ -17140,7 +17140,7 @@
 																  (__cons-itr-cons result) (functor-function (clone comp)))))
 
   ;;PTN; set-symmetric-difference : 11 -  cci x  i  x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 												(first2 input-iterator) (last2 input-iterator) (result vector-pointer))
 	;;(format t "specialized set-symmetric-difference for cons-const-iterator & input-iterator & vector-pointer is invoked.~%")
@@ -17151,7 +17151,7 @@
 																  (opr::vec-ptr-index  result)
 																  (opr::vec-ptr-buffer result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 												(first2 input-iterator) (last2 input-iterator) (result vector-pointer) comp)
 	;;(format t "specialized set-symmetric-difference for cons-const-iterator & input-iterator & vector-pointer is invoked.~%")
@@ -17163,7 +17163,7 @@
 																  (opr::vec-ptr-buffer result) (functor-function (clone comp)))))
 
   ;;PTN; set-symmetric-difference : 12 -  cci x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 												(first2 cons-const-iterator) (last2 cons-const-iterator) (result output-iterator))
 	;;(format t "specialized set-symmetric-difference for cons-const-iterator & cons-const-iterator & output-iterator is invoked.~%")
@@ -17172,7 +17172,7 @@
 									   (__cons-itr-cons first2)
 									   (__cons-itr-cons  last2) (clone result) #'operator_<))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 												(first2 cons-const-iterator) (last2 cons-const-iterator) (result output-iterator) comp)
 	;;(format t "specialized set-symmetric-difference for cons-const-iterator & cons-const-iterator & output-iterator is invoked.~%")
@@ -17182,7 +17182,7 @@
 									   (__cons-itr-cons  last2) (clone result) (functor-function (clone comp))))
 
   ;;PTN; set-symmetric-difference : 13 -  cci x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 												(first2 cons-const-iterator) (last2 cons-const-iterator) (result cons-iterator))
 	;;(format t "specialized set-symmetric-difference for cons-const-iterator & cons-const-iterator & cons-iterator is invoked.~%")
@@ -17193,7 +17193,7 @@
 																  (__cons-itr-cons  last2)
 																  (__cons-itr-cons result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 												(first2 cons-const-iterator) (last2 cons-const-iterator) (result cons-iterator) comp)
 	;;(format t "specialized set-symmetric-difference for cons-const-iterator & cons-const-iterator & cons-iterator is invoked.~%")
@@ -17205,7 +17205,7 @@
 																  (__cons-itr-cons result) (functor-function (clone comp)))))
 
   ;;PTN; set-symmetric-difference : 14 -  cci x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 												(first2 cons-const-iterator) (last2 cons-const-iterator) (result vector-pointer))
 	;;(format t "specialized set-symmetric-difference for cons-const-iterator & cons-const-iterator & vector-pointer is invoked.~%")
@@ -17217,7 +17217,7 @@
 																  (opr::vec-ptr-index  result)
 																  (opr::vec-ptr-buffer result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 												(first2 cons-const-iterator) (last2 cons-const-iterator) (result vector-pointer) comp)
 	;;(format t "specialized set-symmetric-difference for cons-const-iterator & cons-const-iterator & vector-pointer is invoked.~%")
@@ -17230,7 +17230,7 @@
 																  (opr::vec-ptr-buffer result) (functor-function (clone comp)))))
 
   ;;PTN; set-symmetric-difference : 15 -  cci x cvp x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 												(first2 const-vector-pointer) (last2 const-vector-pointer) (result output-iterator))
 	;;(format t "specialized set-symmetric-difference for cons-const-iterator & const-vector-pointer & output-iterator is invoked.~%")
@@ -17241,7 +17241,7 @@
 									   (opr::vec-ptr-index  last2)
 									   (opr::vec-ptr-buffer first2) (clone result) #'operator_<))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 												(first2 const-vector-pointer) (last2 const-vector-pointer)
 												(result output-iterator) comp)
@@ -17254,7 +17254,7 @@
 									   (opr::vec-ptr-buffer first2) (clone result) (functor-function (clone comp))))
 
   ;;PTN; set-symmetric-difference : 16 -  cci x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 												(first2 const-vector-pointer) (last2 const-vector-pointer) (result cons-iterator))
 	;;(format t "specialized set-symmetric-difference for cons-const-iterator & const-vector-pointer & cons-iterator is invoked.~%")
@@ -17267,7 +17267,7 @@
 																  (opr::vec-ptr-buffer first2)
 																  (__cons-itr-cons     result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 												(first2 const-vector-pointer) (last2 const-vector-pointer) (result cons-iterator) comp)
 	;;(format t "specialized set-symmetric-difference for cons-const-iterator & const-vector-pointer & cons-iterator is invoked.~%")
@@ -17281,7 +17281,7 @@
 																  (__cons-itr-cons     result) (functor-function (clone comp)))))
 
   ;;PTN; set-symmetric-difference : 17 -  cci x cvp x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 												(first2 const-vector-pointer) (last2 const-vector-pointer) (result vector-pointer))
 	;;(format t "specialized set-symmetric-difference for cons-const-iterator & const-vector-pointer & vector-pointer is invoked.~%")
@@ -17295,7 +17295,7 @@
 																  (opr::vec-ptr-index  result)
 																  (opr::vec-ptr-buffer result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 cons-const-iterator) (last1 cons-const-iterator)
 												(first2 const-vector-pointer) (last2 const-vector-pointer) (result vector-pointer) comp)
 	;;(format t "specialized set-symmetric-difference for cons-const-iterator & const-vector-pointer & vector-pointer is invoked.~%")
@@ -17329,7 +17329,7 @@
 
 
   ;;PTN; set-symmetric-difference : 19 -  cvp x  i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 const-vector-pointer) (last1 const-vector-pointer)
 												(first2 input-iterator) (last2 input-iterator) (result cons-iterator))
 	;;(format t "specialized set-symmetric-difference for const-vector-pointer & input-iterator & cons-iterator is invoked.~%")
@@ -17341,7 +17341,7 @@
 																  first2 last2
 																  (__cons-itr-cons     result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 const-vector-pointer) (last1 const-vector-pointer)
 												(first2 input-iterator) (last2 input-iterator) (result cons-iterator) comp)
 	;;(format t "specialized set-symmetric-difference for const-vector-pointer & input-iterator & cons-iterator is invoked.~%")
@@ -17379,7 +17379,7 @@
 																  (opr::vec-ptr-buffer result) (functor-function (clone comp)))))
 
   ;;PTN; set-symmetric-difference : 21 -  cvp x cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 const-vector-pointer) (last1 const-vector-pointer)
 												(first2 cons-const-iterator) (last2 cons-const-iterator) (result output-iterator))
 	;;(format t "specialized set-symmetric-difference for const-vector-pointer & cons-const-iterator & output-iterator is invoked.~%")
@@ -17390,7 +17390,7 @@
 									   (__cons-itr-cons     first2)
 									   (__cons-itr-cons      last2) (clone result) #'operator_<))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 const-vector-pointer) (last1 const-vector-pointer)
 												(first2 cons-const-iterator) (last2 cons-const-iterator) (result output-iterator) comp)
 	;;(format t "specialized set-symmetric-difference for const-vector-pointer & cons-const-iterator & output-iterator is invoked.~%")
@@ -17402,7 +17402,7 @@
 									   (__cons-itr-cons      last2) (clone result) (functor-function (clone comp))))
 
   ;;PTN; set-symmetric-difference : 22 -  cvp x cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 const-vector-pointer) (last1 const-vector-pointer)
 												(first2 cons-const-iterator) (last2 cons-const-iterator) (result cons-iterator))
 	;;(format t "specialized set-symmetric-difference for const-vector-pointer & cons-const-iterator & cons-iterator is invoked.~%")
@@ -17415,7 +17415,7 @@
 																  (__cons-itr-cons      last2)
 																  (__cons-itr-cons     result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 const-vector-pointer) (last1 const-vector-pointer)
 												(first2 cons-const-iterator) (last2 cons-const-iterator) (result cons-iterator) comp)
 	;;(format t "specialized set-symmetric-difference for const-vector-pointer & cons-const-iterator & cons-iterator is invoked.~%")
@@ -17429,7 +17429,7 @@
 																  (__cons-itr-cons     result) (functor-function (clone comp)))))
 
   ;;PTN; set-symmetric-difference : 23 -  cvp x cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 const-vector-pointer) (last1 const-vector-pointer)
 												(first2 cons-const-iterator) (last2 cons-const-iterator) (result vector-pointer))
 	;;(format t "specialized set-symmetric-difference for const-vector-pointer & cons-const-iterator & vector-pointer is invoked.~%")
@@ -17443,7 +17443,7 @@
 																  (opr::vec-ptr-index  result)
 																  (opr::vec-ptr-buffer result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 const-vector-pointer) (last1 const-vector-pointer)
 												(first2 cons-const-iterator) (last2 cons-const-iterator) (result vector-pointer) comp)
 	;;(format t "specialized set-symmetric-difference for const-vector-pointer & cons-const-iterator & vector-pointer is invoked.~%")
@@ -17485,7 +17485,7 @@
 									   (opr::vec-ptr-buffer first2) (clone result) (functor-function (clone comp))))
 
   ;;PTN; set-symmetric-difference : 25 -  cvp x cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 const-vector-pointer) (last1 const-vector-pointer)
 												(first2 const-vector-pointer) (last2 const-vector-pointer) (result cons-iterator))
 	;;(format t "specialized set-symmetric-difference for const-vector-pointer & const-vector-pointer & cons-iterator is invoked.~%")
@@ -17500,7 +17500,7 @@
 																  (opr::vec-ptr-buffer first2)
 																  (__cons-itr-cons     result) #'operator_<)))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload set-symmetric-difference ((first1 const-vector-pointer) (last1 const-vector-pointer)
 												(first2 const-vector-pointer) (last2 const-vector-pointer) (result cons-iterator) comp)
 	;;(format t "specialized set-symmetric-difference for const-vector-pointer & const-vector-pointer & cons-iterator is invoked.~%")
@@ -17949,7 +17949,7 @@
 
 
   ;;PTN; min-element : 1 -  cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__min-element-imp-1 (cons1 cons2 less-bf)
 			 (declare (type cl:list cons1 cons2))
 			 (declare (type cl:function less-bf))
@@ -18037,7 +18037,7 @@
 
 
   ;;PTN; max-element : 1 -  cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__max-element-imp-1 (cons1 cons2 less-bf)
 			 (declare (type cl:list cons1 cons2))
 			 (declare (type cl:function less-bf))
@@ -18115,7 +18115,7 @@
 	(__minmax-element-imp-0 first last (functor-function (clone comp))))
 
   ;;PTN; minmax-element : 1 -  cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload minmax-element ((first cons-const-iterator) (last cons-const-iterator))
 	;;(format t "specialized minmax-element for cons-const-iterator is invoked.~%")
 	(multiple-value-bind (min max) (__minmax-element-imp-1 (__cons-itr-cons first)
@@ -18123,7 +18123,7 @@
 	  (make-pair (__algo-make-cons-iterator first min)
 				 (__algo-make-cons-iterator first max))))
 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (defmethod-overload minmax-element ((first cons-const-iterator) (last cons-const-iterator) comp)
 	;;(format t "specialized minmax-element for cons-const-iterator is invoked.~%")
 	(multiple-value-bind (min max) (__minmax-element-imp-1 (__cons-itr-cons first)
@@ -18188,7 +18188,7 @@
 	  (__lexicographical-compare-imp-0 first1 last1 first2 last2 (functor-function (clone comp)))))
 
   ;;PTN; lexicographical-compare : 1 -  cci x  i 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__lexicographical-compare-imp-1 (cons1 end1 first2 last2 less-bf)
 			 (declare (type cl:list cons1 end1))
 			 (declare (type cl:function less-bf))
@@ -18257,7 +18257,7 @@
 									   first2 last2 (functor-function (clone comp)))))
 
   ;;PTN; lexicographical-compare : 3 -   i  x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__lexicographical-compare-imp-6 (first1 last1 cons2 end2 less-bf)
 			 (declare (type cl:list cons2 end2))
 			 (declare (type cl:function less-bf))
@@ -18289,7 +18289,7 @@
 
 
   ;;PTN; lexicographical-compare : 4 -  cci x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__lexicographical-compare-imp-7 (cons1 end1 cons2 end2 less-bf)
 			 (declare (type cl:list cons1 end1 cons2 end2))
 			 (declare (type cl:function less-bf))
@@ -18320,7 +18320,7 @@
 
 
   ;;PTN; lexicographical-compare : 5 -  cvp x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__lexicographical-compare-imp-5 (idx1 last1 buffer1 cons2 end2 less-bf)
 			 (declare (type fixnum idx1 last1))
 			 (declare (type cl:list cons2 end2))
@@ -18394,7 +18394,7 @@
 									   (opr::vec-ptr-buffer first2) (functor-function (clone comp)))))
 
   ;;PTN; lexicographical-compare : 7 -  cci x cvp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__lexicographical-compare-imp-7 (cons1 end1 idx2 last2 buffer2 less-bf)
 			 (declare (type cl:list cons1 end1))
 			 (declare (type fixnum idx2 last2))

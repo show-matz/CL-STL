@@ -159,7 +159,7 @@
 									   (funcall fnc arg1 arg2))))))
   (define-constructor equal-to ()
 	(__equal-to-ctor #'operator_==))
-  #+cl-stl-extra
+  #-cl-stl-noextra
   (define-constructor equal-to (op)
 	(__equal-to-ctor op))
   (defmethod operator_clone ((func equal-to))
@@ -186,7 +186,7 @@
 									   (funcall fnc arg1 arg2))))))
   (define-constructor not-equal-to ()
 	(__not-equal-to-ctor #'operator_/=))
-  #+cl-stl-extra
+  #-cl-stl-noextra
   (define-constructor not-equal-to (op)
 	(__not-equal-to-ctor op))
   (defmethod operator_clone ((func not-equal-to))
@@ -213,7 +213,7 @@
 									   (funcall fnc arg1 arg2))))))
   (define-constructor greater ()
 	(__greater-ctor #'operator_>))
-  #+cl-stl-extra
+  #-cl-stl-noextra
   (define-constructor greater (op)
 	(__greater-ctor op))
   (defmethod operator_clone ((func greater))
@@ -240,7 +240,7 @@
 									   (funcall fnc arg1 arg2))))))
   (define-constructor less ()
 	(__less-ctor #'operator_<))
-  #+cl-stl-extra
+  #-cl-stl-noextra
   (define-constructor less (op)
 	(__less-ctor op))
   (defmethod operator_clone ((func less))
@@ -267,7 +267,7 @@
 									   (funcall fnc arg1 arg2))))))
   (define-constructor greater-equal ()
 	(__greater-equal-ctor #'operator_>=))
-  #+cl-stl-extra
+  #-cl-stl-noextra
   (define-constructor greater-equal (op)
 	(__greater-equal-ctor op))
   (defmethod operator_clone ((func greater-equal))
@@ -294,7 +294,7 @@
 									   (funcall fnc arg1 arg2))))))
   (define-constructor less-equal ()
 	(__less-equal-ctor #'operator_<=))
-  #+cl-stl-extra
+  #-cl-stl-noextra
   (define-constructor less-equal (op)
 	(__less-equal-ctor op))
   (defmethod operator_clone ((func less-equal))

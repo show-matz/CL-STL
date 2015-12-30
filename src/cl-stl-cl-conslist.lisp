@@ -6,14 +6,14 @@
 ;; class difinition
 ;;
 ;;--------------------------------------------------------------------
-#+(or cl-stl-extra (not cl-stl-0x98))
+#-(and cl-stl-noextra cl-stl-0x98)
 (defclass cons-const-iterator (forward-iterator)
   ((node  :type     :cons
 		  :initform nil
 		  :initarg  :node
 		  :accessor __cons-itr-cons)))
 
-#+(or cl-stl-extra (not cl-stl-0x98))
+#-(and cl-stl-noextra cl-stl-0x98)
 (defclass cons-iterator (cons-const-iterator) ())
 
 
@@ -22,7 +22,7 @@
 ;; internal utilities
 ;;
 ;;--------------------------------------------------------------------
-#+(or cl-stl-extra (not cl-stl-0x98))
+#-(and cl-stl-noextra cl-stl-0x98)
 (locally (declare (optimize speed))
   (defun __conslist-count-nodes (node1 node2)
 	(let ((cnt 0))
@@ -30,7 +30,7 @@
 	  (for (nil (not (eq node1 node2)) (incf cnt) :returns cnt)
 		(setf node1 (cdr node1))))))
 
-#+(or cl-stl-extra (not cl-stl-0x98))
+#-(and cl-stl-noextra cl-stl-0x98)
 (locally (declare (optimize speed))
   (defun __conslist-clone (lst)
 	(labels ((imp (src top last)
@@ -46,7 +46,7 @@
 			(_= (car top) (car lst))
 			(imp (cdr lst) top top))))))
 
-#+(or cl-stl-extra (not cl-stl-0x98))
+#-(and cl-stl-noextra cl-stl-0x98)
 (locally (declare (optimize speed))
   (defun __conslist-equal (lst1 lst2)
 	(if (and (null lst1) (null lst2))
@@ -59,7 +59,7 @@
 					nil
 					(__conslist-equal (cdr lst1) (cdr lst2))))))))
 
-#+(or cl-stl-extra (not cl-stl-0x98))
+#-(and cl-stl-noextra cl-stl-0x98)
 (locally (declare (optimize speed))
   (defun __conslist-compare (lst1 lst2)
 	(if (and (null lst1) (null lst2))
@@ -84,39 +84,39 @@
 ;; methods for cons-const-iterator
 ;;
 ;;------------------------------------------------------------------------------
-#+(or cl-stl-extra (not cl-stl-0x98))
+#-(and cl-stl-noextra cl-stl-0x98)
 (defmethod operator_= ((itr1 cons-const-iterator) (itr2 cons-const-iterator))
   (__error-when-const-removing-assign itr1 cons-iterator
 									  itr2 cons-const-iterator)
   (setf (__cons-itr-cons itr1) (__cons-itr-cons itr2))
   itr1)
 
-#+(or cl-stl-extra (not cl-stl-0x98))
+#-(and cl-stl-noextra cl-stl-0x98)
 (defmethod operator_clone ((itr cons-const-iterator))
   (make-instance 'cons-const-iterator :node (__cons-itr-cons itr)))
 
-#+(or cl-stl-extra (not cl-stl-0x98))
+#-(and cl-stl-noextra cl-stl-0x98)
 (defmethod operator_== ((itr1 cons-const-iterator) (itr2 cons-const-iterator))
   (eq (__cons-itr-cons itr1) (__cons-itr-cons itr2)))
 
-#+(or cl-stl-extra (not cl-stl-0x98))
+#-(and cl-stl-noextra cl-stl-0x98)
 (defmethod operator_/= ((itr1 cons-const-iterator) (itr2 cons-const-iterator))
   (not (eq (__cons-itr-cons itr1) (__cons-itr-cons itr2))))
 
-#+(or cl-stl-extra (not cl-stl-0x98))
+#-(and cl-stl-noextra cl-stl-0x98)
 (defmethod operator_* ((itr cons-const-iterator))
   (car (__cons-itr-cons itr)))
 
-#+(or cl-stl-extra (not cl-stl-0x98))
+#-(and cl-stl-noextra cl-stl-0x98)
 (defmethod (setf operator_*) (new-val (itr cons-const-iterator))
   (error 'setf-to-const :what "setf to (_* cons-const-iterator)."))
 
-#+(or cl-stl-extra (not cl-stl-0x98))
+#-(and cl-stl-noextra cl-stl-0x98)
 (defmethod operator_++ ((itr cons-const-iterator))
   (setf (__cons-itr-cons itr) (cdr (__cons-itr-cons itr)))
   itr)
 
-#+(or cl-stl-extra (not cl-stl-0x98))
+#-(and cl-stl-noextra cl-stl-0x98)
 (locally (declare (optimize speed))
   (defmethod advance ((itr cons-const-iterator) (n integer))
 	(declare (type fixnum n))
@@ -130,7 +130,7 @@
 	  (setf (__cons-itr-cons itr) node))
 	nil))
 
-#+(or cl-stl-extra (not cl-stl-0x98))
+#-(and cl-stl-noextra cl-stl-0x98)
 (defmethod distance ((itr1 cons-const-iterator) (itr2 cons-const-iterator))
   (__conslist-count-nodes (__cons-itr-cons itr1) (__cons-itr-cons itr2)))
 
@@ -140,18 +140,18 @@
 ;; methods for cons-iterator
 ;;
 ;;------------------------------------------------------------------------------
-#+(or cl-stl-extra (not cl-stl-0x98))
+#-(and cl-stl-noextra cl-stl-0x98)
 (defmethod operator_clone ((itr cons-iterator))
   (make-instance 'cons-iterator :node (__cons-itr-cons itr)))
 
-#+(or cl-stl-extra (not cl-stl-0x98))
+#-(and cl-stl-noextra cl-stl-0x98)
 (defmethod operator_cast ((itr cons-iterator)
 						  (typename (eql 'cons-const-iterator)))
   (__check-exact-type-of-cast itr 'cons-iterator
 								  'cons-const-iterator)
   (make-instance 'cons-iterator :node (__cons-itr-cons itr)))
 
-#+(or cl-stl-extra (not cl-stl-0x98))
+#-(and cl-stl-noextra cl-stl-0x98)
 (defmethod (setf operator_*) (new-val (itr cons-iterator))
   (setf (car (__cons-itr-cons itr)) new-val)
   new-val)
@@ -161,7 +161,7 @@
 ;-----------------------------------------------------
 ; begin, end, size ... etc.
 ;-----------------------------------------------------
-#+cl-stl-extra ; cl:list's begin, end & for.
+#-cl-stl-noextra ; cl:list's begin, end & for.
 (progn
 
   #-cl-stl-0x98 (defmethod data ((lst cl:list)) lst)
@@ -179,7 +179,7 @@
 ;-----------------------------------------------------
 ; compare
 ;-----------------------------------------------------
-#+cl-stl-extra
+#-cl-stl-noextra
 (locally (declare (optimize speed))
   (defmethod operator_== ((lst1 cl:list) (lst2 cl:list))       (__conslist-equal   lst1 lst2))
   (defmethod operator_/= ((lst1 cl:list) (lst2 cl:list)) (not  (__conslist-equal   lst1 lst2)))
@@ -192,7 +192,7 @@
 ;-----------------------------------------------------
 ; enumeration
 ;-----------------------------------------------------
-#+cl-stl-extra
+#-cl-stl-noextra
 (progn
   #-cl-stl-0x98
   (locally (declare (optimize speed))

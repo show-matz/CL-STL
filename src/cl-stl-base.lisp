@@ -26,8 +26,8 @@
 				;--------------------------------------------------------------------
 				; support for operators
 				;--------------------------------------------------------------------
- #+cl-stl-extra :cons-iterator
- #+cl-stl-extra :cons-const-iterator
+#-cl-stl-noextra :cons-iterator
+#-cl-stl-noextra :cons-const-iterator
 				;--------------------------------------------------------------------
 				; container
 				;--------------------------------------------------------------------
@@ -201,8 +201,7 @@
   #-cl-stl-0x98 :get
   #-cl-stl-0x98 :tuple-cat
   #-cl-stl-0x98 :tie
-  #+(and cl-stl-extra
-		 (not cl-stl-0x98))	:with-tie
+  #-(or cl-stl-noextra cl-stl-0x98)	:with-tie
 				;----------------------------------
 				;utility
 				:pair
@@ -555,7 +554,7 @@
 #-cl-stl-0x98    ; support for 'get in tie'
 (progn
   (defgeneric __tie-get (idx obj))
-  #+cl-stl-extra
+  #-cl-stl-noextra
   (defgeneric (setf __tie-get) (new-val idx obj)))
 
 
@@ -1057,7 +1056,7 @@
 ")
 
 #-cl-stl-0x98
-(declare-method-overload iota (3 #+cl-stl-extra 4)
+(declare-method-overload iota (3 #-cl-stl-noextra 4)
   :documentation "
 <<signature>>
   (cl-stl:iota first last init)            [0x11]
@@ -1141,7 +1140,7 @@
   copy of func.
 "))
 
-(declare-method-overload find (2 3 #+cl-stl-extra 4)
+(declare-method-overload find (2 3 #-cl-stl-noextra 4)
   :documentation "
 <<signature>>
   1) (cl-stl:find container  value)
@@ -1242,7 +1241,7 @@
   iterator point to found element.
 ")
 
-(declare-method-overload count (2 3 #+cl-stl-extra 4)
+(declare-method-overload count (2 3 #-cl-stl-noextra 4)
   :documentation "
 <<signature>>
   1) (cl-stl:count container  value)
@@ -1564,7 +1563,7 @@
   iterator points to last of result sequence.
 ")
 
-(declare-method-overload replace (4 #+cl-stl-extra 5)
+(declare-method-overload replace (4 #-cl-stl-noextra 5)
   :documentation "
 <<signature>>
   (cl-stl:replace first last old-val new-val)
@@ -1596,7 +1595,7 @@
   nil.
 "))
 
-(declare-method-overload replace-copy (5 #+cl-stl-extra 6)
+(declare-method-overload replace-copy (5 #-cl-stl-noextra 6)
   :documentation "
 <<signature>>
   (cl-stl:replace-copy first last result old-val new-val)
@@ -1691,7 +1690,7 @@
   [0x11] iterator point to first + n.
 "))
 
-(declare-method-overload remove (2 3 #+cl-stl-extra 4)
+(declare-method-overload remove (2 3 #-cl-stl-noextra 4)
   :documentation "
 <<signature>>
   1) (cl-stl:remove container value)
@@ -1728,7 +1727,7 @@
   2) iterator point to new end of sequence.
 ")
 
-(declare-method-overload remove-copy (4 #+cl-stl-extra 5)
+(declare-method-overload remove-copy (4 #-cl-stl-noextra 5)
   :documentation "
 <<signature>>
   (cl-stl:remove-copy first last result val)

@@ -100,28 +100,28 @@
 #-cl-stl-0x98 ; cl:vector's begin, end & for.
 (progn
 
-  #+cl-stl-extra (defmethod data ((arr cl:vector)) arr)
-  #+cl-stl-extra (defmethod size ((arr cl:vector)) (length arr))
+  #-cl-stl-noextra (defmethod data ((arr cl:vector)) arr)
+  #-cl-stl-noextra (defmethod size ((arr cl:vector)) (length arr))
 
   (defmethod begin ((arr cl:vector)) (_& arr 0))
   (defmethod end   ((arr cl:vector)) (_& arr (length arr)))
 
-  #+cl-stl-extra (defmethod cbegin ((arr cl:vector)) (const_& arr 0))
-  #+cl-stl-extra (defmethod cend   ((arr cl:vector)) (const_& arr (length arr)))
+  #-cl-stl-noextra (defmethod cbegin ((arr cl:vector)) (const_& arr 0))
+  #-cl-stl-noextra (defmethod cend   ((arr cl:vector)) (const_& arr (length arr)))
 
-  #+cl-stl-extra
+  #-cl-stl-noextra
   (defmethod rbegin ((arr cl:vector))
 	(make-instance 'reverse-vector-pointer :buffer arr :index (1- (length arr))))
 
-  #+cl-stl-extra
+  #-cl-stl-noextra
   (defmethod rend ((arr cl:vector))
 	(make-instance 'reverse-vector-pointer :buffer arr :index -1))
 
-  #+cl-stl-extra
+  #-cl-stl-noextra
   (defmethod crbegin ((arr cl:vector))
 	(make-instance 'const-reverse-vector-pointer :buffer arr :index (1- (length arr))))
 
-  #+cl-stl-extra
+  #-cl-stl-noextra
   (defmethod crend   ((arr cl:vector))
 	(make-instance 'const-reverse-vector-pointer :buffer arr :index -1))
 

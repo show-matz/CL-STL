@@ -120,7 +120,7 @@
 	  (1 (setf (stl:second obj) new-val))
 	  (t (error 'out-of-range :what "Index specified to get is out of range.")))
 	new-val)
-  #+cl-stl-extra
+  #-cl-stl-noextra
   (defmethod (setf __tie-get) (new-val (idx integer) (obj pair))
 	(case idx
 	  (0 (setf (stl:first  obj) new-val))

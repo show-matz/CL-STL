@@ -6,8 +6,8 @@
 				 back-inserter
 				 front-inserter
 				 inserter
-  #+cl-stl-extra stream-writer
-  #+cl-stl-extra stream-reader))
+#-cl-stl-noextra stream-writer
+#-cl-stl-noextra stream-reader))
 
 
 ;;------------------------------------------------------------------------------
@@ -367,32 +367,32 @@
 ;; stream-write-iterator
 ;;
 ;;------------------------------------------------------------------------------
-#+cl-stl-extra
+#-cl-stl-noextra
 (defclass stream-write-iterator (output-iterator)
   ((stream :initform nil
 		   :initarg  :stream
 		   :accessor __stream-wrt-itr-stream)))
 
-#+cl-stl-extra
+#-cl-stl-noextra
 (defmethod operator_= ((itr1 stream-write-iterator) (itr2 stream-write-iterator))
   (setf (__stream-wrt-itr-stream itr1) (__stream-wrt-itr-stream itr2))
   itr1)
 
-#+cl-stl-extra
+#-cl-stl-noextra
 (defmethod operator_clone ((itr stream-write-iterator))
   (make-instance 'stream-write-iterator
 				 :stream (__stream-wrt-itr-stream itr)))
 
-#+cl-stl-extra
+#-cl-stl-noextra
 (defmethod (setf operator_*) (new-val (itr stream-write-iterator))
   (format (__stream-wrt-itr-stream itr) "~A" new-val)
   new-val)
 
-#+cl-stl-extra
+#-cl-stl-noextra
 (defmethod operator_++ ((itr stream-write-iterator))
   (format (slot-value itr 'stream) "~%"))
 
-#+cl-stl-extra
+#-cl-stl-noextra
 (defun stream-writer (stream)
   (make-instance 'stream-write-iterator :stream stream))
 
@@ -401,26 +401,26 @@
 ;; stream-read-iterator
 ;;
 ;;------------------------------------------------------------------------------
-#+cl-stl-extra
+#-cl-stl-noextra
 (defclass stream-read-iterator (input-iterator)
   (m-stream
    m-linenum
    m-linebuf))
 
-#+cl-stl-extra
+#-cl-stl-noextra
 (defmethod operator_= ((itr1 stream-read-iterator) (itr2 stream-read-iterator))
   (setf (slot-value itr1 'm-stream)  (slot-value itr2 'm-stream))
   (setf (slot-value itr1 'm-linenum) (slot-value itr2 'm-linenum))
   (setf (slot-value itr1 'm-linebuf) (slot-value itr2 'm-linebuf))
   itr1)
 
-#+cl-stl-extra
+#-cl-stl-noextra
 (defmethod operator_clone ((itr stream-read-iterator))
   (let ((oitr (make-instance 'stream-read-iterator)))
 	(_= oitr itr)
 	oitr))
 
-#+cl-stl-extra
+#-cl-stl-noextra
 (defmethod operator_== ((itr1 stream-read-iterator) (itr2 stream-read-iterator))
 	(if (and (eq (slot-value itr1 'm-linebuf) :eof)
 			 (eq (slot-value itr2 'm-linebuf) :eof))
@@ -430,15 +430,15 @@
 			t
 			nil)))
 
-#+cl-stl-extra
+#-cl-stl-noextra
 (defmethod operator_/= ((itr1 stream-read-iterator) (itr2 stream-read-iterator))
 	(not (_== itr1 itr2)))
 
-#+cl-stl-extra
+#-cl-stl-noextra
 (defmethod operator_* ((itr stream-read-iterator))
   (slot-value itr 'm-linebuf))
 
-#+cl-stl-extra
+#-cl-stl-noextra
 (defmethod operator_++ ((itr stream-read-iterator))
   (with-slots (m-stream m-linenum m-linebuf) itr
 	(unless (eq m-linebuf :eof)
@@ -446,7 +446,7 @@
 	  (cl:incf m-linenum)))
   itr)
 
-#+cl-stl-extra
+#-cl-stl-noextra
 (defun stream-reader (&optional (stream nil))
   (let ((linenum -1)
 		(linebuf :eof)
@@ -464,7 +464,7 @@
 ;; with-* macros
 ;;
 ;;------------------------------------------------------------------------------
-#+cl-stl-extra
+#-cl-stl-noextra
 (defmacro with-sequence ((itr1 itr2) container &rest body)
   (let ((g-cont (gensym)))
 	`(let* ((,g-cont ,container)
@@ -472,18 +472,18 @@
 			(,itr2 (end   ,g-cont)))
 	   ,@body)))
 
-#+cl-stl-extra
+#-cl-stl-noextra
 (defmacro with-stream-reader ((itr1 itr2) stream &rest body)
   `(let ((,itr1 (stream-reader ,stream))
 		 (,itr2 (stream-reader     nil)))
 	 ,@body))
 
-#+cl-stl-extra
+#-cl-stl-noextra
 (defmacro with-stream-writer (itr stream &rest body)
   `(let ((,itr (stream-writer ,stream)))
 	 ,@body))
 
-#+cl-stl-extra
+#-cl-stl-noextra
 (defmacro with-file-reader ((itr1 itr2) file-name &rest body)
   (let ((stream (gensym)))
 	`(with-open-file (,stream ,file-name :direction :input)
@@ -491,14 +491,14 @@
 			 (,itr2 (stream-reader     nil)))
 		 ,@body))))
 
-#+cl-stl-extra
+#-cl-stl-noextra
 (defmacro with-file-writer (itr file-name &rest body)
   (let ((stream (gensym)))
 	`(with-open-file (,stream ,file-name :direction :output :if-exists :supersede)
 	   (let ((,itr (stream-writer ,stream)))
 		 ,@body))))
 
-#+cl-stl-extra
+#-cl-stl-noextra
 (defmacro with-buffer-reader ((itr1 itr2) buffer &rest body)
   (let ((stream (gensym)))
 	`(with-input-from-string (,stream ,buffer)
@@ -506,7 +506,7 @@
 			 (,itr2 (stream-reader     nil)))
 		 ,@body))))
 
-#+cl-stl-extra
+#-cl-stl-noextra
 (defmacro with-buffer-writer (itr &rest body)
   (let ((stream (gensym)))
 	`(with-output-to-string (,stream)

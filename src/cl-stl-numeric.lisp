@@ -52,7 +52,7 @@
 	  (__accumulate-imp-0 first last init (functor-function (clone binary-op)))))
 
   ;;PTN; accumulate : 1 -  cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__accumulate-imp-1 (cons1 cons2 init plus-bf)
 			 (declare (type cl:function plus-bf))
 			 (let ((acc nil))
@@ -123,7 +123,7 @@
 
   
   ;;PTN; inner-product : 1 -  cci x  i 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__inner-product-imp-1 (cons1 end1 first2 init plus-bf mult-bf)
 			 (declare (type cl:function plus-bf mult-bf))
 			 (let ((acc nil))
@@ -185,7 +185,7 @@
 							 (functor-function (clone binary-op2)))))
 
   ;;PTN; inner-product : 3 -   i  x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__inner-product-imp-3 (first1 last1 cons2 init plus-bf mult-bf)
 			 (declare (type cl:function plus-bf mult-bf))
 			 (let ((acc nil))
@@ -214,7 +214,7 @@
 							 (functor-function (clone binary-op2)))))
 
   ;;PTN; inner-product : 4 -  cci x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__inner-product-imp-4 (cons1 end1 cons2 init plus-bf mult-bf)
 			 (declare (type cl:function plus-bf mult-bf))
 			 (let ((acc nil))
@@ -245,7 +245,7 @@
 							 (functor-function (clone binary-op2)))))
 
   ;;PTN; inner-product : 5 -  cvp x cci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__inner-product-imp-5 (idx1 last1 buffer1 cons2 init plus-bf mult-bf)
 			 (declare (type fixnum idx1 last1))
 			 (declare (type cl:vector buffer1))
@@ -316,7 +316,7 @@
 							 (functor-function (clone binary-op2)))))
 
   ;;PTN; inner-product : 7 -  cci x cvp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__inner-product-imp-7 (cons1 end1 idx2 buffer2 init plus-bf mult-bf)
 			 (declare (type fixnum idx2))
 			 (declare (type cl:vector buffer2))
@@ -417,7 +417,7 @@
 
 
   ;;PTN; partial-sum : 1 -  cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__partial-sum-imp-1 (cons1 cons2 result plus)
 			 (declare (type cl:function plus))
 			 (with-operators
@@ -480,7 +480,7 @@
 						   (clone result) (functor-function (clone binary-op)))))
 
   ;;PTN; partial-sum : 3 -   i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__partial-sum-imp-3 (first last out-cons plus-bf)
 			 (declare (type cl:function plus-bf))
 			 (with-operators
@@ -510,7 +510,7 @@
 
 
   ;;PTN; partial-sum : 4 -  cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__partial-sum-imp-4 (cons1 cons2 out-cons plus-bf)
 			 (declare (type cl:function plus-bf))
 			 (if (eq cons1 cons2)
@@ -543,7 +543,7 @@
 
 
   ;;PTN; partial-sum : 5 -  cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__partial-sum-imp-5 (idx1 idx2 src-buf out-cons plus-bf)
 			 (declare (type fixnum idx1 idx2))
 			 (declare (type cl:vector src-buf))
@@ -616,7 +616,7 @@
 
 
   ;;PTN; partial-sum : 7 -  cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__partial-sum-imp-7 (cons1 cons2 out-idx out-buf plus-bf)
 			 (declare (type fixnum out-idx))
 			 (declare (type cl:vector out-buf))
@@ -719,7 +719,7 @@
 
 
   ;;PTN; adjacent-difference : 1 -  cci x  o 
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__adjacent-difference-imp-1 (cons1 cons2 oitr minus-bf)
 			 (declare (type cl:function minus-bf))
 			 (if (eq cons1 cons2)
@@ -780,7 +780,7 @@
 
 
   ;;PTN; adjacent-difference : 3 -   i  x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__adjacent-difference-imp-3 (first last out-cons minus-bf)
 			 (declare (type cl:function minus-bf))
 			 (with-operators
@@ -811,7 +811,7 @@
 
 
   ;;PTN; adjacent-difference : 4 -  cci x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__adjacent-difference-imp-4 (cons1 cons2 out-cons minus-bf)
 			 (declare (type cl:function minus-bf))
 			 (if (eq cons1 cons2)
@@ -843,7 +843,7 @@
 
 
   ;;PTN; adjacent-difference : 5 -  cvp x  ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__adjacent-difference-imp-5 (idx1 idx2 src-buf out-cons minus-bf)
 			 (declare (type fixnum idx1 idx2))
 			 (declare (type cl:vector src-buf))
@@ -913,7 +913,7 @@
 															  (functor-function (clone binary-op))))))
 
   ;;PTN; adjacent-difference : 7 -  cci x  vp
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__adjacent-difference-imp-7 (cons1 cons2 out-idx out-buf minus-bf)
 			 (declare (type fixnum out-idx))
 			 (declare (type cl:vector out-buf))
@@ -1011,13 +1011,13 @@
 	(defmethod-overload iota ((first forward-iterator) (last forward-iterator) init)
 	  (__iota-imp-0 first last init #'1+))
 
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload iota ((first forward-iterator) (last forward-iterator) init unary-op)
 	  (__iota-imp-0 first last init (functor-function (clone unary-op)))))
 
 
   ;;PTN; iota : 1 -   ci
-  #+(or cl-stl-extra (not cl-stl-0x98))
+  #-(and cl-stl-noextra cl-stl-0x98)
   (labels ((__iota-imp-1 (cons1 cons2 init incr)
 			 (declare (type cl:function incr))
 			 (let ((cur nil))
@@ -1030,7 +1030,7 @@
 	  ;;(format t "specialized iota for cons-iterator is invoked.~%")
 	  (__iota-imp-1 (__cons-itr-cons first)
 					(__cons-itr-cons  last) init #'1+))
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload iota ((first cons-iterator) (last cons-iterator) init unary-op)
 	  ;;(format t "specialized iota for cons-iterator is invoked.~%")
 	  (__iota-imp-1 (__cons-itr-cons first)
@@ -1054,7 +1054,7 @@
 	  (__iota-imp-2 (opr::vec-ptr-index  first)
 					(opr::vec-ptr-index   last)
 					(opr::vec-ptr-buffer first) init #'1+))
-	#+cl-stl-extra
+	#-cl-stl-noextra
 	(defmethod-overload iota ((first vector-pointer) (last vector-pointer) init unary-op)
 	  ;;(format t "specialized iota for vector-pointer is invoked.~%")
 	  (__pointer-check-iterator-range first last)

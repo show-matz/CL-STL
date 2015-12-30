@@ -315,7 +315,7 @@
 (defmethod empty ((cont forward-list))
   (null (cdr (__slst-top-node cont))))
 
-#+cl-stl-extra  ; forward-list::size
+#-cl-stl-noextra  ; forward-list::size
 (progn
   #-cl-stl-0x98 
   (defmethod size ((cont forward-list))
@@ -353,7 +353,7 @@
   (__slst-error-when-empty cont "front")
   (_= (cadr (__slst-top-node cont)) val))
 
-#+cl-stl-extra ; forward-list::data
+#-cl-stl-noextra ; forward-list::data
 (progn
   #-cl-stl-0x98 
   (defmethod data ((cont forward-list))
@@ -604,7 +604,7 @@
 		 (lambda (cur)
 		   (_== val cur))))
 
-  #+cl-stl-extra
+  #-cl-stl-noextra
   (defmethod-overload remove ((lst forward-list) val eql-bf)
 	(let ((eql-bf (clone eql-bf)))
 	  (__remove-imp (__slst-top-node lst)

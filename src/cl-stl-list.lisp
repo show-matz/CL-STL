@@ -737,7 +737,7 @@
 			   (setf node tmp)))))
   (defmethod-overload remove ((lst stl:list) val)
 	(imp lst val #'operator_==))
-  #+cl-stl-extra
+  #-cl-stl-noextra
   (defmethod-overload remove ((lst stl:list) val eql-bf)
 	(imp lst val (functor-function (clone eql-bf)))))
 
