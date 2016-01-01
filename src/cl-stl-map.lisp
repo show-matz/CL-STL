@@ -40,12 +40,12 @@
 ;; internal utilities
 ;;
 ;;--------------------------------------------------------------------
-(defmacro __map-check-item-pairness (sym)
-  (declare (ignorable sym))
-  #-cl-stl-debug nil
-  #+cl-stl-debug
-  `(unless (typep ,sym 'stl:pair)
-	 (error 'type-mismatch :what "Item must be pair.")))
+#+cl-stl-debug
+(locally (declare (optimize speed))
+  (defun __map-item-checker (val)
+	(unless (typep val 'stl:pair)
+	  (error 'type-mismatch :what "Item must be pair."))
+	val))
 
 #+cl-stl-debug
 (labels ((__map-check-iterator-belong-imp (itr cont)
@@ -96,25 +96,23 @@
   (defun __create-map (key-comp)
 	;; MEMO : key-comp copy in __rbtree-ctor.
 	(let ((tree (__rbtree-ctor key-comp #'stl:first)))
+	  #+cl-stl-debug (setf (__rbtree-checker tree) #'__map-item-checker)
 	  (make-instance 'stl::map :core tree)))
 
   (defun __create-map-with-range (key-comp itr1 itr2)
 	;; MEMO : key-comp copy in __rbtree-ctor.
 	;; MEMO : [itr1, itr2) is 'input-iterator'...
 	(let ((tree (__rbtree-ctor key-comp #'stl:first)))
-	  ;;ToDo : check pair-ness of values in sequence... -> Can't check here because sequence is 'input-iterator'.
+	  #+cl-stl-debug (setf (__rbtree-checker tree) #'__map-item-checker)
 	  (__rbtree-insert-range-unique tree itr1 itr2 t)
 	  (make-instance 'stl::map :core tree)))
 
   (defun __create-map-with-array (key-comp arr idx1 idx2)
 	(declare (type cl:vector arr))
 	(declare (type fixnum idx1 idx2))
-	#+cl-stl-debug    ; ToDo : pair-ness check : debug mode only...?
-	(do ((i idx1 (incf i)))
-		((= i idx2) nil)
-	  (__map-check-item-pairness (aref arr i)))
 	;; MEMO : key-comp copy in __rbtree-ctor.
 	(let ((tree (__rbtree-ctor key-comp #'stl:first)))
+	  #+cl-stl-debug (setf (__rbtree-checker tree) #'__map-item-checker)
 	  (__rbtree-insert-array-unique tree arr idx1 idx2 t)
 	  (make-instance 'stl::map :core tree))))
 
@@ -386,7 +384,6 @@
 
   ;; insert ( single element ) - returns pair<iterator,bool>.
   (defmethod-overload insert ((container stl::map) value)
-	(__map-check-item-pairness value)
 	(multiple-value-bind (node success)
 		(__rbtree-insert-unique (__assoc-tree container) value t)
 	  (make-pair (make-instance 'map-iterator :node node) success)))
@@ -395,7 +392,6 @@
   #-cl-stl-0x98
   (defmethod-overload insert ((container stl::map) (rm remove-reference))
 	(let ((val (funcall (the cl:function (__rm-ref-closure rm)))))
-	  (__map-check-item-pairness val)
 	  (funcall (the cl:function (__rm-ref-closure rm)) nil)
 	  (multiple-value-bind (node success)
 		  (__rbtree-insert-unique (__assoc-tree container) val nil)
@@ -412,7 +408,6 @@
 	  (return-from __insert-3 nil))
 	
 	#+cl-stl-debug (__map-check-iterator-belong itr container)
-	(__map-check-item-pairness value)
 	(make-instance 'map-iterator
 				   :node (__rbtree-insert-hint-unique (__assoc-tree container)
 													  (__assoc-itr-node itr) value t)))
@@ -423,7 +418,6 @@
 							  (itr map-const-iterator) (rm remove-reference))
 	#+cl-stl-debug (__map-check-iterator-belong itr container)
 	(let ((val (funcall (the cl:function (__rm-ref-closure rm)))))
-	  (__map-check-item-pairness val)
 	  (funcall (the cl:function (__rm-ref-closure rm)) nil)
 	  (make-instance 'map-iterator
 					 :node (__rbtree-insert-hint-unique (__assoc-tree container)
@@ -437,10 +431,6 @@
 		   (cnt (length arr)))
 	  (declare (type simple-vector arr))
 	  (declare (type fixnum cnt))
-	  #+cl-stl-debug    ; ToDo : pair-ness check : debug mode only...?
-	  (do ((i 0 (incf i)))
-		  ((= i cnt) nil)
-		(__map-check-item-pairness (svref arr i)))
 	  (__rbtree-insert-array-unique (__assoc-tree container) arr 0 cnt t)
 	  nil)))
 
@@ -448,7 +438,6 @@
 (locally (declare (optimize speed))
 
   (defmethod-overload insert ((container stl::map) (itr1 input-iterator) (itr2 input-iterator))
-	;;ToDo : check pair-ness of values in sequence... -> Can't check here because sequence is 'input-iterator'.
 	(__rbtree-insert-range-unique (__assoc-tree container) itr1 itr2 t)
 	nil)
 
@@ -459,10 +448,6 @@
 
   (defmethod-overload insert ((container stl::map) (ptr1 const-vector-pointer) (ptr2 const-vector-pointer))
 	(__pointer-check-iterator-range ptr1 ptr2)
-	#+cl-stl-debug    ; ToDo : pair-ness check : debug mode only...?
-	(for-each ptr1 ptr2
-			  (lambda (v)
-				(__map-check-item-pairness v)))
 	(__rbtree-insert-array-unique (__assoc-tree container)
 								  (opr::vec-ptr-buffer ptr1)
 								  (opr::vec-ptr-index  ptr1)
@@ -476,7 +461,6 @@
 
   ;;returns pair<iterator,bool>.
   (defmethod-overload emplace ((container stl::map) new-val)
-	(__map-check-item-pairness new-val)
 	(multiple-value-bind (node success)
 		(__rbtree-emplace-unique (__assoc-tree container) new-val)
 	  (make-pair (make-instance 'map-iterator :node node) success)))
@@ -485,7 +469,6 @@
   (defmethod-overload emplace-hint ((container stl::map)
 									(itr map-const-iterator) new-val)
 	#+cl-stl-debug (__map-check-iterator-belong itr container)
-	(__map-check-item-pairness new-val)
 	(make-instance 'map-iterator
 				   :node (__rbtree-emplace-hint-unique (__assoc-tree container)
 													   (__assoc-itr-node itr) new-val))))

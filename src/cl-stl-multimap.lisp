@@ -102,25 +102,23 @@
   (defun __create-multimap (key-comp)
 	;; MEMO : key-comp copy in __rbtree-ctor.
 	(let ((tree (__rbtree-ctor key-comp #'stl:first)))
+	  #+cl-stl-debug (setf (__rbtree-checker tree) #'__map-item-checker)
 	  (make-instance 'multimap :core tree)))
 
   (defun __create-multimap-with-range (key-comp itr1 itr2)
 	;; MEMO : key-comp copy in __rbtree-ctor.
 	;; MEMO : [itr1, itr2) is 'input-iterator'...
 	(let ((tree (__rbtree-ctor key-comp #'stl:first)))
-	  ;;ToDo : check pair-ness of values in sequence... -> Can't check here because sequence is 'input-iterator'.
+	  #+cl-stl-debug (setf (__rbtree-checker tree) #'__map-item-checker)
 	  (__rbtree-insert-range-equal tree itr1 itr2 t)
 	  (make-instance 'multimap :core tree)))
 
   (defun __create-multimap-with-array (key-comp arr idx1 idx2)
 	(declare (type cl:vector arr))
 	(declare (type fixnum idx1 idx2))
-	#+cl-stl-debug    ; ToDo : pair-ness check : debug mode only...?
-	(do ((i idx1 (incf i)))
-		((= i idx2) nil)
-	  (__map-check-item-pairness (aref arr i)))
 	;; MEMO : key-comp copy in __rbtree-ctor.
 	(let ((tree (__rbtree-ctor key-comp #'stl:first)))
+	  #+cl-stl-debug (setf (__rbtree-checker tree) #'__map-item-checker)
 	  (__rbtree-insert-array-equal tree arr idx1 idx2 t)
 	  (make-instance 'multimap :core tree))))
 
@@ -334,7 +332,6 @@
 
   ;; insert ( single element ) - returns iterator.
   (defmethod-overload insert ((container multimap) value)
-	(__map-check-item-pairness value)
 	(make-instance 'multimap-iterator
 				   :node (__rbtree-insert-equal (__assoc-tree container) value t)))
 
@@ -342,7 +339,6 @@
   #-cl-stl-0x98
   (defmethod-overload insert ((container multimap) (rm remove-reference))
 	(let ((val (funcall (the cl:function (__rm-ref-closure rm)))))
-	  (__map-check-item-pairness val)
 	  (funcall (the cl:function (__rm-ref-closure rm)) nil)
 	  (make-instance 'multimap-iterator
 					 :node (__rbtree-insert-equal (__assoc-tree container) val nil))))
@@ -358,7 +354,6 @@
 	  (return-from __insert-3 nil))
 	
 	#+cl-stl-debug (__multimap-check-iterator-belong itr container)
-	(__map-check-item-pairness value)
 	(make-instance 'multimap-iterator
 				   :node (__rbtree-insert-hint-equal (__assoc-tree container)
 													 (__assoc-itr-node itr) value t)))
@@ -369,7 +364,6 @@
 							  (itr multimap-const-iterator) (rm remove-reference))
 	#+cl-stl-debug (__multimap-check-iterator-belong itr container)
 	(let ((val (funcall (the cl:function (__rm-ref-closure rm)))))
-	  (__map-check-item-pairness val)
 	  (funcall (the cl:function (__rm-ref-closure rm)) nil)
 	  (make-instance 'multimap-iterator
 					 :node (__rbtree-insert-hint-equal (__assoc-tree container)
@@ -383,10 +377,6 @@
 		   (cnt (length arr)))
 	  (declare (type simple-vector arr))
 	  (declare (type fixnum cnt))
-	  #+cl-stl-debug    ; ToDo : pair-ness check : debug mode only...?
-	  (do ((i 0 (incf i)))
-		  ((= i cnt) nil)
-		(__map-check-item-pairness (svref arr i)))
 	  (__rbtree-insert-array-equal (__assoc-tree container) arr 0 cnt t)
 	  nil)))
 
@@ -394,7 +384,6 @@
 (locally (declare (optimize speed))
 
   (defmethod-overload insert ((container multimap) (itr1 input-iterator) (itr2 input-iterator))
-	;;ToDo : check pair-ness of values in sequence... -> Can't check here because sequence is 'input-iterator'.
 	(__rbtree-insert-range-equal (__assoc-tree container) itr1 itr2 t)
 	nil)
 
@@ -405,10 +394,6 @@
 
   (defmethod-overload insert ((container multimap) (ptr1 const-vector-pointer) (ptr2 const-vector-pointer))
 	(__pointer-check-iterator-range ptr1 ptr2)
-	#+cl-stl-debug    ; ToDo : pair-ness check : debug mode only...?
-	(for-each ptr1 ptr2
-			  (lambda (v)
-				(__map-check-item-pairness v)))
 	(__rbtree-insert-array-equal (__assoc-tree container)
 								 (opr::vec-ptr-buffer ptr1)
 								 (opr::vec-ptr-index  ptr1)
@@ -422,7 +407,6 @@
 
   ;;returns iterator.
   (defmethod-overload emplace ((container multimap) new-val)
-	(__map-check-item-pairness new-val)
 	(make-instance 'multimap-iterator
 				   :node (__rbtree-emplace-equal (__assoc-tree container) new-val)))
 
@@ -430,7 +414,6 @@
   (defmethod-overload emplace-hint ((container multimap)
 									(itr multimap-const-iterator) new-val)
 	#+cl-stl-debug (__multimap-check-iterator-belong itr container)
-	(__map-check-item-pairness new-val)
 	(make-instance 'multimap-iterator
 				   :node (__rbtree-emplace-hint-equal (__assoc-tree container)
 													  (__assoc-itr-node itr) new-val))))

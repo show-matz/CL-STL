@@ -4,10 +4,12 @@
 				 __rbtree-key-comp
 				 __rbtree-node-count
 				 __rbtree-header
+				 #+cl-stl-debug __rbtree-checker
 				 (setf __rbtree-key-func)
 				 (setf __rbtree-key-comp)
 				 (setf __rbtree-node-count)
 				 (setf __rbtree-header)
+				 #+cl-stl-debug (setf __rbtree-checker)
 				 __rbtree-begin-node
 				 __rbtree-end-node
 				 __rbtree-begin
@@ -93,7 +95,9 @@
 	(key-func   nil)          ; always cl:function ( ordinary #'identity or #'stl:first )
 	(key-comp   nil)          ; functor object.
 	(node-count 0             :type integer)
-	(header     (make-rbnode) :type rbnode)))
+	(header     (make-rbnode) :type rbnode)
+	#+cl-stl-debug
+	(checker    #'identity    :type cl:function)))
 
 
 
@@ -192,6 +196,7 @@
 	(declare (type rbtree tree))
 	(let ((obj (make-rbtree :key-func (clone (__rbtree-key-func tree))
 							:key-comp (clone (__rbtree-key-comp tree)))))
+	  #+cl-stl-debug (setf (__rbtree-checker obj) (__rbtree-checker tree))
 	  (__rbtree-initialize obj)
 	  (when (__rbtree-root tree)
 		(setf (__rbtree-root obj) (__rbtree-copy-imp (__rbtree-begin-node tree)
@@ -405,8 +410,9 @@
 	(declare (type rbtree tree1 tree2))
 	(unless (eq tree1 tree2)
 	  (__rbtree-clear tree1)
-	  (setf (__rbtree-key-func tree1) (clone (__rbtree-key-func tree2)))    ;; ToDo : really OK?
-	  (setf (__rbtree-key-comp tree1) (clone (__rbtree-key-comp tree2)))    ;; ToDo : really OK?
+	  (setf (__rbtree-key-func tree1) (clone (__rbtree-key-func tree2)))
+	  (setf (__rbtree-key-comp tree1) (clone (__rbtree-key-comp tree2)))
+	  #+cl-stl-debug (setf (__rbtree-checker  tree1) (__rbtree-checker tree2))
 	  (unless (null (__rbtree-root tree2))
 		(setf (__rbtree-root tree1) (__rbtree-copy-imp (__rbtree-begin-node tree2)
 													   (__rbtree-end-node   tree1)))
@@ -447,6 +453,8 @@
 	(swap (__rbtree-node-count t1) (__rbtree-node-count t2))
 	(swap (__rbtree-key-comp   t1) (__rbtree-key-comp   t2))
 	(swap (__rbtree-key-func   t1) (__rbtree-key-func   t2))
+	#+cl-stl-debug
+	(swap (__rbtree-checker    t1) (__rbtree-checker    t2))
 	nil))
 
 
@@ -759,6 +767,7 @@
   ;; returns 2 value : rbnode & boolean value.
   (defun __rbtree-insert-unique (tree val need-copy)
 	(declare (type rbtree tree))
+	#+cl-stl-debug (setf val (funcall (the cl:function (__rbtree-checker tree)) val))
 	(let ((key-of (__rbtree-key-func tree)))
 	  (declare (type cl:function key-of))
 	  (multiple-value-bind (node1 node2)
@@ -770,6 +779,7 @@
   ;; returns rbnode.
   (defun __rbtree-insert-equal (tree val need-copy)
 	(declare (type rbtree tree))
+	#+cl-stl-debug (setf val (funcall (the cl:function (__rbtree-checker tree)) val))
 	(let ((key-of (__rbtree-key-func tree)))
 	  (declare (type cl:function key-of))
 	  (multiple-value-bind (node1 node2)
@@ -780,6 +790,7 @@
   (defun __rbtree-insert-hint-unique (tree node val need-copy)
 	(declare (type rbtree tree))
 	(declare (type rbnode node))
+	#+cl-stl-debug (setf val (funcall (the cl:function (__rbtree-checker tree)) val))
 	(let ((key-of (__rbtree-key-func tree)))
 	  (declare (type cl:function key-of))
 	  (multiple-value-bind (node1 node2)
@@ -792,6 +803,7 @@
   (defun __rbtree-insert-hint-equal (tree node val need-copy)
 	(declare (type rbtree tree))
 	(declare (type rbnode node))
+	#+cl-stl-debug (setf val (funcall (the cl:function (__rbtree-checker tree)) val))
 	(let ((key-of (__rbtree-key-func tree)))
 	  (declare (type cl:function key-of))
 	  (multiple-value-bind (node1 node2)
@@ -889,6 +901,7 @@
   ;; returns 2 value : rbnode & boolean value.
   (defun __rbtree-emplace-unique (tree val)
 	(declare (type rbtree tree))
+	#+cl-stl-debug (setf val (funcall (the cl:function (__rbtree-checker tree)) val))
 	(let ((key-of   (__rbtree-key-func tree))
 		  (new-node (__rbtree-create-node val nil)))
 	  (declare (type cl:function key-of))
@@ -906,6 +919,7 @@
   ;; returns rbnode.
   (defun __rbtree-emplace-equal (tree val)
 	(declare (type rbtree tree))
+	#+cl-stl-debug (setf val (funcall (the cl:function (__rbtree-checker tree)) val))
 	(let ((key-of   (__rbtree-key-func tree))
 		  (new-node (__rbtree-create-node val nil)))
 	  (declare (type cl:function key-of))
@@ -920,6 +934,7 @@
   (defun __rbtree-emplace-hint-unique (tree node val)
 	(declare (type rbtree tree))
 	(declare (type rbnode node))
+	#+cl-stl-debug (setf val (funcall (the cl:function (__rbtree-checker tree)) val))
 	(let ((key-of   (__rbtree-key-func tree))
 		  (new-node (__rbtree-create-node val nil)))
 	  (declare (type cl:function key-of))
@@ -938,6 +953,7 @@
   (defun __rbtree-emplace-hint-equal (tree node val)
 	(declare (type rbtree tree))
 	(declare (type rbnode node))
+	#+cl-stl-debug (setf val (funcall (the cl:function (__rbtree-checker tree)) val))
 	(let ((key-of   (__rbtree-key-func tree))
 		  (new-node (__rbtree-create-node val nil)))
 	  (declare (type cl:function key-of))
