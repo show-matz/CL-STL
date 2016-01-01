@@ -12342,6 +12342,7 @@
 ; last      : randomaccess-iterator
 ; gen       : functor
 ; returns   : nil.
+#-cl-stl-0x98
 (locally (declare (optimize speed))
 
   ;;PTN; shuffle : 0 -   r
