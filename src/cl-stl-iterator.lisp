@@ -390,7 +390,8 @@
 
 #-cl-stl-noextra
 (defmethod operator_++ ((itr stream-write-iterator))
-  (format (slot-value itr 'stream) "~%"))
+  (format (slot-value itr 'stream) "~%")
+  itr)
 
 #-cl-stl-noextra
 (defun stream-writer (stream)
