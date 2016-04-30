@@ -5,14 +5,14 @@
 				 not2
 				 bind1st
 				 bind2nd
-				 ptr-fun1
-				 ptr-fun2
-				 mem-fun
-				 mem-fun-ref
-				 mem-fun1
-				 mem-fun1-ref
-   #-cl-stl-0x98 is-placeholder
-   #-cl-stl-0x98 is-bind-expression
+				 ptr_fun1
+				 ptr_fun2
+				 mem_fun
+				 mem_fun_ref
+				 mem_fun1
+				 mem_fun1_ref
+   #-cl-stl-0x98 is_placeholder
+   #-cl-stl-0x98 is_bind_expression
    #-cl-stl-0x98 target))
 
 ;-------------------------------------------------------------------------------
@@ -26,18 +26,18 @@
 			:initarg  :closure
 			:accessor __functor-closure)))
 
-(defclass unary-function  (functor) ())    ; deprecated in 0x11 or later
-(defclass binary-function (functor) ())    ; deprecated in 0x11 or later
+(defclass unary_function  (functor) ())    ; deprecated in 0x11 or later
+(defclass binary_function (functor) ())    ; deprecated in 0x11 or later
 
 ;-------------------------------------------------------------------------------
 ;
 ; default methods for functor
 ;
 ;-------------------------------------------------------------------------------
-(defmethod functor-function ((func cl:function))
+(defmethod functor_function ((func cl:function))
   func)
 
-(defmethod functor-function ((func functor))
+(defmethod functor_function ((func functor))
   (__functor-closure func))
 
 
@@ -59,7 +59,7 @@
 ; class plus
 ;------------------------------------------------------------
 (defclass plus (#-cl-stl-0x98 functor
-				#+cl-stl-0x98 binary-function) ())
+				#+cl-stl-0x98 binary_function) ())
 
 (declare-constructor plus (0))
 
@@ -72,7 +72,7 @@
 ; class minus
 ;------------------------------------------------------------
 (defclass minus (#-cl-stl-0x98 functor
-				 #+cl-stl-0x98 binary-function) ())
+				 #+cl-stl-0x98 binary_function) ())
 
 (declare-constructor minus (0))
 
@@ -85,7 +85,7 @@
 ; class multiplies
 ;------------------------------------------------------------
 (defclass multiplies (#-cl-stl-0x98 functor
-					  #+cl-stl-0x98 binary-function) ())
+					  #+cl-stl-0x98 binary_function) ())
 
 (declare-constructor multiplies (0))
 
@@ -98,7 +98,7 @@
 ; class divides
 ;------------------------------------------------------------
 (defclass divides (#-cl-stl-0x98 functor
-				   #+cl-stl-0x98 binary-function) ())
+				   #+cl-stl-0x98 binary_function) ())
 
 (declare-constructor divides (0))
 
@@ -111,7 +111,7 @@
 ; class modulus
 ;------------------------------------------------------------
 (defclass modulus (#-cl-stl-0x98 functor
-				   #+cl-stl-0x98 binary-function) ())
+				   #+cl-stl-0x98 binary_function) ())
 
 (declare-constructor modulus (0))
 
@@ -124,7 +124,7 @@
 ; class negate
 ;------------------------------------------------------------
 (defclass negate (#-cl-stl-0x98 functor
-				  #+cl-stl-0x98 unary-function) ())
+				  #+cl-stl-0x98 unary_function) ())
 
 (declare-constructor negate (0))
 
@@ -140,64 +140,64 @@
 ;-------------------------------------------------------------------------------
 
 ;------------------------------------------------------------
-; class equal-to
+; class equal_to
 ;------------------------------------------------------------
-(defclass equal-to (#-cl-stl-0x98 functor
-					#+cl-stl-0x98 binary-function)
+(defclass equal_to (#-cl-stl-0x98 functor
+					#+cl-stl-0x98 binary_function)
   ((op  :initform nil
 		:initarg  :operator
-		:accessor equal-to-operator)))
+		:accessor equal_to-operator)))
 
-(declare-constructor equal-to (0 1))
+(declare-constructor equal_to (0 1))
 
-(labels ((__equal-to-ctor (op)
+(labels ((__equal_to-ctor (op)
            (let* ((op  (clone op))
-				  (fnc (functor-function op)))
-			 (make-instance 'equal-to
+				  (fnc (functor_function op)))
+			 (make-instance 'equal_to
 							:operator op
 							:closure (lambda (arg1 arg2)
 									   (funcall fnc arg1 arg2))))))
-  (define-constructor equal-to ()
-	(__equal-to-ctor #'operator_==))
+  (define-constructor equal_to ()
+	(__equal_to-ctor #'operator_==))
   #-cl-stl-noextra
-  (define-constructor equal-to (op)
-	(__equal-to-ctor op))
-  (defmethod operator_clone ((func equal-to))
-	(__equal-to-ctor (equal-to-operator func))))
+  (define-constructor equal_to (op)
+	(__equal_to-ctor op))
+  (defmethod operator_clone ((func equal_to))
+	(__equal_to-ctor (equal_to-operator func))))
 
 
 ;------------------------------------------------------------
-; class not-equal-to
+; class not_equal_to
 ;------------------------------------------------------------
-(defclass not-equal-to (#-cl-stl-0x98 functor
-						#+cl-stl-0x98 binary-function)
+(defclass not_equal_to (#-cl-stl-0x98 functor
+						#+cl-stl-0x98 binary_function)
   ((op  :initform nil
 		:initarg  :operator
-		:accessor not-equal-to-operator)))
+		:accessor not_equal_to-operator)))
 
-(declare-constructor not-equal-to (0 1))
+(declare-constructor not_equal_to (0 1))
 
-(labels ((__not-equal-to-ctor (op)
+(labels ((__not_equal_to-ctor (op)
            (let* ((op  (clone op))
-				  (fnc (functor-function op)))
-			 (make-instance 'not-equal-to
+				  (fnc (functor_function op)))
+			 (make-instance 'not_equal_to
 							:operator op
 							:closure (lambda (arg1 arg2)
 									   (funcall fnc arg1 arg2))))))
-  (define-constructor not-equal-to ()
-	(__not-equal-to-ctor #'operator_/=))
+  (define-constructor not_equal_to ()
+	(__not_equal_to-ctor #'operator_/=))
   #-cl-stl-noextra
-  (define-constructor not-equal-to (op)
-	(__not-equal-to-ctor op))
-  (defmethod operator_clone ((func not-equal-to))
-	(__not-equal-to-ctor (not-equal-to-operator func))))
+  (define-constructor not_equal_to (op)
+	(__not_equal_to-ctor op))
+  (defmethod operator_clone ((func not_equal_to))
+	(__not_equal_to-ctor (not_equal_to-operator func))))
 
 
 ;------------------------------------------------------------
 ; class greater
 ;------------------------------------------------------------
 (defclass greater (#-cl-stl-0x98 functor
-				   #+cl-stl-0x98 binary-function)
+				   #+cl-stl-0x98 binary_function)
   ((op  :initform nil
 		:initarg  :operator
 		:accessor greater-operator)))
@@ -206,7 +206,7 @@
 
 (labels ((__greater-ctor (op)
            (let* ((op  (clone op))
-				  (fnc (functor-function op)))
+				  (fnc (functor_function op)))
 			 (make-instance 'greater
 							:operator op
 							:closure (lambda (arg1 arg2)
@@ -224,7 +224,7 @@
 ; class less
 ;------------------------------------------------------------
 (defclass less (#-cl-stl-0x98 functor
-				#+cl-stl-0x98 binary-function)
+				#+cl-stl-0x98 binary_function)
   ((op  :initform nil
 		:initarg  :operator
 		:accessor less-operator)))
@@ -233,7 +233,7 @@
 
 (labels ((__less-ctor (op)
            (let* ((op  (clone op))
-				  (fnc (functor-function op)))
+				  (fnc (functor_function op)))
 			 (make-instance 'less
 							:operator op
 							:closure (lambda (arg1 arg2)
@@ -248,57 +248,57 @@
 
 
 ;------------------------------------------------------------
-; class greater-equal
+; class greater_equal
 ;------------------------------------------------------------
-(defclass greater-equal (#-cl-stl-0x98 functor
-						 #+cl-stl-0x98 binary-function)
+(defclass greater_equal (#-cl-stl-0x98 functor
+						 #+cl-stl-0x98 binary_function)
   ((op  :initform nil
 		:initarg  :operator
-		:accessor greater-equal-operator)))
+		:accessor greater_equal-operator)))
 
-(declare-constructor greater-equal (0 1))
+(declare-constructor greater_equal (0 1))
 
-(labels ((__greater-equal-ctor (op)
+(labels ((__greater_equal-ctor (op)
            (let* ((op  (clone op))
-				  (fnc (functor-function op)))
-			 (make-instance 'greater-equal
+				  (fnc (functor_function op)))
+			 (make-instance 'greater_equal
 							:operator op
 							:closure (lambda (arg1 arg2)
 									   (funcall fnc arg1 arg2))))))
-  (define-constructor greater-equal ()
-	(__greater-equal-ctor #'operator_>=))
+  (define-constructor greater_equal ()
+	(__greater_equal-ctor #'operator_>=))
   #-cl-stl-noextra
-  (define-constructor greater-equal (op)
-	(__greater-equal-ctor op))
-  (defmethod operator_clone ((func greater-equal))
-	(__greater-equal-ctor (greater-equal-operator func))))
+  (define-constructor greater_equal (op)
+	(__greater_equal-ctor op))
+  (defmethod operator_clone ((func greater_equal))
+	(__greater_equal-ctor (greater_equal-operator func))))
 
 
 ;------------------------------------------------------------
-; class less-equal
+; class less_equal
 ;------------------------------------------------------------
-(defclass less-equal (#-cl-stl-0x98 functor
-					  #+cl-stl-0x98 binary-function)
+(defclass less_equal (#-cl-stl-0x98 functor
+					  #+cl-stl-0x98 binary_function)
   ((op  :initform nil
 		:initarg  :operator
-		:accessor less-equal-operator)))
+		:accessor less_equal-operator)))
 
-(declare-constructor less-equal (0 1))
+(declare-constructor less_equal (0 1))
 
-(labels ((__less-equal-ctor (op)
+(labels ((__less_equal-ctor (op)
            (let* ((op  (clone op))
-				  (fnc (functor-function op)))
-			 (make-instance 'less-equal
+				  (fnc (functor_function op)))
+			 (make-instance 'less_equal
 							:operator op
 							:closure (lambda (arg1 arg2)
 									   (funcall fnc arg1 arg2))))))
-  (define-constructor less-equal ()
-	(__less-equal-ctor #'operator_<=))
+  (define-constructor less_equal ()
+	(__less_equal-ctor #'operator_<=))
   #-cl-stl-noextra
-  (define-constructor less-equal (op)
-	(__less-equal-ctor op))
-  (defmethod operator_clone ((func less-equal))
-	(__less-equal-ctor (less-equal-operator func))))
+  (define-constructor less_equal (op)
+	(__less_equal-ctor op))
+  (defmethod operator_clone ((func less_equal))
+	(__less_equal-ctor (less_equal-operator func))))
 
 
 
@@ -308,45 +308,45 @@
 ;
 ;-------------------------------------------------------------------------------
 ;------------------------------------------------------------
-; class logical-and
+; class logical_and
 ;------------------------------------------------------------
-(defclass logical-and (#-cl-stl-0x98 functor
-					   #+cl-stl-0x98 binary-function) ())
+(defclass logical_and (#-cl-stl-0x98 functor
+					   #+cl-stl-0x98 binary_function) ())
 
-(declare-constructor logical-and (0))
+(declare-constructor logical_and (0))
 
-(labels ((__logical-and (arg1 arg2)
+(labels ((__logical_and (arg1 arg2)
 		   (and arg1 arg2)))
-  (define-constructor logical-and ()
-	(make-instance 'logical-and :closure #'__logical-and)))
+  (define-constructor logical_and ()
+	(make-instance 'logical_and :closure #'__logical_and)))
 
 
 ;------------------------------------------------------------
-; class logical-or
+; class logical_or
 ;------------------------------------------------------------
-(defclass logical-or (#-cl-stl-0x98 functor
-					  #+cl-stl-0x98 binary-function) ())
+(defclass logical_or (#-cl-stl-0x98 functor
+					  #+cl-stl-0x98 binary_function) ())
 
-(declare-constructor logical-or (0))
+(declare-constructor logical_or (0))
 
-(labels ((__logical-or (arg1 arg2)
+(labels ((__logical_or (arg1 arg2)
 		   (or arg1 arg2)))
-  (define-constructor logical-or ()
-	(make-instance 'logical-or :closure #'__logical-or)))
+  (define-constructor logical_or ()
+	(make-instance 'logical_or :closure #'__logical_or)))
 
 
 ;------------------------------------------------------------
-; class logical-not
+; class logical_not
 ;------------------------------------------------------------
-(defclass logical-not (#-cl-stl-0x98 functor
-					   #+cl-stl-0x98 unary-function) ())
+(defclass logical_not (#-cl-stl-0x98 functor
+					   #+cl-stl-0x98 unary_function) ())
 
-(declare-constructor logical-not (0))
+(declare-constructor logical_not (0))
 
-(labels ((__logical-not (arg)
+(labels ((__logical_not (arg)
 		   (not arg)))
-  (define-constructor logical-not ()
-	(make-instance 'logical-not :closure #'__logical-not)))
+  (define-constructor logical_not ()
+	(make-instance 'logical_not :closure #'__logical_not)))
 
 
 
@@ -357,36 +357,36 @@
 ;-------------------------------------------------------------------------------
 
 ;------------------------------------------------------------
-; class unary-negate & function not1
+; class unary_negate & function not1
 ;------------------------------------------------------------
-(defclass unary-negate (#-cl-stl-0x98 functor
-						#+cl-stl-0x98 unary-function)
+(defclass unary_negate (#-cl-stl-0x98 functor
+						#+cl-stl-0x98 unary_function)
   ((op  :initform nil
 		:initarg  :operator
-		:accessor unary-negate-operator)))
+		:accessor unary_negate-operator)))
 
-(declare-constructor unary-negate (1))
+(declare-constructor unary_negate (1))
 
-(define-constructor unary-negate (op)
+(define-constructor unary_negate (op)
   (let* ((op  (clone op))
-		 (fnc (functor-function op)))
-	(make-instance 'unary-negate
+		 (fnc (functor_function op)))
+	(make-instance 'unary_negate
 				   :operator op
 				   :closure (lambda (arg)
 							  (not (funcall fnc arg))))))
 
 (defun not1 (op)
   (let* ((op  (clone op))
-		 (fnc (functor-function op)))
-	(make-instance 'unary-negate
+		 (fnc (functor_function op)))
+	(make-instance 'unary_negate
 				   :operator op
 				   :closure (lambda (arg)
 							  (not (funcall fnc arg))))))
 
-(defmethod operator_clone ((func unary-negate))
-  (let* ((op (clone (unary-negate-operator func)))
-		 (fnc (functor-function op)))
-	(make-instance 'unary-negate
+(defmethod operator_clone ((func unary_negate))
+  (let* ((op (clone (unary_negate-operator func)))
+		 (fnc (functor_function op)))
+	(make-instance 'unary_negate
 				   :operator op
 				   :closure (lambda (arg)
 							  (not (funcall fnc arg))))))
@@ -394,36 +394,36 @@
 
 
 ;------------------------------------------------------------
-; class binary-negate & function not2
+; class binary_negate & function not2
 ;------------------------------------------------------------
-(defclass binary-negate (#-cl-stl-0x98 functor
-						 #+cl-stl-0x98 binary-function)
+(defclass binary_negate (#-cl-stl-0x98 functor
+						 #+cl-stl-0x98 binary_function)
   ((op  :initform nil
 		:initarg  :operator
-		:accessor binary-negate-operator)))
+		:accessor binary_negate-operator)))
 
-(declare-constructor binary-negate (1))
+(declare-constructor binary_negate (1))
 
-(define-constructor binary-negate (op)
+(define-constructor binary_negate (op)
   (let* ((op  (clone op))
-		 (fnc (functor-function op)))
-	(make-instance 'binary-negate
+		 (fnc (functor_function op)))
+	(make-instance 'binary_negate
 				   :operator op
 				   :closure (lambda (arg1 arg2)
 							  (not (funcall fnc arg1 arg2))))))
 
 (defun not2 (op)
   (let* ((op  (clone op))
-		 (fnc (functor-function op)))
-	(make-instance 'binary-negate
+		 (fnc (functor_function op)))
+	(make-instance 'binary_negate
 				   :operator op
 				   :closure (lambda (arg1 arg2)
 							  (not (funcall fnc arg1 arg2))))))
 
-(defmethod operator_clone ((func binary-negate))
-  (let* ((op (clone (binary-negate-operator func)))
-		 (fnc (functor-function op)))
-	(make-instance 'binary-negate
+(defmethod operator_clone ((func binary_negate))
+  (let* ((op (clone (binary_negate-operator func)))
+		 (fnc (functor_function op)))
+	(make-instance 'binary_negate
 				   :operator op
 				   :closure (lambda (arg1 arg2)
 							  (not (funcall fnc arg1 arg2))))))
@@ -441,7 +441,7 @@
 ; class binder1st & function bind1st
 ;------------------------------------------------------------
 (defclass binder1st (#-cl-stl-0x98 functor
-					 #+cl-stl-0x98 unary-function)
+					 #+cl-stl-0x98 unary_function)
   ((op	:initform nil
 		:initarg  :operator
 		:accessor binder1st-operator)
@@ -456,7 +456,7 @@
   (progn
 	#-cl-stl-0x98 (warn "binder1st is deprecated."))
   (let* ((op  (clone op))
-		 (fnc (functor-function op)))
+		 (fnc (functor_function op)))
 	(make-instance 'binder1st
 				   :operator op
 				   :arg      arg1
@@ -468,7 +468,7 @@
   (progn
 	#-cl-stl-0x98 (warn "bind1st is deprecated."))
   (let* ((op  (clone functor))
-		 (fnc (functor-function op)))
+		 (fnc (functor_function op)))
 	(make-instance 'binder1st
 				   :operator op
 				   :arg      arg
@@ -478,7 +478,7 @@
 (defmethod operator_clone ((func binder1st))
   (let* ((op   (clone (binder1st-operator func)))
 		 (arg1 (binder1st-arg func))
-		 (fnc  (functor-function op)))
+		 (fnc  (functor_function op)))
 	(make-instance 'binder1st
 				   :operator op
 				   :arg      arg1
@@ -491,7 +491,7 @@
 ; class binder2nd & function bind2nd
 ;------------------------------------------------------------
 (defclass binder2nd (#-cl-stl-0x98 functor
-					 #+cl-stl-0x98 unary-function)
+					 #+cl-stl-0x98 unary_function)
   ((op	:initform nil
 		:initarg  :operator
 		:accessor binder2nd-operator)
@@ -506,7 +506,7 @@
   (progn
 	#-cl-stl-0x98 (warn "binder2nd is deprecated."))
   (let* ((op  (clone op))
-		 (fnc (functor-function op)))
+		 (fnc (functor_function op)))
 	(make-instance 'binder2nd
 				   :operator op
 				   :arg      arg2
@@ -518,7 +518,7 @@
   (progn
 	#-cl-stl-0x98 (warn "bind2nd is deprecated."))
   (let* ((op  (clone functor))
-		 (fnc (functor-function op)))
+		 (fnc (functor_function op)))
 	(make-instance 'binder2nd
 				   :operator op
 				   :arg      arg
@@ -528,7 +528,7 @@
 (defmethod operator_clone ((func binder2nd))
   (let* ((op   (clone (binder2nd-operator func)))
 		 (arg2 (binder2nd-arg func))
-		 (fnc  (functor-function op)))
+		 (fnc  (functor_function op)))
 	(make-instance 'binder2nd
 				   :operator op
 				   :arg      arg2
@@ -544,39 +544,39 @@
 ;-------------------------------------------------------------------------------
 
 ;------------------------------------------------------------
-; class pointer-to-unary-function & function ptr-fun1
+; class pointer_to_unary_function & function ptr_fun1
 ;                                     ( NONSENSE in CL-STL )
 ;------------------------------------------------------------
-(defclass pointer-to-unary-function (#-cl-stl-0x98 functor
-									 #+cl-stl-0x98 unary-function)
+(defclass pointer_to_unary_function (#-cl-stl-0x98 functor
+									 #+cl-stl-0x98 unary_function)
   ((op	:type     cl:function
 		:initform nil
 		:initarg  :operator
-		:accessor pointer-to-unary-function-operator)))
+		:accessor pointer_to_unary_function-operator)))
 
-(declare-constructor pointer-to-unary-function (1))
+(declare-constructor pointer_to_unary_function (1))
 
-(define-constructor pointer-to-unary-function (func)
+(define-constructor pointer_to_unary_function (func)
   #+cl-stl-warn-deprecated
   (progn
-	#-cl-stl-0x98 (warn "pointer-to-unary-function is deprecated."))
-  (make-instance 'pointer-to-unary-function
+	#-cl-stl-0x98 (warn "pointer_to_unary_function is deprecated."))
+  (make-instance 'pointer_to_unary_function
 				 :operator func
 				 :closure (lambda (arg)
 							(funcall func arg))))
 
-(defun ptr-fun1 (func)
+(defun ptr_fun1 (func)
   #+cl-stl-warn-deprecated
   (progn
-	#-cl-stl-0x98 (warn "ptr-fun1 is deprecated."))
-  (make-instance 'pointer-to-unary-function
+	#-cl-stl-0x98 (warn "ptr_fun1 is deprecated."))
+  (make-instance 'pointer_to_unary_function
 				 :operator func
 				 :closure (lambda (arg)
 							(funcall func arg))))
 
-(defmethod operator_clone ((func pointer-to-unary-function))
-  (let ((func (pointer-to-unary-function-operator func)))
-	(make-instance 'pointer-to-unary-function
+(defmethod operator_clone ((func pointer_to_unary_function))
+  (let ((func (pointer_to_unary_function-operator func)))
+	(make-instance 'pointer_to_unary_function
 				   :operator func
 				   :closure (lambda (arg)
 							  (funcall func arg)))))
@@ -584,39 +584,39 @@
 
 
 ;------------------------------------------------------------
-; class pointer-to-binary-function & function ptr-fun2
+; class pointer_to_binary_function & function ptr_fun2
 ;                                     ( NONSENSE in CL-STL )
 ;------------------------------------------------------------
-(defclass pointer-to-binary-function (#-cl-stl-0x98 functor
-									  #+cl-stl-0x98 binary-function)
+(defclass pointer_to_binary_function (#-cl-stl-0x98 functor
+									  #+cl-stl-0x98 binary_function)
   ((op	:type     cl:function
 		:initform nil
 		:initarg  :operator
-		:accessor pointer-to-binary-function-operator)))
+		:accessor pointer_to_binary_function-operator)))
 
-(declare-constructor pointer-to-binary-function (1))
+(declare-constructor pointer_to_binary_function (1))
 
-(define-constructor pointer-to-binary-function (func)
+(define-constructor pointer_to_binary_function (func)
   #+cl-stl-warn-deprecated
   (progn
-	#-cl-stl-0x98 (warn "pointer-to-binary-function is deprecated."))
-  (make-instance 'pointer-to-binary-function
+	#-cl-stl-0x98 (warn "pointer_to_binary_function is deprecated."))
+  (make-instance 'pointer_to_binary_function
 				 :operator func
 				 :closure (lambda (arg1 arg2)
 							(funcall func arg1 arg2))))
 
-(defun ptr-fun2 (func)
+(defun ptr_fun2 (func)
   #+cl-stl-warn-deprecated
   (progn
-	#-cl-stl-0x98 (warn "ptr-fun2 is deprecated."))
-  (make-instance 'pointer-to-binary-function
+	#-cl-stl-0x98 (warn "ptr_fun2 is deprecated."))
+  (make-instance 'pointer_to_binary_function
 				 :operator func
 				 :closure (lambda (arg1 arg2)
 							(funcall func arg1 arg2))))
 
-(defmethod operator_clone ((func pointer-to-binary-function))
-  (let ((func (pointer-to-binary-function-operator func)))
-	(make-instance 'pointer-to-binary-function
+(defmethod operator_clone ((func pointer_to_binary_function))
+  (let ((func (pointer_to_binary_function-operator func)))
+	(make-instance 'pointer_to_binary_function
 				   :operator func
 				   :closure (lambda (arg1 arg2)
 							  (funcall func arg1 arg2)))))
@@ -631,48 +631,48 @@
 ;-------------------------------------------------------------------------------
 
 ;------------------------------------------------------------
-; class mem-fun-t & function mem-fun etc.
+; class mem_fun_t & function mem_fun etc.
 ;                                      ( NONSENSE in CL-STL )
 ;------------------------------------------------------------
-(defclass mem-fun-t (#-cl-stl-0x98 functor
-					 #+cl-stl-0x98 unary-function)
+(defclass mem_fun_t (#-cl-stl-0x98 functor
+					 #+cl-stl-0x98 unary_function)
   ((op	:type     cl:function
 		:initform nil
 		:initarg  :operator
-		:accessor mem-fun-t-operator)))
+		:accessor mem_fun_t-operator)))
 
-(declare-constructor mem-fun-t (1))
+(declare-constructor mem_fun_t (1))
 
-(define-constructor mem-fun-t (func)
+(define-constructor mem_fun_t (func)
   #+cl-stl-warn-deprecated
   (progn
-	#-cl-stl-0x98 (warn "mem-fun-t is deprecated."))
-  (make-instance 'mem-fun-t
+	#-cl-stl-0x98 (warn "mem_fun_t is deprecated."))
+  (make-instance 'mem_fun_t
 				 :operator func
 				 :closure (lambda (obj)
 							(funcall func obj))))
 
-(defun mem-fun (func)
+(defun mem_fun (func)
   #+cl-stl-warn-deprecated
   (progn
-	#-cl-stl-0x98 (warn "mem-fun is deprecated."))
-  (make-instance 'mem-fun-t
+	#-cl-stl-0x98 (warn "mem_fun is deprecated."))
+  (make-instance 'mem_fun_t
 				 :operator func
 				 :closure (lambda (obj)
 							(funcall func obj))))
 
-(defun mem-fun-ref (func)
+(defun mem_fun_ref (func)
   #+cl-stl-warn-deprecated
   (progn
-	#-cl-stl-0x98 (warn "mem-fun-ref is deprecated."))
-  (make-instance 'mem-fun-t
+	#-cl-stl-0x98 (warn "mem_fun_ref is deprecated."))
+  (make-instance 'mem_fun_t
 				 :operator func
 				 :closure (lambda (obj)
 							(funcall func obj))))
 
-(defmethod operator_clone ((func mem-fun-t))
-  (let ((func (mem-fun-t-operator func)))
-	(make-instance 'mem-fun-t
+(defmethod operator_clone ((func mem_fun_t))
+  (let ((func (mem_fun_t-operator func)))
+	(make-instance 'mem_fun_t
 				   :operator func
 				   :closure (lambda (obj)
 							  (funcall func obj)))))
@@ -681,48 +681,48 @@
 
 
 ;------------------------------------------------------------
-; class mem-fun1-t & function mem-fun1 etc.
+; class mem_fun1_t & function mem_fun1 etc.
 ;                                      ( NONSENSE in CL-STL )
 ;------------------------------------------------------------
-(defclass mem-fun1-t (#-cl-stl-0x98 functor
-					  #+cl-stl-0x98 unary-function)
+(defclass mem_fun1_t (#-cl-stl-0x98 functor
+					  #+cl-stl-0x98 unary_function)
   ((op	:type     cl:function
 		:initform nil
 		:initarg  :operator
-		:accessor mem-fun1-t-operator)))
+		:accessor mem_fun1_t-operator)))
 
-(declare-constructor mem-fun1-t (1))
+(declare-constructor mem_fun1_t (1))
 
-(define-constructor mem-fun1-t (func)
+(define-constructor mem_fun1_t (func)
   #+cl-stl-warn-deprecated
   (progn
-	#-cl-stl-0x98 (warn "mem-fun1-t is deprecated."))
-  (make-instance 'mem-fun1-t
+	#-cl-stl-0x98 (warn "mem_fun1_t is deprecated."))
+  (make-instance 'mem_fun1_t
 				 :operator func
 				 :closure (lambda (obj arg)
 							(funcall func obj arg))))
 
-(defun mem-fun1 (func)
+(defun mem_fun1 (func)
   #+cl-stl-warn-deprecated
   (progn
-	#-cl-stl-0x98 (warn "mem-fun1 is deprecated."))
-  (make-instance 'mem-fun1-t
+	#-cl-stl-0x98 (warn "mem_fun1 is deprecated."))
+  (make-instance 'mem_fun1_t
 				 :operator func
 				 :closure (lambda (obj arg)
 							(funcall func obj arg))))
 
-(defun mem-fun1-ref (func)
+(defun mem_fun1_ref (func)
   #+cl-stl-warn-deprecated
   (progn
-	#-cl-stl-0x98 (warn "mem-fun1-ref is deprecated."))
-  (make-instance 'mem-fun1-t
+	#-cl-stl-0x98 (warn "mem_fun1_ref is deprecated."))
+  (make-instance 'mem_fun1_t
 				 :operator func
 				 :closure (lambda (obj arg)
 							(funcall func obj arg))))
 
-(defmethod operator_clone ((func mem-fun1-t))
-  (let ((func (mem-fun1-t-operator func)))
-	(make-instance 'mem-fun1-t
+(defmethod operator_clone ((func mem_fun1_t))
+  (let ((func (mem_fun1_t-operator func)))
+	(make-instance 'mem_fun1_t
 				   :operator func
 				   :closure (lambda (obj arg)
 							  (funcall func obj arg)))))
@@ -730,14 +730,14 @@
 
 
 ;------------------------------------------------------------
-; class mem-fun-ref-t;
+; class mem_fun_ref-t;
 ;------------------------------------------------------------
-; --> use mem-fun-t instead.
+; --> use mem_fun_t instead.
 
 ;------------------------------------------------------------
-; class mem-fun1-ref-t;
+; class mem_fun1_ref-t;
 ;------------------------------------------------------------
-; --> use mem-fun1-t instead.
+; --> use mem_fun1_t instead.
 
 
 
@@ -749,14 +749,14 @@
 ;-------------------------------------------------------------------------------
 
 #-cl-stl-0x98
-(defun is-placeholder (arg)
+(defun is_placeholder (arg)
   (if (not (keywordp arg))
 	  0
 	  (handler-case (values (parse-integer (symbol-name arg)))
 		(error () 0))))
 			 
 #-cl-stl-0x98
-(defun is-bind-expression (arg)
+(defun is_bind_expression (arg)
   (eq (type-of arg) '__binded-expr))
 			 
 
@@ -811,7 +811,7 @@
 				   (values (nreverse acc1)
 						   (nreverse acc2))
 				   (let* ((item (car args))
-						  (ret  (is-placeholder item)))
+						  (ret  (is_placeholder item)))
 					 (if (< 0 ret)
 						 (cl:push (get-argsym ret) acc2)
 						 (progn
@@ -829,7 +829,7 @@
 		  (multiple-value-bind (lambda-list ignore-list) (make-lambda-list 1 nil nil)
 			`(labels ((,g-imp (,g-bindee ,g-params ,g-cloner)
 						(declare (type cl:vector ,g-params))
-						(let ((,g-bd-fnc (functor-function ,g-bindee)))
+						(let ((,g-bd-fnc (functor_function ,g-bindee)))
 						  (declare (type cl:function ,g-bd-fnc))
 						  (make-instance '__binded-expr
 										 :bindee ,g-bindee :params ,g-params :cloner ,g-cloner
@@ -865,7 +865,7 @@
 		   (if (null op)
 			   (make-instance 'function)
 			   (let* ((target  (clone op))
-					  (closure (functor-function target)))
+					  (closure (functor_function target)))
 				 (make-instance 'function
 								:target  target
 								:closure (lambda (&rest args)
@@ -895,10 +895,10 @@
 	  obj)))
 
 #-cl-stl-0x98
-(defmethod functor-function ((func function))
+(defmethod functor_function ((func function))
   (let ((closure (__functor-closure func)))
 	(unless closure
-	  (error 'bad-function-call :what "empty function."))
+	  (error 'bad_function_call :what "empty function."))
 	closure))
 
 #-cl-stl-0x98
@@ -914,7 +914,7 @@
 				   (setf (__function-target fnc) nil)
 				   (setf (__functor-closure fnc) nil))
 				 (let* ((target  (clone op))
-						(closure (functor-function op)))
+						(closure (functor_function op)))
 				   (setf (__function-target fnc) target)
 				   (setf (__functor-closure fnc) (locally (declare (type cl:function closure))
 												   (lambda (&rest args)
@@ -976,71 +976,71 @@
 
 
 ;------------------------------------------------------------
-; class bit-and
+; class bit_and
 ;------------------------------------------------------------
 #-cl-stl-0x98
-(defclass bit-and (functor) ())
+(defclass bit_and (functor) ())
 
 #-cl-stl-0x98
-(declare-constructor bit-and (0))
+(declare-constructor bit_and (0))
 
 #-cl-stl-0x98
-(labels ((__bit-and (arg1 arg2) (logand arg1 arg2)))
-  (define-constructor bit-and ()
-	(make-instance 'bit-and :closure #'__bit-and)))
-
-
-;------------------------------------------------------------
-; class bit-or
-;------------------------------------------------------------
-#-cl-stl-0x98
-(defclass bit-or (functor) ())
-
-#-cl-stl-0x98
-(declare-constructor bit-or (0))
-
-#-cl-stl-0x98
-(labels ((__bit-or (arg1 arg2) (logior arg1 arg2)))
-  (define-constructor bit-or ()
-	(make-instance 'bit-or :closure #'__bit-or)))
+(labels ((__bit_and (arg1 arg2) (logand arg1 arg2)))
+  (define-constructor bit_and ()
+	(make-instance 'bit_and :closure #'__bit_and)))
 
 
 ;------------------------------------------------------------
-; class bit-xor
+; class bit_or
 ;------------------------------------------------------------
 #-cl-stl-0x98
-(defclass bit-xor (functor) ())
+(defclass bit_or (functor) ())
 
 #-cl-stl-0x98
-(declare-constructor bit-xor (0))
+(declare-constructor bit_or (0))
 
 #-cl-stl-0x98
-(labels ((__bit-xor (arg1 arg2) (logxor arg1 arg2)))
-  (define-constructor bit-xor ()
-	(make-instance 'bit-xor :closure #'__bit-xor)))
+(labels ((__bit_or (arg1 arg2) (logior arg1 arg2)))
+  (define-constructor bit_or ()
+	(make-instance 'bit_or :closure #'__bit_or)))
+
+
+;------------------------------------------------------------
+; class bit_xor
+;------------------------------------------------------------
+#-cl-stl-0x98
+(defclass bit_xor (functor) ())
+
+#-cl-stl-0x98
+(declare-constructor bit_xor (0))
+
+#-cl-stl-0x98
+(labels ((__bit_xor (arg1 arg2) (logxor arg1 arg2)))
+  (define-constructor bit_xor ()
+	(make-instance 'bit_xor :closure #'__bit_xor)))
 
 
 ;;------------------------------------------------------------
-;; class mem-fn
+;; class mem_fn
 ;;------------------------------------------------------------
 #-cl-stl-0x98
-(defclass mem-fn (functor)
+(defclass mem_fn (functor)
   ((method :type     cl:function
 		   :initform nil
 		   :initarg  :method
-		   :accessor mem-fn-method)))
+		   :accessor mem_fn-method)))
 
 #-cl-stl-0x98
-(declare-constructor mem-fn (1))
+(declare-constructor mem_fn (1))
 
 #-cl-stl-0x98
-(labels ((__mem-fn-ctor (method)
-		   (make-instance 'mem-fn
+(labels ((__mem_fn-ctor (method)
+		   (make-instance 'mem_fn
 						  :method  method
 						  :closure (lambda (&rest args)
 									 (apply method args)))))
-  (define-constructor mem-fn (method)
-	(__mem-fn-ctor method))
-  (defmethod operator_clone ((func mem-fn))
-	(__mem-fn-ctor (mem-fn-method func))))
+  (define-constructor mem_fn (method)
+	(__mem_fn-ctor method))
+  (defmethod operator_clone ((func mem_fn))
+	(__mem_fn-ctor (mem_fn-method func))))
 

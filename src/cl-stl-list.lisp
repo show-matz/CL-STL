@@ -10,7 +10,7 @@
   (next nil)
   (item nil))
 
-(defclass list (bidirectional-container pushable-back-container pushable-front-container)
+(defclass list (bidirectional_container pushable_back_container pushable_front_container)
   ((size-cache    :type     :fixnum
 				  :initform 0
 				  :initarg  :size
@@ -24,21 +24,21 @@
 				  :initarg  :last
 				  :accessor list-last-sentinel)))
 
-(defclass list-const-iterator (bidirectional-iterator)
+(defclass list_const_iterator (bidirectional_iterator)
   ((node  :type     :list-node
 		  :initform nil
 		  :initarg  :node
 		  :accessor list-itr-node)))
 
-(defclass list-iterator (list-const-iterator) ())
+(defclass list_iterator (list_const_iterator) ())
 
-(defclass list-const-reverse-iterator (bidirectional-iterator)
+(defclass list_const_reverse_iterator (bidirectional_iterator)
   ((node  :type     :list-node
 		  :initform nil
 		  :initarg  :node
 		  :accessor list-rev-itr-node)))
 
-(defclass list-reverse-iterator (list-const-reverse-iterator) ())
+(defclass list_reverse_iterator (list_const_reverse_iterator) ())
 
 ;;--------------------------------------------------------------------
 ;;
@@ -212,8 +212,8 @@
 ; constructor with initializer list
 #-cl-stl-0x98
 (locally (declare (optimize speed))
-  (define-constructor list ((arg initializer-list))
-	(declare (type initializer-list arg))
+  (define-constructor list ((arg initializer_list))
+	(declare (type initializer_list arg))
 	(let* ((arr (__initlist-data arg))
 		   (cnt (length arr))
 		   (s1  (make-list-node))
@@ -264,7 +264,7 @@
 			 (let ((cnt (__list-assign-seq s1 s2 itr1 itr2)))
 			   (make-instance 'stl:list :size cnt :top s1 :last s2)))))
 
-  (define-constructor list ((arg1 input-iterator) (arg2 input-iterator))
+  (define-constructor list ((arg1 input_iterator) (arg2 input_iterator))
 	(__create-list-with-sequence arg1 arg2))
 
   (define-constructor list ((arg1 const-vector-pointer) (arg2 const-vector-pointer))
@@ -323,7 +323,7 @@
   cont1)
 
 #-cl-stl-0x98
-(defmethod operator_= ((cont stl:list) (il initializer-list))
+(defmethod operator_= ((cont stl:list) (il initializer_list))
   (assign cont il)
   cont)
 
@@ -346,7 +346,7 @@
   nil)
 
 ;MEMO : always returns nil.
-(defmethod-overload assign ((cont stl:list) (itr1 input-iterator) (itr2 input-iterator))
+(defmethod-overload assign ((cont stl:list) (itr1 input_iterator) (itr2 input_iterator))
   (let ((cnt (__list-assign-seq (list-top-sentinel  cont)
 								(list-last-sentinel cont) itr1 itr2)))
 	(setf (list-size-cache cont) cnt))
@@ -362,8 +362,8 @@
 ;MEMO : always returns nil.
 #-cl-stl-0x98
 (locally (declare (optimize speed))
-  (defmethod-overload assign ((cont stl:list) (arg initializer-list))
-	(declare (type initializer-list arg))
+  (defmethod-overload assign ((cont stl:list) (arg initializer_list))
+	(declare (type initializer_list arg))
 	(let* ((arr  (__initlist-data arg))
 		   (idx  0)
 		   (cnt  (length arr))
@@ -397,35 +397,35 @@
 ; iterators
 ;-----------------------------------------------------
 (defmethod begin ((cont stl:list))
-  (make-instance 'list-iterator :node (list-node-next (list-top-sentinel cont))))
+  (make-instance 'list_iterator :node (list-node-next (list-top-sentinel cont))))
 
 (defmethod end ((cont stl:list))
-  (make-instance 'list-iterator :node (list-last-sentinel cont)))
+  (make-instance 'list_iterator :node (list-last-sentinel cont)))
 
 (defmethod rbegin ((cont stl:list))
-  (make-instance 'list-reverse-iterator :node (list-node-prev (list-last-sentinel cont))))
+  (make-instance 'list_reverse_iterator :node (list-node-prev (list-last-sentinel cont))))
 
 (defmethod rend ((cont stl:list))
-  (make-instance 'list-reverse-iterator :node (list-top-sentinel cont)))
+  (make-instance 'list_reverse_iterator :node (list-top-sentinel cont)))
 
 #-cl-stl-0x98
 (defmethod cbegin ((cont stl:list))
-  (make-instance 'list-const-iterator
+  (make-instance 'list_const_iterator
 				 :node (list-node-next (list-top-sentinel cont))))
 
 #-cl-stl-0x98
 (defmethod cend ((cont stl:list))
-  (make-instance 'list-const-iterator
+  (make-instance 'list_const_iterator
 				 :node (list-last-sentinel cont)))
 
 #-cl-stl-0x98
 (defmethod crbegin ((cont stl:list))
-  (make-instance 'list-const-reverse-iterator
+  (make-instance 'list_const_reverse_iterator
 				 :node (list-node-prev (list-last-sentinel cont))))
 
 #-cl-stl-0x98
 (defmethod crend ((cont stl:list))
-  (make-instance 'list-const-reverse-iterator
+  (make-instance 'list_const_reverse_iterator
 				 :node (list-top-sentinel cont)))
 
 ;-----------------------------------------------------
@@ -437,7 +437,7 @@
 (defmethod size ((cont stl:list))
   (list-size-cache cont))
 
-(defmethod max-size ((cont stl:list))
+(defmethod max_size ((cont stl:list))
   most-positive-fixnum)
 
 (labels ((imp (cont new-size initial-element)
@@ -446,12 +446,12 @@
 				   ((< cur-size new-size)
 					(do ()
 						((= cur-size new-size) nil)
-					  (push-back cont initial-element)
+					  (push_back cont initial-element)
 					  (incf cur-size)))
 				   ((< new-size cur-size)
 					(do ()
 						((= cur-size new-size) nil)
-					  (pop-back cont)
+					  (pop_back cont)
 					  (decf cur-size))))
 			 (setf (list-size-cache cont) new-size))))
 
@@ -485,39 +485,39 @@
 ;-----------------------------------------------------
 ; modifiers
 ;-----------------------------------------------------
-(defmethod push-back ((container stl:list) new-val)
+(defmethod push_back ((container stl:list) new-val)
   (__list-insert-node (list-last-sentinel container)
 					  (__list-new-node new-val))
   (incf (list-size-cache container))
   nil)
 
-(defmethod push-front ((container stl:list) new-val)
+(defmethod push_front ((container stl:list) new-val)
   (__list-insert-node (list-node-next (list-top-sentinel container))
 					  (__list-new-node new-val))
   (incf (list-size-cache container))
   nil)
 
-(defmethod pop-back ((cont stl:list))
-  (__list-error-when-empty cont "pop-back")
+(defmethod pop_back ((cont stl:list))
+  (__list-error-when-empty cont "pop_back")
   (__list-pullout-node (list-node-prev (list-last-sentinel cont)))
   (decf (list-size-cache cont))
   nil)
 
-(defmethod pop-front ((cont stl:list))
-  (__list-error-when-empty cont "pop-front")
+(defmethod pop_front ((cont stl:list))
+  (__list-error-when-empty cont "pop_front")
   (__list-pullout-node (list-node-next (list-top-sentinel cont)))
   (decf (list-size-cache cont))
   nil)
 
-#-cl-stl-0x98    ; emplace-back
-(defmethod-overload emplace-back ((container stl:list) new-val)
+#-cl-stl-0x98    ; emplace_back
+(defmethod-overload emplace_back ((container stl:list) new-val)
   (__list-insert-node (list-last-sentinel container)
 					  (__list-new-node new-val nil))
   (incf (list-size-cache container))
   nil)
 
-#-cl-stl-0x98    ; emplace-front
-(defmethod-overload emplace-front ((container stl:list) new-val)
+#-cl-stl-0x98    ; emplace_front
+(defmethod-overload emplace_front ((container stl:list) new-val)
   (__list-insert-node (list-node-next (list-top-sentinel container))
 					  (__list-new-node new-val nil))
   (incf (list-size-cache container))
@@ -525,8 +525,8 @@
 
 ;; insert ( single element ) - returns iterator
 (defmethod-overload insert ((cont stl:list)
-							(itr #+cl-stl-0x98 list-iterator
-								 #-cl-stl-0x98 list-const-iterator) value)
+							(itr #+cl-stl-0x98 list_iterator
+								 #-cl-stl-0x98 list_const_iterator) value)
   (__list-check-iterator-belong itr cont)
   (let ((node (list-itr-node itr)))
 	(__list-insert node (__list-new-node value)))
@@ -535,8 +535,8 @@
 
 ;; insert ( fill )
 (defmethod-overload insert ((cont stl:list)
-							(itr #+cl-stl-0x98 list-iterator
-								 #-cl-stl-0x98 list-const-iterator) (count integer) value)
+							(itr #+cl-stl-0x98 list_iterator
+								 #-cl-stl-0x98 list_const_iterator) (count integer) value)
   ;; MEMO : in C++98, always returns nil. but C++11, returns iterator.
   (__error-unless-non-negative-fixnum insert count)
   (__list-check-iterator-belong itr cont)
@@ -546,7 +546,7 @@
 	(__list-insert-values (list-node-prev node) node value count)
 	(incf (list-size-cache cont) count)
 	#+cl-stl-0x98 nil
-	#-cl-stl-0x98 (make-instance 'list-iterator :node (list-node-next prev))))
+	#-cl-stl-0x98 (make-instance 'list_iterator :node (list-node-next prev))))
 
 
 ;; insert ( range )
@@ -559,15 +559,15 @@
 			 (let ((cnt (__list-insert-seq (list-node-prev node) node itr1 itr2)))
 			   (incf (list-size-cache cont) cnt))
 			 #+cl-stl-0x98 nil
-			 #-cl-stl-0x98 (make-instance 'list-iterator :node (list-node-next prev)))))
+			 #-cl-stl-0x98 (make-instance 'list_iterator :node (list-node-next prev)))))
   
-  (defmethod-overload insert ((cont stl:list) (itr #+cl-stl-0x98 list-iterator
-												   #-cl-stl-0x98 list-const-iterator)
-							  (itr1 input-iterator) (itr2 input-iterator))
+  (defmethod-overload insert ((cont stl:list) (itr #+cl-stl-0x98 list_iterator
+												   #-cl-stl-0x98 list_const_iterator)
+							  (itr1 input_iterator) (itr2 input_iterator))
 	(__insert-imp cont itr itr1 itr2))
 
-  (defmethod-overload insert ((cont stl:list) (itr #+cl-stl-0x98 list-iterator
-												   #-cl-stl-0x98 list-const-iterator)
+  (defmethod-overload insert ((cont stl:list) (itr #+cl-stl-0x98 list_iterator
+												   #-cl-stl-0x98 list_const_iterator)
 							  (itr1 const-vector-pointer) (itr2 const-vector-pointer))
 	(__pointer-check-iterator-range itr1 itr2)
 	(__insert-imp cont itr itr1 itr2)))
@@ -576,7 +576,7 @@
 ;; insert ( move ) - returns iterator.
 #-cl-stl-0x98
 (defmethod-overload insert ((cont stl:list)
-							(itr list-const-iterator) (rm remove-reference))
+							(itr list_const_iterator) (rm remove-reference))
   (__list-check-iterator-belong itr cont)
   (let ((node (list-itr-node itr))
 		(val (funcall (the cl:function (__rm-ref-closure rm)))))
@@ -589,8 +589,8 @@
 #-cl-stl-0x98
 (locally (declare (optimize speed))
   (defmethod-overload insert ((cont stl:list)
-							  (itr list-const-iterator) (il initializer-list))
-	(declare (type initializer-list il))
+							  (itr list_const_iterator) (il initializer_list))
+	(declare (type initializer_list il))
 	(__list-check-iterator-belong itr cont)
 	(let* ((arr (__initlist-data il))
 		   (cnt (length arr)))
@@ -606,11 +606,11 @@
 			  (__list-insert node (__list-new-node (aref arr idx))))
 			(setf (list-size-cache cont)
 				  (the fixnum (+ (the fixnum (list-size-cache cont)) cnt)))
-			(make-instance 'list-iterator :node (list-node-next prev)))))))
+			(make-instance 'list_iterator :node (list-node-next prev)))))))
 
 #-cl-stl-0x98    ; emplace
 (defmethod-overload emplace ((container stl:list)
-							 (itr list-const-iterator) new-val)
+							 (itr list_const_iterator) new-val)
   (__list-check-iterator-belong itr container)
   (let ((node (list-itr-node itr)))
 	(__list-insert node (__list-new-node new-val nil)))
@@ -618,27 +618,27 @@
   (prev itr))
 
 (defmethod-overload erase ((cont stl:list)
-						   (itr #+cl-stl-0x98 list-iterator
-								#-cl-stl-0x98 list-const-iterator))
+						   (itr #+cl-stl-0x98 list_iterator
+								#-cl-stl-0x98 list_const_iterator))
   (__list-check-iterator-belong itr cont)
   (let* ((node1 (list-itr-node  itr))
 		 (next  (list-node-next node1)))
 	(__list-connect-node (list-node-prev node1) next)
 	(decf (list-size-cache cont))
-	(make-instance 'list-iterator :node next)))
+	(make-instance 'list_iterator :node next)))
 
 (defmethod-overload erase ((cont stl:list)
-						   (first #+cl-stl-0x98 list-iterator
-								  #-cl-stl-0x98 list-const-iterator)
-						   (last  #+cl-stl-0x98 list-iterator
-								  #-cl-stl-0x98 list-const-iterator))
+						   (first #+cl-stl-0x98 list_iterator
+								  #-cl-stl-0x98 list_const_iterator)
+						   (last  #+cl-stl-0x98 list_iterator
+								  #-cl-stl-0x98 list_const_iterator))
   (__list-check-iterator-belong first cont)
   (__list-check-iterator-range first last)
   (let ((node1 (list-itr-node first))
 		(next  (list-itr-node last)))
 	(__list-connect-node (list-node-prev node1) next)
 	(decf (list-size-cache cont) (__list-count-nodes node1 next))
-	(make-instance 'list-iterator :node next)))
+	(make-instance 'list_iterator :node next)))
 
 (defmethod-overload swap ((cont1 stl:list) (cont2 stl:list))
   (let ((size1 (list-size-cache    cont1))
@@ -668,8 +668,8 @@
 			 (__list-connect-node node2 node))))
 
   (defmethod-overload splice ((lst1 stl:list)
-							  (itr  #+cl-stl-0x98 list-iterator
-									#-cl-stl-0x98 list-const-iterator)
+							  (itr  #+cl-stl-0x98 list_iterator
+									#-cl-stl-0x98 list_const_iterator)
 							  (lst2 stl:list))
 	(declare (ignorable lst1))
 	(__list-check-iterator-belong itr lst1)
@@ -684,11 +684,11 @@
 	nil)
 
   (defmethod-overload splice ((lst1 stl:list)
-							  (itr  #+cl-stl-0x98 list-iterator
-									#-cl-stl-0x98 list-const-iterator)
+							  (itr  #+cl-stl-0x98 list_iterator
+									#-cl-stl-0x98 list_const_iterator)
 							  (lst2 stl:list)
-							  (itr1 #+cl-stl-0x98 list-iterator
-									#-cl-stl-0x98 list-const-iterator))
+							  (itr1 #+cl-stl-0x98 list_iterator
+									#-cl-stl-0x98 list_const_iterator))
 	(declare (ignorable lst1 lst2))
 	(__list-check-iterator-belong itr  lst1)
 	(__list-check-iterator-belong itr1 lst2)
@@ -702,13 +702,13 @@
 	nil)
 
   (defmethod-overload splice ((lst1 stl:list)
-							  (itr  #+cl-stl-0x98 list-iterator
-									#-cl-stl-0x98 list-const-iterator)
+							  (itr  #+cl-stl-0x98 list_iterator
+									#-cl-stl-0x98 list_const_iterator)
 							  (lst2 stl:list)
-							  (itr1 #+cl-stl-0x98 list-iterator
-									#-cl-stl-0x98 list-const-iterator)
-							  (itr2 #+cl-stl-0x98 list-iterator
-									#-cl-stl-0x98 list-const-iterator))
+							  (itr1 #+cl-stl-0x98 list_iterator
+									#-cl-stl-0x98 list_const_iterator)
+							  (itr2 #+cl-stl-0x98 list_iterator
+									#-cl-stl-0x98 list_const_iterator))
 	(declare (ignorable lst1 lst2))
 	(__list-check-iterator-belong itr  lst1)
 	(__list-check-iterator-belong itr1 lst2)
@@ -739,10 +739,10 @@
 	(imp lst val #'operator_==))
   #-cl-stl-noextra
   (defmethod-overload remove ((lst stl:list) val eql-bf)
-	(imp lst val (functor-function (clone eql-bf)))))
+	(imp lst val (functor_function (clone eql-bf)))))
 
-(defmethod-overload remove-if ((lst stl:list) pred-uf)
-  (do ((pred-uf (functor-function (clone pred-uf)) )
+(defmethod-overload remove_if ((lst stl:list) pred-uf)
+  (do ((pred-uf (functor_function (clone pred-uf)) )
 	   (node (list-node-next (list-top-sentinel lst)))
 	   (last (list-last-sentinel lst)))
 	  ((eq node last) nil)
@@ -779,7 +779,7 @@
 	(unless (< (list-size-cache lst) 2)
 	  (let ((cnt (imp (list-node-next (list-top-sentinel lst))
 					  (list-last-sentinel lst)
-					  (functor-function (clone eql-bf)))))
+					  (functor_function (clone eql-bf)))))
 		(decf (list-size-cache lst) cnt)))
 	nil))
 				   
@@ -814,7 +814,7 @@
 	(unless (or (eq lst1 lst2) (empty lst2))
 	  (imp (list-node-next (list-top-sentinel lst1)) (list-last-sentinel lst1)
 		   (list-node-next (list-top-sentinel lst2)) (list-last-sentinel lst2)
-		   (functor-function (clone less-bf)))
+		   (functor_function (clone less-bf)))
 	  (incf (list-size-cache lst1) (list-size-cache lst2))
 	  (setf (list-size-cache lst2) 0))
 	nil))
@@ -874,7 +874,7 @@
 	nil)
 
   (defmethod-overload sort ((lst stl:list) less-bf)
-	(__sort-imp lst (functor-function (clone less-bf)))
+	(__sort-imp lst (functor_function (clone less-bf)))
 	nil))
 
 
@@ -968,42 +968,42 @@
 
 ;;------------------------------------------------------------------------------
 ;;
-;; methods for list-const-iterator
+;; methods for list_const_iterator
 ;;
 ;;------------------------------------------------------------------------------
-(defmethod operator_= ((itr1 list-const-iterator) (itr2 list-const-iterator))
-  (__error-when-const-removing-assign itr1 list-iterator
-									  itr2 list-const-iterator)
+(defmethod operator_= ((itr1 list_const_iterator) (itr2 list_const_iterator))
+  (__error-when-const-removing-assign itr1 list_iterator
+									  itr2 list_const_iterator)
   (setf (list-itr-node itr1) (list-itr-node itr2))
   itr1)
 
-(defmethod operator_clone ((itr list-const-iterator))
-  (make-instance 'list-const-iterator :node (list-itr-node itr)))
+(defmethod operator_clone ((itr list_const_iterator))
+  (make-instance 'list_const_iterator :node (list-itr-node itr)))
 
-(defmethod operator_== ((itr1 list-const-iterator) (itr2 list-const-iterator))
+(defmethod operator_== ((itr1 list_const_iterator) (itr2 list_const_iterator))
   (eq (list-itr-node itr1) (list-itr-node itr2)))
 
-(defmethod operator_/= ((itr1 list-const-iterator) (itr2 list-const-iterator))
+(defmethod operator_/= ((itr1 list_const_iterator) (itr2 list_const_iterator))
   (not (eq (list-itr-node itr1) (list-itr-node itr2))))
 
-(defmethod operator_* ((itr list-const-iterator))
+(defmethod operator_* ((itr list_const_iterator))
   (list-node-item (list-itr-node itr)))
 
-(defmethod (setf operator_*) (new-val (itr list-const-iterator))
-  (error 'setf-to-const :what "setf to (_* list-const-iterator)."))
+(defmethod (setf operator_*) (new-val (itr list_const_iterator))
+  (error 'setf-to-const :what "setf to (_* list_const_iterator)."))
 
-(defmethod operator_++ ((itr list-const-iterator))
+(defmethod operator_++ ((itr list_const_iterator))
   (let ((node (list-itr-node itr)))
 	(setf (list-itr-node itr) (list-node-next node)))
   itr)
 
-(defmethod operator_-- ((itr list-const-iterator))
+(defmethod operator_-- ((itr list_const_iterator))
   (let ((node (list-itr-node itr)))
 	(setf (list-itr-node itr) (list-node-prev node)))
   itr)
 
 (locally (declare (optimize speed))
-  (defmethod advance ((itr list-const-iterator) (n integer))
+  (defmethod advance ((itr list_const_iterator) (n integer))
 	(declare (type fixnum n))
 	(let ((node (list-itr-node itr)))
 	  (if (>= n 0)
@@ -1020,79 +1020,79 @@
 	  (setf (list-itr-node itr) node))
 	nil))
 
-(defmethod distance ((itr1 list-const-iterator) (itr2 list-const-iterator))
+(defmethod distance ((itr1 list_const_iterator) (itr2 list_const_iterator))
   (__list-count-nodes (list-itr-node itr1) (list-itr-node itr2)))
 
 ;; creating reverse iterator.
-(define-constructor reverse-iterator ((itr list-const-iterator))
-  (make-instance 'list-const-reverse-iterator
+(define-constructor reverse_iterator ((itr list_const_iterator))
+  (make-instance 'list_const_reverse_iterator
 				 :node (list-node-prev (list-itr-node itr))))
 
 
 ;;------------------------------------------------------------------------------
 ;;
-;; methods for list-iterator
+;; methods for list_iterator
 ;;
 ;;------------------------------------------------------------------------------
-(defmethod operator_clone ((itr list-iterator))
-  (make-instance 'list-iterator :node (list-itr-node itr)))
+(defmethod operator_clone ((itr list_iterator))
+  (make-instance 'list_iterator :node (list-itr-node itr)))
 
-(defmethod operator_cast ((itr list-iterator)
-						  (typename (eql 'list-const-iterator)))
-  (__check-exact-type-of-cast itr 'list-iterator 'list-const-iterator)
-  (make-instance 'list-const-iterator :node (list-itr-node itr)))
+(defmethod operator_cast ((itr list_iterator)
+						  (typename (eql 'list_const_iterator)))
+  (__check-exact-type-of-cast itr 'list_iterator 'list_const_iterator)
+  (make-instance 'list_const_iterator :node (list-itr-node itr)))
 
-(defmethod (setf operator_*) (new-val (itr list-iterator))
+(defmethod (setf operator_*) (new-val (itr list_iterator))
   (_= (list-node-item (list-itr-node itr)) new-val))
 
 ;; creating reverse iterator.
-(define-constructor reverse-iterator ((itr list-iterator))
-  (make-instance 'list-reverse-iterator
+(define-constructor reverse_iterator ((itr list_iterator))
+  (make-instance 'list_reverse_iterator
 				 :node (list-node-prev (list-itr-node itr))))
 
 
 
 ;;------------------------------------------------------------------------------
 ;;
-;; methods for list-const-reverse-iterator
+;; methods for list_const_reverse_iterator
 ;;
 ;;------------------------------------------------------------------------------
-(defmethod operator_= ((itr1 list-const-reverse-iterator)
-					  (itr2 list-const-reverse-iterator))
-  (__error-when-const-removing-assign itr1 list-reverse-iterator
-									  itr2 list-const-reverse-iterator)
+(defmethod operator_= ((itr1 list_const_reverse_iterator)
+					  (itr2 list_const_reverse_iterator))
+  (__error-when-const-removing-assign itr1 list_reverse_iterator
+									  itr2 list_const_reverse_iterator)
   (setf (list-rev-itr-node itr1) (list-rev-itr-node itr2))
   itr1)
 
-(defmethod operator_clone ((itr list-const-reverse-iterator))
-  (make-instance 'list-const-reverse-iterator :node (list-rev-itr-node itr)))
+(defmethod operator_clone ((itr list_const_reverse_iterator))
+  (make-instance 'list_const_reverse_iterator :node (list-rev-itr-node itr)))
 
-(defmethod operator_== ((itr1 list-const-reverse-iterator)
-				  (itr2 list-const-reverse-iterator))
+(defmethod operator_== ((itr1 list_const_reverse_iterator)
+				  (itr2 list_const_reverse_iterator))
   (eq (list-rev-itr-node itr1) (list-rev-itr-node itr2)))
 
-(defmethod operator_/= ((itr1 list-const-reverse-iterator)
-				   (itr2 list-const-reverse-iterator))
+(defmethod operator_/= ((itr1 list_const_reverse_iterator)
+				   (itr2 list_const_reverse_iterator))
   (not (eq (list-rev-itr-node itr1) (list-rev-itr-node itr2))))
 
-(defmethod operator_* ((itr list-const-reverse-iterator))
+(defmethod operator_* ((itr list_const_reverse_iterator))
   (list-node-item (list-rev-itr-node itr)))
 
-(defmethod (setf operator_*) (new-val (itr list-const-reverse-iterator))
-  (error 'setf-to-const :what "setf to (_* list-const-reverse-iterator)."))
+(defmethod (setf operator_*) (new-val (itr list_const_reverse_iterator))
+  (error 'setf-to-const :what "setf to (_* list_const_reverse_iterator)."))
 
-(defmethod operator_++ ((itr list-const-reverse-iterator))
+(defmethod operator_++ ((itr list_const_reverse_iterator))
   (let ((node (list-rev-itr-node itr)))
 	(setf (list-rev-itr-node itr) (list-node-prev node)))
   itr)
 
-(defmethod operator_-- ((itr list-const-reverse-iterator))
+(defmethod operator_-- ((itr list_const_reverse_iterator))
   (let ((node (list-rev-itr-node itr)))
 	(setf (list-rev-itr-node itr) (list-node-next node)))
   itr)
 
 (locally (declare (optimize speed))
-  (defmethod advance ((itr list-const-reverse-iterator) (n integer))
+  (defmethod advance ((itr list_const_reverse_iterator) (n integer))
 	(declare (type fixnum n))
 	(let ((node (list-rev-itr-node itr)))
 	  (if (>= n 0)
@@ -1109,46 +1109,46 @@
 	  (setf (list-rev-itr-node itr) node))
 	nil))
 
-(defmethod distance ((itr1 list-const-reverse-iterator)
-					  (itr2 list-const-reverse-iterator))
+(defmethod distance ((itr1 list_const_reverse_iterator)
+					  (itr2 list_const_reverse_iterator))
    (__list-count-nodes (list-rev-itr-node itr2) (list-rev-itr-node itr1)))
 
-(defmethod base ((rev-itr list-const-reverse-iterator))
-  (make-instance 'list-const-iterator
+(defmethod base ((rev-itr list_const_reverse_iterator))
+  (make-instance 'list_const_iterator
 				 :node  (list-node-next (list-rev-itr-node rev-itr))))
 
 ;; creating reverse iterator.
-(define-constructor reverse-iterator ((itr list-const-reverse-iterator))
-  (make-instance 'list-const-iterator
+(define-constructor reverse_iterator ((itr list_const_reverse_iterator))
+  (make-instance 'list_const_iterator
 				 :node (list-node-next (list-rev-itr-node itr))))
 
 
 ;;------------------------------------------------------------------------------
 ;;
-;; methods for list-reverse-iterator
+;; methods for list_reverse_iterator
 ;;
 ;;------------------------------------------------------------------------------
-(defmethod operator_clone ((itr list-reverse-iterator))
-  (make-instance 'list-reverse-iterator
+(defmethod operator_clone ((itr list_reverse_iterator))
+  (make-instance 'list_reverse_iterator
 				 :node (list-rev-itr-node itr)))
 
-(defmethod operator_cast ((itr list-reverse-iterator)
-						  (typename (eql 'list-const-reverse-iterator)))
-  (__check-exact-type-of-cast itr 'list-reverse-iterator
-								  'list-const-reverse-iterator)
-  (make-instance 'list-const-reverse-iterator
+(defmethod operator_cast ((itr list_reverse_iterator)
+						  (typename (eql 'list_const_reverse_iterator)))
+  (__check-exact-type-of-cast itr 'list_reverse_iterator
+								  'list_const_reverse_iterator)
+  (make-instance 'list_const_reverse_iterator
 				 :node (list-rev-itr-node itr)))
 
-(defmethod (setf operator_*) (new-val (itr list-reverse-iterator))
+(defmethod (setf operator_*) (new-val (itr list_reverse_iterator))
   (_= (list-node-item (list-rev-itr-node itr)) new-val))
 
-(defmethod base ((rev-itr list-reverse-iterator))
-  (make-instance 'list-iterator
+(defmethod base ((rev-itr list_reverse_iterator))
+  (make-instance 'list_iterator
 				 :node  (list-node-next (list-rev-itr-node rev-itr))))
 
 ;; creating reverse iterator.
-(define-constructor reverse-iterator ((itr list-reverse-iterator))
-  (make-instance 'list-iterator
+(define-constructor reverse_iterator ((itr list_reverse_iterator))
+  (make-instance 'list_iterator
 				 :node (list-node-next (list-rev-itr-node itr))))
 
 
@@ -1164,7 +1164,7 @@
 #+cl-stl-debug
 (defmethod dump ((container stl:list) &optional (stream t) (print-item-fnc nil))
   (setf print-item-fnc (if print-item-fnc
-						   (functor-function (clone print-item-fnc))
+						   (functor_function (clone print-item-fnc))
 						   (lambda (s x) (format s "~A" x))))
   (format stream "begin dump ---------------------~%")
   (with-operators
@@ -1178,7 +1178,7 @@
   nil)
 
 #+cl-stl-debug
-(defmethod check-integrity ((container stl:list) &optional (stream t))
+(defmethod check_integrity ((container stl:list) &optional (stream t))
   (let ((result     nil)
 		(err-count  0))
 	; counting node count ( and check forward reachability )

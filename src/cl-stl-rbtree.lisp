@@ -1,12 +1,12 @@
 (in-package :cl-stl)
 
 (declaim (inline __rbtree-key-func
-				 __rbtree-key-comp
+				 __rbtree-key_comp
 				 __rbtree-node-count
 				 __rbtree-header
 				 #+cl-stl-debug __rbtree-checker
 				 (setf __rbtree-key-func)
-				 (setf __rbtree-key-comp)
+				 (setf __rbtree-key_comp)
 				 (setf __rbtree-node-count)
 				 (setf __rbtree-header)
 				 #+cl-stl-debug (setf __rbtree-checker)
@@ -93,7 +93,7 @@
 (locally (declare (optimize speed))
   (defstruct (rbtree (:conc-name __rbtree-))
 	(key-func   nil)          ; always cl:function ( ordinary #'identity or #'stl:first )
-	(key-comp   nil)          ; functor object.
+	(key_comp   nil)          ; functor object.
 	(node-count 0             :type integer)
 	(header     (make-rbnode) :type rbnode)
 	#+cl-stl-debug
@@ -133,7 +133,7 @@
 (defmacro __rbtree-size (tree)
   `(__rbtree-node-count ,tree))
 
-(defmacro __rbtree-max-size (tree)
+(defmacro __rbtree-max_size (tree)
   (declare (ignore tree))
   most-positive-fixnum)
 
@@ -185,17 +185,17 @@
 ;; allocation/deallocation
 (locally (declare (optimize speed))
 
-  (defun __rbtree-ctor (key-comp key-func)
+  (defun __rbtree-ctor (key_comp key-func)
 	(declare (type cl:function key-func))
-	;;MEMO : key-comp may be functor object.
-	(let ((obj (make-rbtree :key-func key-func :key-comp (clone key-comp))))
+	;;MEMO : key_comp may be functor object.
+	(let ((obj (make-rbtree :key-func key-func :key_comp (clone key_comp))))
 	  (__rbtree-initialize obj)
 	  obj))
 
   (defun __rbtree-copy-ctor (tree)
 	(declare (type rbtree tree))
 	(let ((obj (make-rbtree :key-func (clone (__rbtree-key-func tree))
-							:key-comp (clone (__rbtree-key-comp tree)))))
+							:key_comp (clone (__rbtree-key_comp tree)))))
 	  #+cl-stl-debug (setf (__rbtree-checker obj) (__rbtree-checker tree))
 	  (__rbtree-initialize obj)
 	  (when (__rbtree-root tree)
@@ -411,7 +411,7 @@
 	(unless (eq tree1 tree2)
 	  (__rbtree-clear tree1)
 	  (setf (__rbtree-key-func tree1) (clone (__rbtree-key-func tree2)))
-	  (setf (__rbtree-key-comp tree1) (clone (__rbtree-key-comp tree2)))
+	  (setf (__rbtree-key_comp tree1) (clone (__rbtree-key_comp tree2)))
 	  #+cl-stl-debug (setf (__rbtree-checker  tree1) (__rbtree-checker tree2))
 	  (unless (null (__rbtree-root tree2))
 		(setf (__rbtree-root tree1) (__rbtree-copy-imp (__rbtree-begin-node tree2)
@@ -451,7 +451,7 @@
 			  (setf (__rbnode-parent (__rbtree-root t2)) (__rbtree-end-node t2)))))
 	;; No need to swap header's color as it does not change.
 	(swap (__rbtree-node-count t1) (__rbtree-node-count t2))
-	(swap (__rbtree-key-comp   t1) (__rbtree-key-comp   t2))
+	(swap (__rbtree-key_comp   t1) (__rbtree-key_comp   t2))
 	(swap (__rbtree-key-func   t1) (__rbtree-key-func   t2))
 	#+cl-stl-debug
 	(swap (__rbtree-checker    t1) (__rbtree-checker    t2))
@@ -461,11 +461,11 @@
 (locally (declare (optimize speed))
 
   ;;NOTE : returns rbnode
-  (defun __rbtree-lower-bound-imp (tree node-x node-y key)
+  (defun __rbtree-lower_bound-imp (tree node-x node-y key)
 	(declare (type rbtree tree))
 	(declare (type rbnode node-y))    ; node-x maybe nil
 	(let ((key-of (__rbtree-key-func tree))
-		  (cmp    (functor-function (__rbtree-key-comp tree))))
+		  (cmp    (functor_function (__rbtree-key_comp tree))))
 	  (declare (type cl:function key-of cmp))
 	  (do ()
 		  ((null node-x) node-y)
@@ -475,11 +475,11 @@
 			(setf node-x (__rbnode-right node-x))))))
 
   ;;NOTE : returns rbnode
-  (defun __rbtree-upper-bound-imp (tree node-x node-y key)
+  (defun __rbtree-upper_bound-imp (tree node-x node-y key)
 	(declare (type rbtree tree))
 	(declare (type rbnode node-y))    ; node-x maybe nil
 	(let ((key-of (__rbtree-key-func tree))
-		  (cmp    (functor-function (__rbtree-key-comp tree))))
+		  (cmp    (functor_function (__rbtree-key_comp tree))))
 	  (declare (type cl:function key-of cmp))
 	  (do ()
 		  ((null node-x) node-y)
@@ -489,12 +489,12 @@
 			(setf node-x (__rbnode-right node-x))))))
 
   ;;NOTE : returns 2 values : rbnode & rbnode.
-  (defun __rbtree-equal-range (tree key)
+  (defun __rbtree-equal_range (tree key)
 	(declare (type rbtree tree))
 	(let ((node-x (__rbtree-begin-node tree))
 		  (node-y (__rbtree-end-node   tree))
 		  (key-of (__rbtree-key-func   tree))
-		  (cmp    (functor-function    (__rbtree-key-comp tree))))
+		  (cmp    (functor_function    (__rbtree-key_comp tree))))
 	  (declare (type rbnode node-y))        ;MEMO : node-x maybe nil.
 	  (declare (type cl:function key-of cmp))
 	  (do ()
@@ -512,9 +512,9 @@
 			   (setf node-y  node-x)
 			   (setf node-x  (__rbnode-left node-x))
 			   (setf node-x2 (__rbnode-right node-x2))
-			   (return-from __rbtree-equal-range
-				 (values (__rbtree-lower-bound-imp tree node-x  node-y  key)
-						 (__rbtree-upper-bound-imp tree node-x2 node-y2 key))))))))
+			   (return-from __rbtree-equal_range
+				 (values (__rbtree-lower_bound-imp tree node-x  node-y  key)
+						 (__rbtree-upper_bound-imp tree node-x2 node-y2 key))))))))
 	  (values node-y node-y))))
 
 
@@ -570,7 +570,7 @@
 	;; NOTE : returns count of erased items.
 	(defun __rbtree-erase-key (tree key)
 	  (declare (type rbtree tree))
-	  (multiple-value-bind (node1 node2) (__rbtree-equal-range tree key)
+	  (multiple-value-bind (node1 node2) (__rbtree-equal_range tree key)
 		(declare (type rbnode node1 node2))
 		(let ((old-size (__rbtree-size tree)))
 		  (declare (fixnum old-size))
@@ -597,7 +597,7 @@
 		  (node-x (__rbtree-begin-node tree))
 		  (node-y (__rbtree-end-node   tree))
 		  (key-of (__rbtree-key-func   tree))
-		  (cmp    (functor-function    (__rbtree-key-comp tree))))
+		  (cmp    (functor_function    (__rbtree-key_comp tree))))
 	  (declare (type rbnode node-y))    ; MEMO : node-x maybe nil.
 	  (declare (type cl:function key-of cmp))
 	  (do ()
@@ -623,7 +623,7 @@
 	(let ((node-x (__rbtree-begin-node tree))
 		  (node-y (__rbtree-end-node   tree))
 		  (key-of (__rbtree-key-func   tree))
-		  (cmp    (functor-function (__rbtree-key-comp tree))))
+		  (cmp    (functor_function (__rbtree-key_comp tree))))
 	  (declare (type rbnode node-y))    ; MEMO : node-x maybe nil.
 	  (declare (type cl:function key-of cmp))
 	  (do ()
@@ -639,7 +639,7 @@
 	(declare (type rbtree tree))
 	(declare (type rbnode node))
 	(let ((key-of (__rbtree-key-func tree))
-		  (cmp    (functor-function (__rbtree-key-comp tree))))
+		  (cmp    (functor_function (__rbtree-key_comp tree))))
 	  (declare (type cl:function key-of cmp))
 	  (cond
 		;; when end
@@ -678,7 +678,7 @@
 	(declare (type rbtree tree))
 	(declare (type rbnode node))
 	(let ((key-of (__rbtree-key-func tree))
-		  (cmp    (functor-function (__rbtree-key-comp tree))))
+		  (cmp    (functor_function (__rbtree-key_comp tree))))
 	  (declare (type cl:function key-of cmp))
 	  (cond
 		;; when end
@@ -719,7 +719,7 @@
 	(declare (type rbtree tree))
 	(declare (type rbnode node-p))    ; MEMO node-x maybe nil.
 	(let ((key-of (__rbtree-key-func tree))
-		  (cmp    (functor-function (__rbtree-key-comp tree))))
+		  (cmp    (functor_function (__rbtree-key_comp tree))))
 	  (declare (type cl:function key-of cmp))
 	  (let ((node-z (__rbtree-create-node val need-copy))
 			(insert-left-p (or node-x
@@ -736,7 +736,7 @@
 	(declare (type rbtree tree))
 	(declare (type rbnode node))
 	(let ((key-of (__rbtree-key-func tree))
-		  (cmp    (functor-function (__rbtree-key-comp tree))))
+		  (cmp    (functor_function (__rbtree-key_comp tree))))
 	  (declare (type cl:function key-of cmp))
 	  (let ((node-z (__rbtree-create-node val need-copy))
 			(insert-left-p (or (eq node (__rbtree-end-node tree))
@@ -753,7 +753,7 @@
 	(let ((node-x (__rbtree-begin-node tree))
 		  (node-y (__rbtree-end-node   tree))
 		  (key-of (__rbtree-key-func   tree))
-		  (cmp    (functor-function (__rbtree-key-comp tree))))
+		  (cmp    (functor_function (__rbtree-key_comp tree))))
 	  (declare (type rbnode node-y))        ;MEMO : node-x maybe nil.
 	  (declare (type cl:function key-of cmp))
 	  (do ()
@@ -854,7 +854,7 @@
 	(declare (type rbtree tree))
 	(declare (type rbnode node-p new-node))    ; MEMO node-x maybe nil.
 	(let ((key-of (__rbtree-key-func tree))
-		  (cmp    (functor-function (__rbtree-key-comp tree))))
+		  (cmp    (functor_function (__rbtree-key_comp tree))))
 	  (declare (type cl:function key-of cmp))
 	  (let ((insert-left-p (or node-x
 							   (eq node-p (__rbtree-end-node tree))
@@ -870,7 +870,7 @@
 	(declare (type rbtree tree))
 	(declare (type rbnode node new-node))
 	(let ((key-of (__rbtree-key-func tree))
-		  (cmp    (functor-function (__rbtree-key-comp tree))))
+		  (cmp    (functor_function (__rbtree-key_comp tree))))
 	  (declare (type cl:function key-of cmp))
 	  (let ((insert-left-p (or (eq node (__rbtree-end-node tree))
 							   (not (funcall cmp
@@ -887,7 +887,7 @@
 	(let ((node-x (__rbtree-begin-node tree))
 		  (node-y (__rbtree-end-node   tree))
 		  (key-of (__rbtree-key-func   tree))
-		  (cmp    (functor-function (__rbtree-key-comp tree))))
+		  (cmp    (functor_function (__rbtree-key_comp tree))))
 	  (declare (type rbnode node-y))        ;MEMO : node-x maybe nil.
 	  (declare (type cl:function key-of cmp))
 	  (do ()
@@ -931,7 +931,7 @@
 		  (error c)))))
 
   ;; returns rbnode.
-  (defun __rbtree-emplace-hint-unique (tree node val)
+  (defun __rbtree-emplace_hint-unique (tree node val)
 	(declare (type rbtree tree))
 	(declare (type rbnode node))
 	#+cl-stl-debug (setf val (funcall (the cl:function (__rbtree-checker tree)) val))
@@ -950,7 +950,7 @@
 		  (error c)))))
 
   ;; returns rbnode.
-  (defun __rbtree-emplace-hint-equal (tree node val)
+  (defun __rbtree-emplace_hint-equal (tree node val)
 	(declare (type rbtree tree))
 	(declare (type rbnode node))
 	#+cl-stl-debug (setf val (funcall (the cl:function (__rbtree-checker tree)) val))
@@ -974,11 +974,11 @@
   ;;NOTE : returns rbnode
   (defun __rbtree-find (tree key)
 	(declare (type rbtree tree))
-	(let ((node     (__rbtree-lower-bound-imp tree (__rbtree-begin-node tree)
+	(let ((node     (__rbtree-lower_bound-imp tree (__rbtree-begin-node tree)
 												   (__rbtree-end-node   tree) key))
 		  (end-node (__rbtree-end tree))
 		  (key-of   (__rbtree-key-func tree))
-		  (cmp      (functor-function (__rbtree-key-comp tree))))
+		  (cmp      (functor_function (__rbtree-key_comp tree))))
 	  (declare (type rbnode node end-node))
 	  (declare (type cl:function key-of cmp))
 	  (if (or (eq node end-node)
@@ -988,22 +988,22 @@
 
   (defun __rbtree-count (tree key)
 	(declare (type rbtree tree))
-	(multiple-value-bind (node1 node2) (__rbtree-equal-range tree key)
+	(multiple-value-bind (node1 node2) (__rbtree-equal_range tree key)
 	  (do ((cnt 0 (1+ cnt)))
 		  ((eq node1 node2) cnt)
 		(declare (type fixnum cnt))
 		(setf node1 (__rbnode-increment node1)))))
 
   ;;NOTE : returns rbnode
-  (defun __rbtree-lower-bound (tree key)
+  (defun __rbtree-lower_bound (tree key)
 	(declare (type rbtree tree))
-	(__rbtree-lower-bound-imp tree (__rbtree-begin-node tree)
+	(__rbtree-lower_bound-imp tree (__rbtree-begin-node tree)
 								   (__rbtree-end-node   tree) key))
 
   ;;NOTE : returns rbnode
-  (defun __rbtree-upper-bound (tree key)
+  (defun __rbtree-upper_bound (tree key)
 	(declare (type rbtree tree))
-	(__rbtree-upper-bound-imp tree (__rbtree-begin-node tree)
+	(__rbtree-upper_bound-imp tree (__rbtree-begin-node tree)
 								   (__rbtree-end-node   tree) key)))
 
 
@@ -1073,7 +1073,7 @@
 (defun __rbtree-dump (tree stream item-printer)
   (declare (type rbtree tree))
   (let ((item-printer (if item-printer
-						  (functor-function (clone item-printer))
+						  (functor_function (clone item-printer))
 						  (lambda (s x) (format s "~A" x)))))
 	(declare (type cl:function item-printer))
 	(labels ((indent (cnt)
@@ -1129,7 +1129,7 @@
 			   (eq (__rbnode-left  (__rbtree-header tree)) (__rbtree-end-node tree))
 			   (eq (__rbnode-right (__rbtree-header tree)) (__rbtree-end-node tree)))
 		  (let ((key-of (__rbtree-key-func tree))
-				(cmp    (functor-function (__rbtree-key-comp tree)))
+				(cmp    (functor_function (__rbtree-key_comp tree)))
 				(len    (__black-count (__rbtree-leftmost tree) (__rbtree-root tree))))
 			(declare (type cl:function key-of cmp))
 			(do ((node1 (__rbtree-begin tree) (__rbnode-increment node1))

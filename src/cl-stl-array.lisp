@@ -7,20 +7,20 @@
 ;;--------------------------------------------------------------------
 #-cl-stl-0x98
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass stl:array (randomaccess-container)
+  (defclass stl:array (randomaccess_container)
 	((buffer :type     :simple-vector
 			 :initform nil
 			 :initarg  :buffer
 			 :accessor array-data))))
 
 #-cl-stl-0x98
-(defclass array-const-iterator (const-vector-pointer randomaccess-iterator) ())
+(defclass array_const_iterator (const-vector-pointer randomaccess_iterator) ())
 #-cl-stl-0x98
-(defclass array-iterator (vector-pointer array-const-iterator) ())
+(defclass array_iterator (vector-pointer array_const_iterator) ())
 #-cl-stl-0x98
-(defclass array-const-reverse-iterator (const-reverse-vector-pointer randomaccess-iterator) ())
+(defclass array_const_reverse_iterator (const-reverse-vector-pointer randomaccess_iterator) ())
 #-cl-stl-0x98
-(defclass array-reverse-iterator (reverse-vector-pointer array-const-reverse-iterator) ())
+(defclass array_reverse_iterator (reverse-vector-pointer array_const_reverse_iterator) ())
 
 ;;--------------------------------------------------------------------
 ;;
@@ -42,7 +42,7 @@
 						0
 						(length ,buf-sym))))
 	   (when (or (< ,idx-sym 0) (<= ,g-size ,idx-sym))
-		 (error 'out-of-range :what ,(format nil "index ~A is out of range." idx-sym))))))
+		 (error 'out_of_range :what ,(format nil "index ~A is out of range." idx-sym))))))
 
 #-cl-stl-0x98
 (defun __create-array (size &optional (initial-element nil))
@@ -89,7 +89,7 @@
 ; constructor with initializer list
 #-cl-stl-0x98
 (locally (declare (optimize speed))
-  (define-constructor array ((arg1 integer) (arg2 initializer-list))
+  (define-constructor array ((arg1 integer) (arg2 initializer_list))
 	(declare (type fixnum arg1))
 	(if (< arg1 (the fixnum (size arg2)))
 		(error 'type-mismatch :what (format nil "Too many initializer for array<~A>." arg1))
@@ -154,7 +154,7 @@
 
 #-cl-stl-0x98
 (locally (declare (optimize speed))
-  (defmethod operator_= ((cont stl:array) (il initializer-list))
+  (defmethod operator_= ((cont stl:array) (il initializer_list))
 	(let* ((dst (array-data cont))
 		   (dst-cnt (length dst))
 		   (src (__initlist-data il))
@@ -199,46 +199,46 @@
 ;-----------------------------------------------------
 #-cl-stl-0x98
 (defmethod begin ((cont stl:array))
-  (make-instance 'array-iterator :buffer (array-data cont) :index 0))
+  (make-instance 'array_iterator :buffer (array-data cont) :index 0))
 
 #-cl-stl-0x98
 (defmethod end ((cont stl:array))
   (let ((buf (array-data cont)))
-	(make-instance 'array-iterator :buffer buf
+	(make-instance 'array_iterator :buffer buf
 								   :index (length buf))))
 
 #-cl-stl-0x98
 (defmethod rbegin ((cont stl:array))
   (let ((buf (array-data cont)))
-	(make-instance 'array-reverse-iterator
+	(make-instance 'array_reverse_iterator
 				   :buffer buf :index (1- (length buf)))))
 
 #-cl-stl-0x98
 (defmethod rend ((cont stl:array))
   (let ((buf (array-data cont)))
-	(make-instance 'array-reverse-iterator :buffer buf :index -1)))
+	(make-instance 'array_reverse_iterator :buffer buf :index -1)))
 
 #-cl-stl-0x98
 (defmethod cbegin ((cont stl:array))
-  (make-instance 'array-const-iterator
+  (make-instance 'array_const_iterator
 				 :buffer (array-data cont) :index 0))
 
 #-cl-stl-0x98
 (defmethod cend ((cont stl:array))
   (let ((buf (array-data cont)))
-	(make-instance 'array-const-iterator
+	(make-instance 'array_const_iterator
 				   :buffer buf :index (length buf))))
 
 #-cl-stl-0x98
 (defmethod crbegin ((cont stl:array))
   (let ((buf (array-data cont)))
-	(make-instance 'array-const-reverse-iterator
+	(make-instance 'array_const_reverse_iterator
 				   :buffer buf :index (1- (length buf)))))
 
 #-cl-stl-0x98
 (defmethod crend ((cont stl:array))
   (let ((buf (array-data cont)))
-	(make-instance 'array-const-reverse-iterator
+	(make-instance 'array_const_reverse_iterator
 				   :buffer buf :index -1)))
 
 ;-----------------------------------------------------
@@ -253,7 +253,7 @@
   (length (array-data cont)))
 
 #-cl-stl-0x98
-(defmethod max-size ((cont stl:array))
+(defmethod max_size ((cont stl:array))
   most-positive-fixnum)
 
 ;-----------------------------------------------------
@@ -310,7 +310,7 @@
 	(if (zerop cnt)
 		(error 'undefined-behavior :what "operator_& for empty array.")
 		(if (or (< idx 0) (< cnt idx))
-			(error 'out-of-range :what (format nil "index ~A is out of range." idx))
+			(error 'out_of_range :what (format nil "index ~A is out of range." idx))
 			(make-instance 'vector-pointer :buffer buf :index idx)))))
   
 #-cl-stl-0x98
@@ -320,7 +320,7 @@
 	(if (zerop cnt)
 		(error 'undefined-behavior :what "operator_& for empty array.")
 		(if (or (< idx 0) (< cnt idx))
-			(error 'out-of-range :what (format nil "index ~A is out of range." idx))
+			(error 'out_of_range :what (format nil "index ~A is out of range." idx))
 			(make-instance 'const-vector-pointer :buffer buf :index idx)))))
 
 #-cl-stl-0x98
@@ -446,52 +446,52 @@
 (defmethod-overload get ((idx integer) (obj stl:array))
   (let ((buf (array-data obj)))
 	(unless (and (<= 0 idx) (< idx (length buf)))
-	  (error 'out-of-range :what "Index specified to get is out of range."))
+	  (error 'out_of_range :what "Index specified to get is out of range."))
 	(svref buf idx)))
 
 #-cl-stl-0x98
 (defmethod-overload (setf get) (new-val (idx integer) (obj stl:array))
   (let ((buf (array-data obj)))
 	(unless (and (<= 0 idx) (< idx (length buf)))
-	  (error 'out-of-range :what "Index specified to get is out of range."))
+	  (error 'out_of_range :what "Index specified to get is out of range."))
 	(_= (svref buf idx) new-val)
 	new-val))
 
 ;;------------------------------------------------------------------------------
 ;;
-;; methods for array-const-iterator
+;; methods for array_const_iterator
 ;;
 ;;------------------------------------------------------------------------------
 #-cl-stl-0x98
-(defmethod operator_= ((itr1 array-const-iterator) (itr2 array-const-iterator))
-  (__error-when-const-removing-assign itr1 array-iterator
-									  itr2 array-const-iterator)
+(defmethod operator_= ((itr1 array_const_iterator) (itr2 array_const_iterator))
+  (__error-when-const-removing-assign itr1 array_iterator
+									  itr2 array_const_iterator)
   (setf (opr::vec-ptr-buffer itr1) (opr::vec-ptr-buffer itr2))
   (setf (opr::vec-ptr-index  itr1) (opr::vec-ptr-index  itr2))
   itr1)
 
 #-cl-stl-0x98
-(defmethod operator_clone ((itr array-const-iterator))
-  (make-instance 'array-const-iterator
+(defmethod operator_clone ((itr array_const_iterator))
+  (make-instance 'array_const_iterator
 				 :buffer (opr::vec-ptr-buffer itr)
 				 :index  (opr::vec-ptr-index  itr)))
 
 #-cl-stl-0x98
-(defmethod operator_+ ((itr array-const-iterator) (n integer))
-  (make-instance 'array-const-iterator
+(defmethod operator_+ ((itr array_const_iterator) (n integer))
+  (make-instance 'array_const_iterator
 				 :buffer (opr::vec-ptr-buffer itr)
 				 :index  (+ n (opr::vec-ptr-index itr))))
 
 #-cl-stl-0x98
-(defmethod operator_- ((itr array-const-iterator) (n integer))
-  (make-instance 'array-const-iterator
+(defmethod operator_- ((itr array_const_iterator) (n integer))
+  (make-instance 'array_const_iterator
 				 :buffer (opr::vec-ptr-buffer itr)
 				 :index  (- (opr::vec-ptr-index itr) n)))
 
 ;; creating reverse iterator.
 #-cl-stl-0x98
-(define-constructor reverse-iterator ((itr array-const-iterator))
-  (make-instance 'array-const-reverse-iterator
+(define-constructor reverse_iterator ((itr array_const_iterator))
+  (make-instance 'array_const_reverse_iterator
 				 :buffer (opr::vec-ptr-buffer itr)
 				 :index  (1- (opr::vec-ptr-index  itr))))
 
@@ -499,131 +499,131 @@
 
 ;;------------------------------------------------------------------------------
 ;;
-;; methods for array-iterator
+;; methods for array_iterator
 ;;
 ;;------------------------------------------------------------------------------
 #-cl-stl-0x98
-(defmethod operator_clone ((itr array-iterator))
-  (make-instance 'array-iterator
+(defmethod operator_clone ((itr array_iterator))
+  (make-instance 'array_iterator
 				 :buffer (opr::vec-ptr-buffer itr)
 				 :index  (opr::vec-ptr-index  itr)))
 
 #-cl-stl-0x98
-(defmethod operator_cast ((itr array-iterator)
-						  (typename (eql 'array-const-iterator)))
-  (__check-exact-type-of-cast itr 'array-iterator 'array-const-iterator)
-  (make-instance 'array-const-iterator
+(defmethod operator_cast ((itr array_iterator)
+						  (typename (eql 'array_const_iterator)))
+  (__check-exact-type-of-cast itr 'array_iterator 'array_const_iterator)
+  (make-instance 'array_const_iterator
 				 :buffer (opr::vec-ptr-buffer itr)
 				 :index  (opr::vec-ptr-index  itr)))
 
 #-cl-stl-0x98
-(defmethod operator_+ ((itr array-iterator) (n integer))
-  (make-instance 'array-iterator
+(defmethod operator_+ ((itr array_iterator) (n integer))
+  (make-instance 'array_iterator
 				 :buffer (opr::vec-ptr-buffer itr)
 				 :index  (+ n (opr::vec-ptr-index itr))))
 
 #-cl-stl-0x98
-(defmethod operator_- ((itr array-iterator) (n integer))
-  (make-instance 'array-iterator
+(defmethod operator_- ((itr array_iterator) (n integer))
+  (make-instance 'array_iterator
 				 :buffer (opr::vec-ptr-buffer itr)
 				 :index  (- (opr::vec-ptr-index itr) n)))
 
 ;; creating reverse iterator.
 #-cl-stl-0x98
-(define-constructor reverse-iterator ((itr array-iterator))
-  (make-instance 'array-reverse-iterator
+(define-constructor reverse_iterator ((itr array_iterator))
+  (make-instance 'array_reverse_iterator
 				 :buffer (opr::vec-ptr-buffer itr)
 				 :index  (1- (opr::vec-ptr-index  itr))))
 
 
 ;;------------------------------------------------------------------------------
 ;;
-;; methods for array-const-reverse-iterator
+;; methods for array_const_reverse_iterator
 ;;
 ;;------------------------------------------------------------------------------
 #-cl-stl-0x98
-(defmethod operator_= ((itr1 array-const-reverse-iterator)
-					  (itr2 array-const-reverse-iterator))
-  (__error-when-const-removing-assign itr1 array-reverse-iterator
-									  itr2 array-const-reverse-iterator)
+(defmethod operator_= ((itr1 array_const_reverse_iterator)
+					  (itr2 array_const_reverse_iterator))
+  (__error-when-const-removing-assign itr1 array_reverse_iterator
+									  itr2 array_const_reverse_iterator)
   (setf (opr::rev-vec-ptr-buffer itr1) (opr::rev-vec-ptr-buffer itr2))
   (setf (opr::rev-vec-ptr-index  itr1) (opr::rev-vec-ptr-index  itr2))
   itr1)
 
 #-cl-stl-0x98
-(defmethod operator_clone ((itr array-const-reverse-iterator))
-  (make-instance 'array-const-reverse-iterator
+(defmethod operator_clone ((itr array_const_reverse_iterator))
+  (make-instance 'array_const_reverse_iterator
 				 :buffer (opr::rev-vec-ptr-buffer itr)
 				 :index  (opr::rev-vec-ptr-index  itr)))
 
 #-cl-stl-0x98
-(defmethod operator_+ ((itr array-const-reverse-iterator) (n integer))
-  (make-instance 'array-const-reverse-iterator
+(defmethod operator_+ ((itr array_const_reverse_iterator) (n integer))
+  (make-instance 'array_const_reverse_iterator
 				 :buffer (opr::rev-vec-ptr-buffer itr)
 				 :index  (- (opr::rev-vec-ptr-index itr) n)))
 
 #-cl-stl-0x98
-(defmethod operator_- ((itr array-const-reverse-iterator) (n integer))
-  (make-instance 'array-const-reverse-iterator
+(defmethod operator_- ((itr array_const_reverse_iterator) (n integer))
+  (make-instance 'array_const_reverse_iterator
 				 :buffer (opr::rev-vec-ptr-buffer itr)
 				 :index  (+ (opr::rev-vec-ptr-index itr) n)))
 
 #-cl-stl-0x98
-(defmethod base ((rev-itr array-const-reverse-iterator))
-  (make-instance 'array-const-iterator
+(defmethod base ((rev-itr array_const_reverse_iterator))
+  (make-instance 'array_const_iterator
 				 :buffer (opr::rev-vec-ptr-buffer rev-itr)
 				 :index  (1+ (opr::rev-vec-ptr-index rev-itr))))
 
 ;; creating reverse iterator.
 #-cl-stl-0x98
-(define-constructor reverse-iterator ((itr array-const-reverse-iterator))
-  (make-instance 'array-const-iterator
+(define-constructor reverse_iterator ((itr array_const_reverse_iterator))
+  (make-instance 'array_const_iterator
 				 :buffer (opr::rev-vec-ptr-buffer itr)
 				 :index  (1+ (opr::rev-vec-ptr-index  itr))))
 
 
 ;;------------------------------------------------------------------------------
 ;;
-;; methods for array-reverse-iterator
+;; methods for array_reverse_iterator
 ;;
 ;;------------------------------------------------------------------------------
 #-cl-stl-0x98
-(defmethod operator_clone ((itr array-reverse-iterator))
-  (make-instance 'array-reverse-iterator
+(defmethod operator_clone ((itr array_reverse_iterator))
+  (make-instance 'array_reverse_iterator
 				 :buffer (opr::rev-vec-ptr-buffer itr)
 				 :index  (opr::rev-vec-ptr-index  itr)))
 
 #-cl-stl-0x98
-(defmethod operator_cast ((itr array-reverse-iterator)
-						  (typename (eql 'array-const-reverse-iterator)))
-  (__check-exact-type-of-cast itr 'array-reverse-iterator
-								  'array-const-reverse-iterator)
-  (make-instance 'array-const-reverse-iterator
+(defmethod operator_cast ((itr array_reverse_iterator)
+						  (typename (eql 'array_const_reverse_iterator)))
+  (__check-exact-type-of-cast itr 'array_reverse_iterator
+								  'array_const_reverse_iterator)
+  (make-instance 'array_const_reverse_iterator
 				 :buffer (opr::rev-vec-ptr-buffer itr)
 				 :index  (opr::rev-vec-ptr-index  itr)))
 
 #-cl-stl-0x98
-(defmethod operator_+ ((itr array-reverse-iterator) (n integer))
-  (make-instance 'array-reverse-iterator
+(defmethod operator_+ ((itr array_reverse_iterator) (n integer))
+  (make-instance 'array_reverse_iterator
 				 :buffer (opr::rev-vec-ptr-buffer itr)
 				 :index  (+ n (opr::rev-vec-ptr-index itr))))
 
 #-cl-stl-0x98
-(defmethod operator_- ((itr array-reverse-iterator) (n integer))
-  (make-instance 'array-reverse-iterator
+(defmethod operator_- ((itr array_reverse_iterator) (n integer))
+  (make-instance 'array_reverse_iterator
 				 :buffer (opr::rev-vec-ptr-buffer itr)
 				 :index  (- (opr::rev-vec-ptr-index itr) n)))
 
 #-cl-stl-0x98
-(defmethod base ((rev-itr array-reverse-iterator))
-  (make-instance 'array-iterator
+(defmethod base ((rev-itr array_reverse_iterator))
+  (make-instance 'array_iterator
 				 :buffer (opr::rev-vec-ptr-buffer rev-itr)
 				 :index  (1+ (opr::rev-vec-ptr-index rev-itr))))
 
 ;; creating reverse iterator.
 #-cl-stl-0x98
-(define-constructor reverse-iterator ((itr array-reverse-iterator))
-  (make-instance 'array-iterator
+(define-constructor reverse_iterator ((itr array_reverse_iterator))
+  (make-instance 'array_iterator
 				 :buffer (opr::rev-vec-ptr-buffer itr)
 				 :index  (1+ (opr::rev-vec-ptr-index  itr))))
 
@@ -644,7 +644,7 @@
 	(let ((buf (array-data container)))
 	  (when buf
 		(setf print-item-fnc (if print-item-fnc
-								 (functor-function (clone print-item-fnc))
+								 (functor_function (clone print-item-fnc))
 								 (lambda (s x) (format s "~A" x))))
 		(do ((idx 0)
 			 (cnt (size container)))
@@ -659,7 +659,7 @@
 #+cl-stl-debug
 (progn
   #-cl-stl-0x98
-  (defmethod check-integrity ((container stl:array) &optional (stream t))
+  (defmethod check_integrity ((container stl:array) &optional (stream t))
 	(declare (ignorable container stream))
 	;; intentionally do nothing...
 	t))

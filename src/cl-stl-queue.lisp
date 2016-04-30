@@ -6,7 +6,7 @@
 ;;
 ;;------------------------------------------------------------------------------
 (defclass queue (clonable)
-  ((container :type     :pushable-front-container
+  ((container :type     :pushable_front_container
 			  :initform (new stl:deque)
 			  :initarg  :container
 			  :accessor __que-container)))
@@ -19,9 +19,9 @@
 ;;------------------------------------------------------------------------------
 (defmacro check-underlying-container-of-queue (cont)
   (check-type cont symbol)
-  `(unless (and (typep ,cont 'pushable-back-container)
-				(typep ,cont 'pushable-front-container))
-	 (error 'type-mismatch :what "Underlying container of queue must be pushable-back-container and be pushable-front-container.")))
+  `(unless (and (typep ,cont 'pushable_back_container)
+				(typep ,cont 'pushable_front_container))
+	 (error 'type-mismatch :what "Underlying container of queue must be pushable_back_container and be pushable_front_container.")))
 
 
 ;;------------------------------------------------------------------------------
@@ -37,8 +37,8 @@
 
 ; initialize
 ; MEMO : container arg is copied.
-(define-constructor queue ((arg pushable-front-container))
-  (check-type arg pushable-back-container)
+(define-constructor queue ((arg pushable_front_container))
+  (check-type arg pushable_back_container)
   (make-instance 'queue :container (clone arg)))
 
 ; copy constructor
@@ -107,17 +107,17 @@
 ; modifiers
 ;-----------------------------------------------------
 (defmethod push ((cont queue) val)
-  (push-back (__que-container cont) val)
+  (push_back (__que-container cont) val)
   nil)
 
 (defmethod pop ((cont queue))
-  (pop-front (__que-container cont))
+  (pop_front (__que-container cont))
   nil)
 
 
 #-cl-stl-0x98    ; emplace
 (defmethod-overload emplace ((container queue) new-val)
-  (__emplace-back-2 (__que-container container) new-val)
+  (__emplace_back-2 (__que-container container) new-val)
   nil)
 
 #-cl-stl-0x98

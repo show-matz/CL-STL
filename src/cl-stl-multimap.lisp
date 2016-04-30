@@ -7,7 +7,7 @@
 ;;------------------------------------------------------------------------------
 (locally (declare (optimize speed))
 
-  (defclass multimap (bidirectional-container)
+  (defclass multimap (bidirectional_container)
 	((rbtree  :type     :rbtree
 			  :initform nil
 			  :initarg  :core
@@ -19,20 +19,20 @@
 ;TMP;			 :accessor __instance-id)
 	))
 
-  (defclass multimap-const-iterator (bidirectional-iterator)
+  (defclass multimap_const_iterator (bidirectional_iterator)
 	((node :type     :rbnode
 		   :initform nil
 		   :initarg  :node
 		   :accessor __assoc-itr-node)))
 
-  (defclass multimap-const-reverse-iterator (bidirectional-iterator)
+  (defclass multimap_const_reverse_iterator (bidirectional_iterator)
 	((node :type     :rbnode
 		   :initform nil
 		   :initarg  :node
 		   :accessor __assoc-rev-itr-node)))
 
-  (defclass multimap-iterator (multimap-const-iterator) ())
-  (defclass multimap-reverse-iterator (multimap-const-reverse-iterator) ()))
+  (defclass multimap_iterator (multimap_const_iterator) ())
+  (defclass multimap_reverse_iterator (multimap_const_reverse_iterator) ()))
 
 
 ;;--------------------------------------------------------------------
@@ -51,8 +51,8 @@
 					   nil
 					   (let ((key (stl:first val)))
 						 (handler-case
-							 (do ((node1 (__rbtree-lower-bound tree key) (__rbnode-increment node1))
-								  (node2 (__rbtree-upper-bound tree key)))
+							 (do ((node1 (__rbtree-lower_bound tree key) (__rbnode-increment node1))
+								  (node2 (__rbtree-upper_bound tree key)))
 								 ((eq node1 node2) nil)
 							   (when (eq node node1)
 								 (return t)))
@@ -77,11 +77,11 @@
 			  (if (handler-case
 					  (let ((key1 (stl:first (__rbnode-value node1)))
 							(key2 (stl:first (__rbnode-value node2)))
-							(comp (functor-function (key-comp cont))))
+							(comp (functor_function (key_comp cont))))
 						(if (funcall comp key2 key1)
 							nil
-							(do ((nodeA (__rbtree-lower-bound tree key1) (__rbnode-increment nodeA))
-								 (nodeB (__rbtree-upper-bound tree key2)))
+							(do ((nodeA (__rbtree-lower_bound tree key1) (__rbnode-increment nodeA))
+								 (nodeB (__rbtree-upper_bound tree key2)))
 								((eq nodeA nodeB) nil)
 							  (if (eq node1 nodeA)
 								  (return (__multimap-check-iterator-belong-imp itr2 cont))
@@ -99,25 +99,25 @@
 ;;--------------------------------------------------------------------
 (locally (declare (optimize speed))
 
-  (defun __create-multimap (key-comp)
-	;; MEMO : key-comp copy in __rbtree-ctor.
-	(let ((tree (__rbtree-ctor key-comp #'stl:first)))
+  (defun __create-multimap (key_comp)
+	;; MEMO : key_comp copy in __rbtree-ctor.
+	(let ((tree (__rbtree-ctor key_comp #'stl:first)))
 	  #+cl-stl-debug (setf (__rbtree-checker tree) #'__map-item-checker)
 	  (make-instance 'multimap :core tree)))
 
-  (defun __create-multimap-with-range (key-comp itr1 itr2)
-	;; MEMO : key-comp copy in __rbtree-ctor.
-	;; MEMO : [itr1, itr2) is 'input-iterator'...
-	(let ((tree (__rbtree-ctor key-comp #'stl:first)))
+  (defun __create-multimap-with-range (key_comp itr1 itr2)
+	;; MEMO : key_comp copy in __rbtree-ctor.
+	;; MEMO : [itr1, itr2) is 'input_iterator'...
+	(let ((tree (__rbtree-ctor key_comp #'stl:first)))
 	  #+cl-stl-debug (setf (__rbtree-checker tree) #'__map-item-checker)
 	  (__rbtree-insert-range-equal tree itr1 itr2 t)
 	  (make-instance 'multimap :core tree)))
 
-  (defun __create-multimap-with-array (key-comp arr idx1 idx2)
+  (defun __create-multimap-with-array (key_comp arr idx1 idx2)
 	(declare (type cl:vector arr))
 	(declare (type fixnum idx1 idx2))
-	;; MEMO : key-comp copy in __rbtree-ctor.
-	(let ((tree (__rbtree-ctor key-comp #'stl:first)))
+	;; MEMO : key_comp copy in __rbtree-ctor.
+	(let ((tree (__rbtree-ctor key_comp #'stl:first)))
 	  #+cl-stl-debug (setf (__rbtree-checker tree) #'__map-item-checker)
 	  (__rbtree-insert-array-equal tree arr idx1 idx2 t)
 	  (make-instance 'multimap :core tree))))
@@ -140,7 +140,7 @@
 
 ; empty constructor 3
 (define-constructor multimap ((arg #-cl-stl-0x98 functor
-								   #+cl-stl-0x98 binary-function))
+								   #+cl-stl-0x98 binary_function))
   (__create-multimap arg))
 
 ; copy constructor
@@ -149,26 +149,26 @@
 
 ; constructor with initializer list 1
 #-cl-stl-0x98
-(define-constructor multimap ((il initializer-list))
-  (declare (type initializer-list il))
+(define-constructor multimap ((il initializer_list))
+  (declare (type initializer_list il))
   (let ((arr (__initlist-data il)))
 	(declare (type simple-vector arr))
 	(__create-multimap-with-array #'operator_< arr 0 (length arr))))
 
 ; constructor with initializer list 2
 #-cl-stl-0x98
-(define-constructor multimap ((il initializer-list) (comp cl:function))
-  (declare (type initializer-list il))
+(define-constructor multimap ((il initializer_list) (comp cl:function))
+  (declare (type initializer_list il))
   (let ((arr (__initlist-data il)))
 	(declare (type simple-vector arr))
 	(__create-multimap-with-array comp arr 0 (length arr))))
 
 ; constructor with initializer list 3
 #-cl-stl-0x98
-(define-constructor multimap ((il initializer-list)
+(define-constructor multimap ((il initializer_list)
 							  (comp #-cl-stl-0x98 functor
-									#+cl-stl-0x98 binary-function))
-  (declare (type initializer-list il))
+									#+cl-stl-0x98 binary_function))
+  (declare (type initializer_list il))
   (let ((arr (__initlist-data il)))
 	(declare (type simple-vector arr))
 	(__create-multimap-with-array comp arr 0 (length arr))))
@@ -178,21 +178,21 @@
 (define-constructor multimap ((arg remove-reference))
   (let ((cont (funcall (the cl:function (__rm-ref-closure arg)))))
 	(__check-type-of-move-constructor cont multimap)
-	(let ((obj (__create-multimap (key-comp cont))))
+	(let ((obj (__create-multimap (key_comp cont))))
 	  (__rbtree-swap (__assoc-tree obj) (__assoc-tree cont))
 	  obj)))
 
 ; range constructor
-(define-constructor multimap ((itr1 input-iterator) (itr2 input-iterator))
+(define-constructor multimap ((itr1 input_iterator) (itr2 input_iterator))
   (__create-multimap-with-range #'operator_< itr1 itr2))
 
-(define-constructor multimap ((itr1 input-iterator)
-							  (itr2 input-iterator) (comp cl:function))
+(define-constructor multimap ((itr1 input_iterator)
+							  (itr2 input_iterator) (comp cl:function))
   (__create-multimap-with-range comp itr1 itr2))
 
-(define-constructor multimap ((itr1 input-iterator)
-							  (itr2 input-iterator) (comp #-cl-stl-0x98 functor
-														  #+cl-stl-0x98 binary-function))
+(define-constructor multimap ((itr1 input_iterator)
+							  (itr2 input_iterator) (comp #-cl-stl-0x98 functor
+														  #+cl-stl-0x98 binary_function))
   (__create-multimap-with-range comp itr1 itr2))
 
 ;; range constructor for const-vector-pointer.
@@ -213,7 +213,7 @@
 
 (define-constructor multimap ((ptr1 const-vector-pointer)
 							  (ptr2 const-vector-pointer) (comp #-cl-stl-0x98 functor
-																#+cl-stl-0x98 binary-function))
+																#+cl-stl-0x98 binary_function))
   (__pointer-check-iterator-range ptr1 ptr2)
   (__create-multimap-with-array comp
 								 (opr::vec-ptr-buffer ptr1)
@@ -248,12 +248,12 @@
 			(tree2 (__assoc-tree cont2)))
 		(__rbtree-clear tree1)
 		(__rbtree-swap tree1 tree2)
-		(setf (__rbtree-key-comp tree2) (clone (__rbtree-key-comp tree1)))))
+		(setf (__rbtree-key_comp tree2) (clone (__rbtree-key_comp tree1)))))
 	(values cont1 cont2))
 
   #-cl-stl-0x98
-  (defmethod operator_= ((cont multimap) (il initializer-list))
-	(declare (type initializer-list il))
+  (defmethod operator_= ((cont multimap) (il initializer_list))
+	(declare (type initializer_list il))
 	(let ((tree (__assoc-tree cont))
 		  (arr  (__initlist-data il)))
 	  (declare (type rbtree tree))
@@ -269,39 +269,39 @@
 (locally (declare (optimize speed))
 
   (defmethod begin ((container multimap))
-	(make-instance 'multimap-iterator
+	(make-instance 'multimap_iterator
 				   :node (__rbtree-begin (__assoc-tree container))))
 
   (defmethod end ((container multimap))
-	(make-instance 'multimap-iterator
+	(make-instance 'multimap_iterator
 				   :node (__rbtree-end (__assoc-tree container))))
 
   (defmethod rbegin ((container multimap))
-	(make-instance 'multimap-reverse-iterator 
+	(make-instance 'multimap_reverse_iterator 
 				   :node (__rbtree-rbegin (__assoc-tree container))))
 
   (defmethod rend ((container multimap))
-	(make-instance 'multimap-reverse-iterator 
+	(make-instance 'multimap_reverse_iterator 
 				   :node (__rbtree-rend (__assoc-tree container))))
 
   #-cl-stl-0x98
   (defmethod cbegin ((container multimap))
-	(make-instance 'multimap-const-iterator
+	(make-instance 'multimap_const_iterator
 				   :node (__rbtree-begin (__assoc-tree container))))
 
   #-cl-stl-0x98
   (defmethod cend ((container multimap))
-	(make-instance 'multimap-const-iterator
+	(make-instance 'multimap_const_iterator
 				   :node (__rbtree-end (__assoc-tree container))))
 
   #-cl-stl-0x98
   (defmethod crbegin ((container multimap))
-	(make-instance 'multimap-const-reverse-iterator
+	(make-instance 'multimap_const_reverse_iterator
 				   :node (__rbtree-rbegin (__assoc-tree container))))
 
   #-cl-stl-0x98
   (defmethod crend ((container multimap))
-	(make-instance 'multimap-const-reverse-iterator
+	(make-instance 'multimap_const_reverse_iterator
 				   :node (__rbtree-rend (__assoc-tree container)))))
 
 
@@ -316,8 +316,8 @@
   (defmethod size ((container multimap))
 	(__rbtree-size (__assoc-tree container)))
 
-  (defmethod max-size ((container multimap))
-	(__rbtree-max-size (__assoc-tree container))))
+  (defmethod max_size ((container multimap))
+	(__rbtree-max_size (__assoc-tree container))))
 
 
 ;;----------------------------------------------------------
@@ -332,7 +332,7 @@
 
   ;; insert ( single element ) - returns iterator.
   (defmethod-overload insert ((container multimap) value)
-	(make-instance 'multimap-iterator
+	(make-instance 'multimap_iterator
 				   :node (__rbtree-insert-equal (__assoc-tree container) value t)))
 
   ;; insert ( single element by remove reference ) - returns iterator.
@@ -340,39 +340,39 @@
   (defmethod-overload insert ((container multimap) (rm remove-reference))
 	(let ((val (funcall (the cl:function (__rm-ref-closure rm)))))
 	  (funcall (the cl:function (__rm-ref-closure rm)) nil)
-	  (make-instance 'multimap-iterator
+	  (make-instance 'multimap_iterator
 					 :node (__rbtree-insert-equal (__assoc-tree container) val nil))))
 
   ;; insert ( single element with hint ) - returns iterator.
   (defmethod-overload insert ((container multimap)
-							  (itr #+cl-stl-0x98 multimap-iterator
-								   #-cl-stl-0x98 multimap-const-iterator) value)
+							  (itr #+cl-stl-0x98 multimap_iterator
+								   #-cl-stl-0x98 multimap_const_iterator) value)
 	#+cl-stl-0x98  ;; HACK
-	(when (and (typep itr   'multimap-const-iterator)
-			   (typep value 'multimap-const-iterator))
+	(when (and (typep itr   'multimap_const_iterator)
+			   (typep value 'multimap_const_iterator))
 	  (__rbtree-insert-range-equal (__assoc-tree container) itr value t)
 	  (return-from __insert-3 nil))
 	
 	#+cl-stl-debug (__multimap-check-iterator-belong itr container)
-	(make-instance 'multimap-iterator
+	(make-instance 'multimap_iterator
 				   :node (__rbtree-insert-hint-equal (__assoc-tree container)
 													 (__assoc-itr-node itr) value t)))
 
   ;; insert ( single element with hint by remove reference ) - returns iterator.
   #-cl-stl-0x98
   (defmethod-overload insert ((container multimap)
-							  (itr multimap-const-iterator) (rm remove-reference))
+							  (itr multimap_const_iterator) (rm remove-reference))
 	#+cl-stl-debug (__multimap-check-iterator-belong itr container)
 	(let ((val (funcall (the cl:function (__rm-ref-closure rm)))))
 	  (funcall (the cl:function (__rm-ref-closure rm)) nil)
-	  (make-instance 'multimap-iterator
+	  (make-instance 'multimap_iterator
 					 :node (__rbtree-insert-hint-equal (__assoc-tree container)
 													   (__assoc-itr-node itr) val nil))))
 
   ;; insert ( initializer list ) - returns nil.
   #-cl-stl-0x98
-  (defmethod-overload insert ((container multimap) (il initializer-list))
-	(declare (type initializer-list il))
+  (defmethod-overload insert ((container multimap) (il initializer_list))
+	(declare (type initializer_list il))
 	(let* ((arr (__initlist-data il))
 		   (cnt (length arr)))
 	  (declare (type simple-vector arr))
@@ -383,12 +383,12 @@
 ;; range insert - returns nil.
 (locally (declare (optimize speed))
 
-  (defmethod-overload insert ((container multimap) (itr1 input-iterator) (itr2 input-iterator))
+  (defmethod-overload insert ((container multimap) (itr1 input_iterator) (itr2 input_iterator))
 	(__rbtree-insert-range-equal (__assoc-tree container) itr1 itr2 t)
 	nil)
 
   (defmethod-overload insert ((container multimap)
-							  (itr1 multimap-const-iterator) (itr2 multimap-const-iterator))
+							  (itr1 multimap_const_iterator) (itr2 multimap_const_iterator))
 	(__rbtree-insert-range-equal (__assoc-tree container) itr1 itr2 t)
 	nil)
 
@@ -407,15 +407,15 @@
 
   ;;returns iterator.
   (defmethod-overload emplace ((container multimap) new-val)
-	(make-instance 'multimap-iterator
+	(make-instance 'multimap_iterator
 				   :node (__rbtree-emplace-equal (__assoc-tree container) new-val)))
 
   ;;returns iterator.
-  (defmethod-overload emplace-hint ((container multimap)
-									(itr multimap-const-iterator) new-val)
+  (defmethod-overload emplace_hint ((container multimap)
+									(itr multimap_const_iterator) new-val)
 	#+cl-stl-debug (__multimap-check-iterator-belong itr container)
-	(make-instance 'multimap-iterator
-				   :node (__rbtree-emplace-hint-equal (__assoc-tree container)
+	(make-instance 'multimap_iterator
+				   :node (__rbtree-emplace_hint-equal (__assoc-tree container)
 													  (__assoc-itr-node itr) new-val))))
 
 ;;erase
@@ -423,24 +423,24 @@
 
   ;; In 0x98, returns nil. In 0x11 returns iterator.
   (defmethod-overload erase ((container multimap)
-							 (itr #+cl-stl-0x98 multimap-iterator
-								  #-cl-stl-0x98 multimap-const-iterator))
+							 (itr #+cl-stl-0x98 multimap_iterator
+								  #-cl-stl-0x98 multimap_const_iterator))
 	#+cl-stl-debug (__multimap-check-iterator-belong itr container)
 	(let ((node (__rbtree-erase-node (__assoc-tree container) (__assoc-itr-node itr))))
 	  (declare (ignorable node))
 	  #+cl-stl-0x98 nil
-	  #-cl-stl-0x98 (make-instance 'multimap-iterator :node node)))
+	  #-cl-stl-0x98 (make-instance 'multimap_iterator :node node)))
 
   ;; In 0x98, returns nil. In 0x11 returns iterator.
   (defmethod-overload erase ((container multimap)
-							 (first #+cl-stl-0x98 multimap-iterator #-cl-stl-0x98 multimap-const-iterator)
-							 (last  #+cl-stl-0x98 multimap-iterator #-cl-stl-0x98 multimap-const-iterator))
+							 (first #+cl-stl-0x98 multimap_iterator #-cl-stl-0x98 multimap_const_iterator)
+							 (last  #+cl-stl-0x98 multimap_iterator #-cl-stl-0x98 multimap_const_iterator))
 	#+cl-stl-debug (__multimap-check-iterator-range container first last)
 	(let ((node (__rbtree-erase-range (__assoc-tree container)
 									  (__assoc-itr-node first) (__assoc-itr-node last))))
 	  (declare (ignorable node))
 	  #+cl-stl-0x98 nil
-	  #-cl-stl-0x98 (make-instance 'multimap-iterator :node node)))
+	  #-cl-stl-0x98 (make-instance 'multimap_iterator :node node)))
 
   ;; returns deleted node count.
   (defmethod-overload erase ((container multimap) key)
@@ -463,7 +463,7 @@
 
   ;; returns iterator.
   (defmethod-overload find ((container multimap) key)
-	(make-instance 'multimap-iterator
+	(make-instance 'multimap_iterator
 				   :node (__rbtree-find (__assoc-tree container) key)))
 
   ;; returns fixnum.
@@ -471,22 +471,22 @@
 	(__rbtree-count (__assoc-tree container) key))
 
   ;; returns iterator.
-  (defmethod-overload lower-bound ((container multimap) key)
-	(make-instance 'multimap-iterator
-				   :node (__rbtree-lower-bound (__assoc-tree container) key)))
+  (defmethod-overload lower_bound ((container multimap) key)
+	(make-instance 'multimap_iterator
+				   :node (__rbtree-lower_bound (__assoc-tree container) key)))
 
   ;; returns iterator.
-  (defmethod-overload upper-bound ((container multimap) key)
-	(make-instance 'multimap-iterator
-				   :node (__rbtree-upper-bound (__assoc-tree container) key)))
+  (defmethod-overload upper_bound ((container multimap) key)
+	(make-instance 'multimap_iterator
+				   :node (__rbtree-upper_bound (__assoc-tree container) key)))
 
   ;; returns pair(itr,itr).
-  (defmethod-overload equal-range ((container multimap) key)
+  (defmethod-overload equal_range ((container multimap) key)
 	(let ((tree (__assoc-tree container)))
-	  (make-pair (make-instance 'multimap-iterator
-								:node (__rbtree-lower-bound tree key))
-				 (make-instance 'multimap-iterator
-								:node (__rbtree-upper-bound tree key))))))
+	  (make_pair (make-instance 'multimap_iterator
+								:node (__rbtree-lower_bound tree key))
+				 (make-instance 'multimap_iterator
+								:node (__rbtree-upper_bound tree key))))))
 
 
 ;;----------------------------------------------------------
@@ -494,11 +494,11 @@
 ;;----------------------------------------------------------
 (locally (declare (optimize speed))
 
-  (defmethod key-comp ((container multimap))
-	(clone (__rbtree-key-comp (__assoc-tree container))))
+  (defmethod key_comp ((container multimap))
+	(clone (__rbtree-key_comp (__assoc-tree container))))
 
-  (defmethod value-comp ((container multimap))
-	(let ((fnc (functor-function (clone (__rbtree-key-comp (__assoc-tree container))))))
+  (defmethod value_comp ((container multimap))
+	(let ((fnc (functor_function (clone (__rbtree-key_comp (__assoc-tree container))))))
 	  (declare (type cl:function fnc))
 	  (lambda (pr1 pr2)
 		(funcall fnc (stl:first pr1) (stl:first pr2))))))
@@ -540,40 +540,40 @@
 
 ;;------------------------------------------------------------------------------
 ;;
-;; methods for multimap-const-iterator
+;; methods for multimap_const_iterator
 ;;
 ;;------------------------------------------------------------------------------
-(defmethod operator_= ((itr1 multimap-const-iterator) (itr2 multimap-const-iterator))
-  (__error-when-const-removing-assign itr1 multimap-iterator
-									  itr2 multimap-const-iterator)
+(defmethod operator_= ((itr1 multimap_const_iterator) (itr2 multimap_const_iterator))
+  (__error-when-const-removing-assign itr1 multimap_iterator
+									  itr2 multimap_const_iterator)
   (setf (__assoc-itr-node itr1) (__assoc-itr-node itr2))
   itr1)
 
-(defmethod operator_clone ((itr multimap-const-iterator))
-  (make-instance 'multimap-const-iterator :node (__assoc-itr-node itr)))
+(defmethod operator_clone ((itr multimap_const_iterator))
+  (make-instance 'multimap_const_iterator :node (__assoc-itr-node itr)))
 
-(defmethod operator_== ((itr1 multimap-const-iterator) (itr2 multimap-const-iterator))
+(defmethod operator_== ((itr1 multimap_const_iterator) (itr2 multimap_const_iterator))
   (eq (__assoc-itr-node itr1) (__assoc-itr-node itr2)))
 
-(defmethod operator_/= ((itr1 multimap-const-iterator) (itr2 multimap-const-iterator))
+(defmethod operator_/= ((itr1 multimap_const_iterator) (itr2 multimap_const_iterator))
   (not (eq (__assoc-itr-node itr1) (__assoc-itr-node itr2))))
 
-(defmethod operator_* ((itr multimap-const-iterator))
+(defmethod operator_* ((itr multimap_const_iterator))
   (__rbnode-value (__assoc-itr-node itr)))
 
-(defmethod (setf operator_*) (new-val (itr multimap-const-iterator))
-  (error 'setf-to-const :what "setf to (_* multimap-const-iterator)."))
+(defmethod (setf operator_*) (new-val (itr multimap_const_iterator))
+  (error 'setf-to-const :what "setf to (_* multimap_const_iterator)."))
 
-(defmethod operator_++ ((itr multimap-const-iterator))
+(defmethod operator_++ ((itr multimap_const_iterator))
   (setf (__assoc-itr-node itr) (__rbnode-increment (__assoc-itr-node itr)))
   itr)
 
-(defmethod operator_-- ((itr multimap-const-iterator))
+(defmethod operator_-- ((itr multimap_const_iterator))
   (setf (__assoc-itr-node itr) (__rbnode-decrement (__assoc-itr-node itr)))
   itr)
 
 (locally (declare (optimize speed))
-  (defmethod advance ((itr multimap-const-iterator) (n integer))
+  (defmethod advance ((itr multimap_const_iterator) (n integer))
 	(declare (type fixnum n))
 	(let ((node (__assoc-itr-node itr)))
 	  (if (>= n 0)
@@ -591,7 +591,7 @@
 	nil))
 
 (locally (declare (optimize speed))
-  (defmethod distance ((itr1 multimap-const-iterator) (itr2 multimap-const-iterator))
+  (defmethod distance ((itr1 multimap_const_iterator) (itr2 multimap_const_iterator))
 	(let ((cnt 0))
 	  (declare (type fixnum cnt))
 	  (do ((node1 (__assoc-itr-node itr1))
@@ -601,73 +601,73 @@
 		(setf node1 (__rbnode-increment node1))))))
 
 ;; creating reverse iterator.
-(define-constructor reverse-iterator ((itr multimap-const-iterator))
-  (make-instance 'multimap-const-reverse-iterator
+(define-constructor reverse_iterator ((itr multimap_const_iterator))
+  (make-instance 'multimap_const_reverse_iterator
 				 :node (__rbnode-decrement (__assoc-itr-node itr))))
 
 
 ;;------------------------------------------------------------------------------
 ;;
-;; methods for multimap-iterator
+;; methods for multimap_iterator
 ;;
 ;;------------------------------------------------------------------------------
-(defmethod operator_clone ((itr multimap-iterator))
-  (make-instance 'multimap-iterator :node (__assoc-itr-node itr)))
+(defmethod operator_clone ((itr multimap_iterator))
+  (make-instance 'multimap_iterator :node (__assoc-itr-node itr)))
 
-(defmethod operator_cast ((itr multimap-iterator)
-						  (typename (eql 'multimap-const-iterator)))
-  (__check-exact-type-of-cast itr 'multimap-iterator 'multimap-const-iterator)
-  (make-instance 'multimap-const-iterator :node (__assoc-itr-node itr)))
+(defmethod operator_cast ((itr multimap_iterator)
+						  (typename (eql 'multimap_const_iterator)))
+  (__check-exact-type-of-cast itr 'multimap_iterator 'multimap_const_iterator)
+  (make-instance 'multimap_const_iterator :node (__assoc-itr-node itr)))
 
-(defmethod (setf operator_*) (new-val (itr multimap-iterator))
+(defmethod (setf operator_*) (new-val (itr multimap_iterator))
   (_= (__rbnode-value (__assoc-itr-node itr)) new-val))
 
 ;; creating reverse iterator.
-(define-constructor reverse-iterator ((itr multimap-iterator))
-  (make-instance 'multimap-reverse-iterator
+(define-constructor reverse_iterator ((itr multimap_iterator))
+  (make-instance 'multimap_reverse_iterator
 				 :node (__rbnode-decrement (__assoc-itr-node itr))))
 
 
 
 ;;------------------------------------------------------------------------------
 ;;
-;; methods for multimap-const-reverse-iterator
+;; methods for multimap_const_reverse_iterator
 ;;
 ;;------------------------------------------------------------------------------
-(defmethod operator_= ((itr1 multimap-const-reverse-iterator)
-					   (itr2 multimap-const-reverse-iterator))
-  (__error-when-const-removing-assign itr1 multimap-reverse-iterator
-									  itr2 multimap-const-reverse-iterator)
+(defmethod operator_= ((itr1 multimap_const_reverse_iterator)
+					   (itr2 multimap_const_reverse_iterator))
+  (__error-when-const-removing-assign itr1 multimap_reverse_iterator
+									  itr2 multimap_const_reverse_iterator)
   (setf (__assoc-rev-itr-node itr1) (__assoc-rev-itr-node itr2))
   itr1)
 
-(defmethod operator_clone ((itr multimap-const-reverse-iterator))
-  (make-instance 'multimap-const-reverse-iterator :node (__assoc-rev-itr-node itr)))
+(defmethod operator_clone ((itr multimap_const_reverse_iterator))
+  (make-instance 'multimap_const_reverse_iterator :node (__assoc-rev-itr-node itr)))
 
-(defmethod operator_== ((itr1 multimap-const-reverse-iterator)
-						(itr2 multimap-const-reverse-iterator))
+(defmethod operator_== ((itr1 multimap_const_reverse_iterator)
+						(itr2 multimap_const_reverse_iterator))
   (eq (__assoc-rev-itr-node itr1) (__assoc-rev-itr-node itr2)))
 
-(defmethod operator_/= ((itr1 multimap-const-reverse-iterator)
-						(itr2 multimap-const-reverse-iterator))
+(defmethod operator_/= ((itr1 multimap_const_reverse_iterator)
+						(itr2 multimap_const_reverse_iterator))
   (not (eq (__assoc-rev-itr-node itr1) (__assoc-rev-itr-node itr2))))
 
-(defmethod operator_* ((itr multimap-const-reverse-iterator))
+(defmethod operator_* ((itr multimap_const_reverse_iterator))
   (__rbnode-value (__assoc-rev-itr-node itr)))
 
-(defmethod (setf operator_*) (new-val (itr multimap-const-reverse-iterator))
-  (error 'setf-to-const :what "setf to (_* multimap-const-reverse-iterator)."))
+(defmethod (setf operator_*) (new-val (itr multimap_const_reverse_iterator))
+  (error 'setf-to-const :what "setf to (_* multimap_const_reverse_iterator)."))
 
-(defmethod operator_++ ((itr multimap-const-reverse-iterator))
+(defmethod operator_++ ((itr multimap_const_reverse_iterator))
   (setf (__assoc-rev-itr-node itr) (__rbnode-decrement (__assoc-rev-itr-node itr)))
   itr)
 
-(defmethod operator_-- ((itr multimap-const-reverse-iterator))
+(defmethod operator_-- ((itr multimap_const_reverse_iterator))
   (setf (__assoc-rev-itr-node itr) (__rbnode-increment (__assoc-rev-itr-node itr)))
   itr)
 
 (locally (declare (optimize speed))
-  (defmethod advance ((itr multimap-const-reverse-iterator) (n integer))
+  (defmethod advance ((itr multimap_const_reverse_iterator) (n integer))
 	(declare (type fixnum n))
 	(let ((node (__assoc-rev-itr-node itr)))
 	  (if (>= n 0)
@@ -685,8 +685,8 @@
 	nil))
 
 (locally (declare (optimize speed))
-  (defmethod distance ((itr1 multimap-const-reverse-iterator)
-					   (itr2 multimap-const-reverse-iterator))
+  (defmethod distance ((itr1 multimap_const_reverse_iterator)
+					   (itr2 multimap_const_reverse_iterator))
 	(let ((cnt 0))
 	  (declare (type fixnum cnt))
 	  (do ((node1 (__assoc-rev-itr-node itr1))
@@ -695,39 +695,39 @@
 		(incf cnt)
 		(setf node1 (__rbnode-decrement node1))))))
 
-(defmethod base ((rev-itr multimap-const-reverse-iterator))
-  (make-instance 'multimap-const-iterator
+(defmethod base ((rev-itr multimap_const_reverse_iterator))
+  (make-instance 'multimap_const_iterator
 				 :node  (__rbnode-increment (__assoc-rev-itr-node rev-itr))))
 
 ;; creating reverse iterator.
-(define-constructor reverse-iterator ((itr multimap-const-reverse-iterator))
-  (make-instance 'multimap-const-iterator
+(define-constructor reverse_iterator ((itr multimap_const_reverse_iterator))
+  (make-instance 'multimap_const_iterator
 				 :node (__rbnode-increment (__assoc-rev-itr-node itr))))
 
 
 ;;------------------------------------------------------------------------------
 ;;
-;; methods for multimap-reverse-iterator
+;; methods for multimap_reverse_iterator
 ;;
 ;;------------------------------------------------------------------------------
-(defmethod operator_clone ((itr multimap-reverse-iterator))
-  (make-instance 'multimap-reverse-iterator :node (__assoc-rev-itr-node itr)))
+(defmethod operator_clone ((itr multimap_reverse_iterator))
+  (make-instance 'multimap_reverse_iterator :node (__assoc-rev-itr-node itr)))
 
-(defmethod operator_cast ((itr multimap-reverse-iterator)
-						  (typename (eql 'multimap-const-reverse-iterator)))
-  (__check-exact-type-of-cast itr 'multimap-reverse-iterator 'multimap-const-reverse-iterator)
-  (make-instance 'multimap-const-reverse-iterator :node (__assoc-rev-itr-node itr)))
+(defmethod operator_cast ((itr multimap_reverse_iterator)
+						  (typename (eql 'multimap_const_reverse_iterator)))
+  (__check-exact-type-of-cast itr 'multimap_reverse_iterator 'multimap_const_reverse_iterator)
+  (make-instance 'multimap_const_reverse_iterator :node (__assoc-rev-itr-node itr)))
 
-(defmethod (setf operator_*) (new-val (itr multimap-reverse-iterator))
+(defmethod (setf operator_*) (new-val (itr multimap_reverse_iterator))
   (_= (__rbnode-value (__assoc-rev-itr-node itr)) new-val))
 
-(defmethod base ((rev-itr multimap-reverse-iterator))
-  (make-instance 'multimap-iterator
+(defmethod base ((rev-itr multimap_reverse_iterator))
+  (make-instance 'multimap_iterator
 				 :node  (__rbnode-increment (__assoc-rev-itr-node rev-itr))))
 
 ;; creating reverse iterator.
-(define-constructor reverse-iterator ((itr multimap-reverse-iterator))
-  (make-instance 'multimap-iterator
+(define-constructor reverse_iterator ((itr multimap_reverse_iterator))
+  (make-instance 'multimap_iterator
 				 :node (__rbnode-increment (__assoc-rev-itr-node itr))))
 
 
@@ -744,7 +744,7 @@
   nil)
 
 #+cl-stl-debug
-(defmethod check-integrity ((container multimap) &optional (stream t))
+(defmethod check_integrity ((container multimap) &optional (stream t))
   (declare (ignorable stream))
   (__rbtree-verify (__assoc-tree container)))
 

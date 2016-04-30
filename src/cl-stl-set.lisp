@@ -7,7 +7,7 @@
 ;;------------------------------------------------------------------------------
 (locally (declare (optimize speed))
 
-  (defclass set (bidirectional-container)
+  (defclass set (bidirectional_container)
 	((rbtree :type     :rbtree
 			 :initform nil
 			 :initarg  :core
@@ -19,20 +19,20 @@
 ;TMP;			 :accessor __instance-id)
 	))
 
-  (defclass set-const-iterator (bidirectional-iterator)
+  (defclass set_const_iterator (bidirectional_iterator)
 	((node :type     :rbnode
 		   :initform nil
 		   :initarg  :node
 		   :accessor __assoc-itr-node)))
 
-  (defclass set-const-reverse-iterator (bidirectional-iterator)
+  (defclass set_const_reverse_iterator (bidirectional_iterator)
 	((node :type     :rbnode
 		   :initform nil
 		   :initarg  :node
 		   :accessor __assoc-rev-itr-node)))
 
-  (defclass set-iterator (set-const-iterator) ())
-  (defclass set-reverse-iterator (set-const-reverse-iterator) ()))
+  (defclass set_iterator (set_const_iterator) ())
+  (defclass set_reverse_iterator (set_const_reverse_iterator) ()))
 
 
 ;;--------------------------------------------------------------------
@@ -47,7 +47,7 @@
 			 (if (eq node (__rbtree-end tree))
 				 t
 				 (handler-case
-					 (eq node (__rbtree-lower-bound tree (__rbnode-value node)))
+					 (eq node (__rbtree-lower_bound tree (__rbnode-value node)))
 				   (error () nil))))))
 
   (defun __set-check-iterator-belong (itr cont)
@@ -69,9 +69,9 @@
 			  (if (handler-case
 					  (let ((val1 (__rbnode-value node1))
 							(val2 (__rbnode-value node2)))
-						(and (eq node1 (__rbtree-lower-bound tree val1))
-							 (eq node2 (__rbtree-lower-bound tree val2))
-							 (not (functor-call (value-comp cont) val2 val1))))
+						(and (eq node1 (__rbtree-lower_bound tree val1))
+							 (eq node2 (__rbtree-lower_bound tree val2))
+							 (not (functor_call (value_comp cont) val2 val1))))
 					(error () nil))
 				  t
 				  (error 'undefined-behavior :what "Invalid iterator range.")))))))
@@ -119,7 +119,7 @@
 
 ; empty constructor 3
 (define-constructor set ((comp #-cl-stl-0x98 functor
-							   #+cl-stl-0x98 binary-function))
+							   #+cl-stl-0x98 binary_function))
   (__create-set comp))
 
 ; copy constructor
@@ -128,26 +128,26 @@
 
 ; constructor with initializer list 1
 #-cl-stl-0x98
-(define-constructor set ((il initializer-list))
-  (declare (type initializer-list il))
+(define-constructor set ((il initializer_list))
+  (declare (type initializer_list il))
   (let ((arr (__initlist-data il)))
 	(declare (type simple-vector arr))
 	(__create-set-with-array #'operator_< arr 0 (length arr))))
 
 ; constructor with initializer list 2
 #-cl-stl-0x98
-(define-constructor set ((il initializer-list) (comp cl:function))
-  (declare (type initializer-list il))
+(define-constructor set ((il initializer_list) (comp cl:function))
+  (declare (type initializer_list il))
   (let ((arr (__initlist-data il)))
 	(declare (type simple-vector arr))
 	(__create-set-with-array comp arr 0 (length arr))))
 
 ; constructor with initializer list 3
 #-cl-stl-0x98
-(define-constructor set ((il   initializer-list)
+(define-constructor set ((il   initializer_list)
 						 (comp #-cl-stl-0x98 functor
-							   #+cl-stl-0x98 binary-function))
-  (declare (type initializer-list il))
+							   #+cl-stl-0x98 binary_function))
+  (declare (type initializer_list il))
   (let ((arr (__initlist-data il)))
 	(declare (type simple-vector arr))
 	(__create-set-with-array comp arr 0 (length arr))))
@@ -157,21 +157,21 @@
 (define-constructor set ((arg remove-reference))
   (let ((cont (funcall (the cl:function (__rm-ref-closure arg)))))
 	(__check-type-of-move-constructor cont stl::set)
-	(let ((obj (__create-set (key-comp cont))))
+	(let ((obj (__create-set (key_comp cont))))
 	  (__rbtree-swap (__assoc-tree obj) (__assoc-tree cont))
 	  obj)))
 
 ; range constructor
-(define-constructor set ((itr1 input-iterator) (itr2 input-iterator))
+(define-constructor set ((itr1 input_iterator) (itr2 input_iterator))
   (__create-set-with-range #'operator_< itr1 itr2))
 
-(define-constructor set ((itr1 input-iterator)
-						 (itr2 input-iterator) (comp cl:function))
+(define-constructor set ((itr1 input_iterator)
+						 (itr2 input_iterator) (comp cl:function))
   (__create-set-with-range comp itr1 itr2))
 
-(define-constructor set ((itr1 input-iterator)
-						 (itr2 input-iterator) (comp #-cl-stl-0x98 functor
-													 #+cl-stl-0x98 binary-function))
+(define-constructor set ((itr1 input_iterator)
+						 (itr2 input_iterator) (comp #-cl-stl-0x98 functor
+													 #+cl-stl-0x98 binary_function))
   (__create-set-with-range comp itr1 itr2))
 
 ; range constructor for const-vector-pointer.
@@ -192,7 +192,7 @@
 
 (define-constructor set ((ptr1 const-vector-pointer)
 						 (ptr2 const-vector-pointer) (comp #-cl-stl-0x98 functor
-														   #+cl-stl-0x98 binary-function))
+														   #+cl-stl-0x98 binary_function))
   (__pointer-check-iterator-range ptr1 ptr2)
   (__create-set-with-array comp
 							(opr::vec-ptr-buffer ptr1)
@@ -228,12 +228,12 @@
 			(tree2 (__assoc-tree cont2)))
 		(__rbtree-clear tree1)
 		(__rbtree-swap tree1 tree2)
-		(setf (__rbtree-key-comp tree2) (clone (__rbtree-key-comp tree1)))))
+		(setf (__rbtree-key_comp tree2) (clone (__rbtree-key_comp tree1)))))
 	(values cont1 cont2))
 
   #-cl-stl-0x98
-  (defmethod operator_= ((cont stl::set) (il initializer-list))
-	(declare (type initializer-list il))
+  (defmethod operator_= ((cont stl::set) (il initializer_list))
+	(declare (type initializer_list il))
 	(let ((tree (__assoc-tree cont))
 		  (arr  (__initlist-data il)))
 	  (declare (type rbtree        tree))
@@ -249,39 +249,39 @@
 (locally (declare (optimize speed))
 
   (defmethod begin ((container stl::set))
-	(make-instance 'set-iterator
+	(make-instance 'set_iterator
 				   :node (__rbtree-begin (__assoc-tree container))))
 
   (defmethod end ((container stl::set))
-	(make-instance 'set-iterator
+	(make-instance 'set_iterator
 				   :node (__rbtree-end (__assoc-tree container))))
 
   (defmethod rbegin ((container stl::set))
-	(make-instance 'set-reverse-iterator
+	(make-instance 'set_reverse_iterator
 				   :node (__rbtree-rbegin (__assoc-tree container))))
 
   (defmethod rend ((container stl::set))
-	(make-instance 'set-reverse-iterator
+	(make-instance 'set_reverse_iterator
 				   :node (__rbtree-rend (__assoc-tree container))))
 
   #-cl-stl-0x98
   (defmethod cbegin ((container stl::set))
-	(make-instance 'set-const-iterator
+	(make-instance 'set_const_iterator
 				   :node (__rbtree-begin (__assoc-tree container))))
 
   #-cl-stl-0x98
   (defmethod cend ((container stl::set))
-	(make-instance 'set-const-iterator
+	(make-instance 'set_const_iterator
 				   :node (__rbtree-end (__assoc-tree container))))
 
   #-cl-stl-0x98
   (defmethod crbegin ((container stl::set))
-	(make-instance 'set-const-reverse-iterator
+	(make-instance 'set_const_reverse_iterator
 				   :node (__rbtree-rbegin (__assoc-tree container))))
 
   #-cl-stl-0x98
   (defmethod crend ((container stl::set))
-	(make-instance 'set-const-reverse-iterator
+	(make-instance 'set_const_reverse_iterator
 				   :node (__rbtree-rend (__assoc-tree container)))))
 
 
@@ -296,8 +296,8 @@
   (defmethod size ((container stl::set))
 	(__rbtree-size (__assoc-tree container)))
 
-  (defmethod max-size ((container stl::set))
-	(__rbtree-max-size (__assoc-tree container))))
+  (defmethod max_size ((container stl::set))
+	(__rbtree-max_size (__assoc-tree container))))
 
 
 ;;----------------------------------------------------------
@@ -314,7 +314,7 @@
   (defmethod-overload insert ((container stl::set) value)
 	(multiple-value-bind (node success)
 		(__rbtree-insert-unique (__assoc-tree container) value t)
-	  (make-pair (make-instance 'set-iterator :node node) success)))
+	  (make_pair (make-instance 'set_iterator :node node) success)))
 
   ;; insert ( single element by remove reference ) - returns pair<iterator,bool>.
   #-cl-stl-0x98
@@ -323,38 +323,38 @@
 	  (funcall (the cl:function (__rm-ref-closure rm)) nil)
 	  (multiple-value-bind (node success)
 		  (__rbtree-insert-unique (__assoc-tree container) val nil)
-		(make-pair (make-instance 'set-iterator :node node) success))))
+		(make_pair (make-instance 'set_iterator :node node) success))))
 
   ;; insert ( single element with hint ) - returns iterator.
   (defmethod-overload insert ((container stl::set)
-							  (itr #+cl-stl-0x98 set-iterator
-								   #-cl-stl-0x98 set-const-iterator) value)
+							  (itr #+cl-stl-0x98 set_iterator
+								   #-cl-stl-0x98 set_const_iterator) value)
 	#+cl-stl-0x98  ;; HACK
-	(when (and (typep itr   'set-const-iterator)
-			   (typep value 'set-const-iterator))
+	(when (and (typep itr   'set_const_iterator)
+			   (typep value 'set_const_iterator))
 	  (__rbtree-insert-range-unique (__assoc-tree container) itr value t)
 	  (return-from __insert-3 nil))
 	
 	#+cl-stl-debug (__set-check-iterator-belong itr container)
-	(make-instance 'set-iterator
+	(make-instance 'set_iterator
 				   :node (__rbtree-insert-hint-unique (__assoc-tree container)
 													  (__assoc-itr-node itr) value t)))
 
   ;; insert ( single element with hint by remove reference ) - returns iterator.
   #-cl-stl-0x98
   (defmethod-overload insert ((container stl::set)
-							  (itr set-const-iterator) (rm remove-reference))
+							  (itr set_const_iterator) (rm remove-reference))
 	#+cl-stl-debug (__set-check-iterator-belong itr container)
 	(let ((val (funcall (the cl:function (__rm-ref-closure rm)))))
 	  (funcall (the cl:function (__rm-ref-closure rm)) nil)
-	  (make-instance 'set-iterator
+	  (make-instance 'set_iterator
 					 :node (__rbtree-insert-hint-unique (__assoc-tree container)
 														(__assoc-itr-node itr) val nil))))
 
   ;; insert ( initializer list ) - returns nil.
   #-cl-stl-0x98
-  (defmethod-overload insert ((container stl::set) (il initializer-list))
-	(declare (type initializer-list il))
+  (defmethod-overload insert ((container stl::set) (il initializer_list))
+	(declare (type initializer_list il))
 	(let ((arr (__initlist-data il)))
 	  (declare (type simple-vector arr))
 	  (__rbtree-insert-array-unique (__assoc-tree container) arr 0 (length arr) t)
@@ -364,11 +364,11 @@
 ;; range insert - returns nil.
 (locally (declare (optimize speed))
 
-  (defmethod-overload insert ((container stl::set) (itr1 input-iterator) (itr2 input-iterator))
+  (defmethod-overload insert ((container stl::set) (itr1 input_iterator) (itr2 input_iterator))
 	(__rbtree-insert-range-unique (__assoc-tree container) itr1 itr2 t)
 	nil)
 
-  (defmethod-overload insert ((container stl::set) (itr1 set-const-iterator) (itr2 set-const-iterator))
+  (defmethod-overload insert ((container stl::set) (itr1 set_const_iterator) (itr2 set_const_iterator))
 	(__rbtree-insert-range-unique (__assoc-tree container) itr1 itr2 t)
 	nil)
 
@@ -388,14 +388,14 @@
   (defmethod-overload emplace ((container stl::set) new-val)
 	(multiple-value-bind (node success)
 		(__rbtree-emplace-unique (__assoc-tree container) new-val)
-	  (make-pair (make-instance 'set-iterator :node node) success)))
+	  (make_pair (make-instance 'set_iterator :node node) success)))
 
   ;;returns iterator.
-  (defmethod-overload emplace-hint ((container stl::set)
-									(itr set-const-iterator) new-val)
+  (defmethod-overload emplace_hint ((container stl::set)
+									(itr set_const_iterator) new-val)
 	#+cl-stl-debug (__set-check-iterator-belong itr container)
-	(make-instance 'set-iterator
-				   :node (__rbtree-emplace-hint-unique (__assoc-tree container)
+	(make-instance 'set_iterator
+				   :node (__rbtree-emplace_hint-unique (__assoc-tree container)
 													   (__assoc-itr-node itr) new-val))))
 
 ;;erase
@@ -403,24 +403,24 @@
 
   ;; In 0x98, returns nil. In 0x11 returns iterator.
   (defmethod-overload erase ((container stl::set)
-							 (itr #+cl-stl-0x98 set-iterator
-								  #-cl-stl-0x98 set-const-iterator))
+							 (itr #+cl-stl-0x98 set_iterator
+								  #-cl-stl-0x98 set_const_iterator))
 	#+cl-stl-debug (__set-check-iterator-belong itr container)
 	(let ((node (__rbtree-erase-node (__assoc-tree container) (__assoc-itr-node itr))))
 	  (declare (ignorable node))
 	  #+cl-stl-0x98 nil
-	  #-cl-stl-0x98 (make-instance 'set-iterator :node node)))
+	  #-cl-stl-0x98 (make-instance 'set_iterator :node node)))
 
   ;; In 0x98, returns nil. In 0x11 returns iterator.
   (defmethod-overload erase ((container stl::set)
-							 (first #+cl-stl-0x98 set-iterator	#-cl-stl-0x98 set-const-iterator)
-							 (last  #+cl-stl-0x98 set-iterator	#-cl-stl-0x98 set-const-iterator))
+							 (first #+cl-stl-0x98 set_iterator	#-cl-stl-0x98 set_const_iterator)
+							 (last  #+cl-stl-0x98 set_iterator	#-cl-stl-0x98 set_const_iterator))
 	#+cl-stl-debug (__set-check-iterator-range container first last)
 	(let ((node (__rbtree-erase-range (__assoc-tree container)
 									  (__assoc-itr-node first) (__assoc-itr-node last))))
 	  (declare (ignorable node))
 	  #+cl-stl-0x98 nil
-	  #-cl-stl-0x98 (make-instance 'set-iterator :node node)))
+	  #-cl-stl-0x98 (make-instance 'set_iterator :node node)))
 
   ;; returns deleted node count.
   (defmethod-overload erase ((container stl::set) key)
@@ -442,7 +442,7 @@
 
   ;; returns iterator.
   (defmethod-overload find ((container stl::set) key)
-	(make-instance 'set-iterator
+	(make-instance 'set_iterator
 				   :node (__rbtree-find (__assoc-tree container) key)))
 
   ;; returns integer.
@@ -450,22 +450,22 @@
 	(__rbtree-count (__assoc-tree container) key))
 
   ;; returns iterator.
-  (defmethod-overload lower-bound ((container stl::set) key)
-	(make-instance 'set-iterator
-				   :node (__rbtree-lower-bound (__assoc-tree container) key)))
+  (defmethod-overload lower_bound ((container stl::set) key)
+	(make-instance 'set_iterator
+				   :node (__rbtree-lower_bound (__assoc-tree container) key)))
 
   ;; returns iterator.
-  (defmethod-overload upper-bound ((container stl::set) key)
-	(make-instance 'set-iterator
-				   :node (__rbtree-upper-bound (__assoc-tree container) key)))
+  (defmethod-overload upper_bound ((container stl::set) key)
+	(make-instance 'set_iterator
+				   :node (__rbtree-upper_bound (__assoc-tree container) key)))
 
   ;; returns pair(itr,itr).
-  (defmethod-overload equal-range ((container stl::set) key)
+  (defmethod-overload equal_range ((container stl::set) key)
 	(let ((tree (__assoc-tree container)))
-	  (make-pair (make-instance 'set-iterator
-								:node (__rbtree-lower-bound tree key))
-				 (make-instance 'set-iterator
-								:node (__rbtree-upper-bound tree key))))))
+	  (make_pair (make-instance 'set_iterator
+								:node (__rbtree-lower_bound tree key))
+				 (make-instance 'set_iterator
+								:node (__rbtree-upper_bound tree key))))))
 
 
 ;;----------------------------------------------------------
@@ -473,11 +473,11 @@
 ;;----------------------------------------------------------
 (locally (declare (optimize speed))
 
-  (defmethod key-comp ((container stl::set))
-	(clone (__rbtree-key-comp (__assoc-tree container))))
+  (defmethod key_comp ((container stl::set))
+	(clone (__rbtree-key_comp (__assoc-tree container))))
 
-  (defmethod value-comp ((container stl::set))
-	(clone (__rbtree-key-comp (__assoc-tree container)))))
+  (defmethod value_comp ((container stl::set))
+	(clone (__rbtree-key_comp (__assoc-tree container)))))
 
 
 ;;----------------------------------------------------------
@@ -516,40 +516,40 @@
 
 ;;------------------------------------------------------------------------------
 ;;
-;; methods for set-const-iterator
+;; methods for set_const_iterator
 ;;
 ;;------------------------------------------------------------------------------
-(defmethod operator_= ((itr1 set-const-iterator) (itr2 set-const-iterator))
-  (__error-when-const-removing-assign itr1 set-iterator
-									  itr2 set-const-iterator)
+(defmethod operator_= ((itr1 set_const_iterator) (itr2 set_const_iterator))
+  (__error-when-const-removing-assign itr1 set_iterator
+									  itr2 set_const_iterator)
   (setf (__assoc-itr-node itr1) (__assoc-itr-node itr2))
   itr1)
 
-(defmethod operator_clone ((itr set-const-iterator))
-  (make-instance 'set-const-iterator :node (__assoc-itr-node itr)))
+(defmethod operator_clone ((itr set_const_iterator))
+  (make-instance 'set_const_iterator :node (__assoc-itr-node itr)))
 
-(defmethod operator_== ((itr1 set-const-iterator) (itr2 set-const-iterator))
+(defmethod operator_== ((itr1 set_const_iterator) (itr2 set_const_iterator))
   (eq (__assoc-itr-node itr1) (__assoc-itr-node itr2)))
 
-(defmethod operator_/= ((itr1 set-const-iterator) (itr2 set-const-iterator))
+(defmethod operator_/= ((itr1 set_const_iterator) (itr2 set_const_iterator))
   (not (eq (__assoc-itr-node itr1) (__assoc-itr-node itr2))))
 
-(defmethod operator_* ((itr set-const-iterator))
+(defmethod operator_* ((itr set_const_iterator))
   (__rbnode-value (__assoc-itr-node itr)))
 
-(defmethod (setf operator_*) (new-val (itr set-const-iterator))
-  (error 'setf-to-const :what "setf to (_* set-const-iterator)."))
+(defmethod (setf operator_*) (new-val (itr set_const_iterator))
+  (error 'setf-to-const :what "setf to (_* set_const_iterator)."))
 
-(defmethod operator_++ ((itr set-const-iterator))
+(defmethod operator_++ ((itr set_const_iterator))
   (setf (__assoc-itr-node itr) (__rbnode-increment (__assoc-itr-node itr)))
   itr)
 
-(defmethod operator_-- ((itr set-const-iterator))
+(defmethod operator_-- ((itr set_const_iterator))
   (setf (__assoc-itr-node itr) (__rbnode-decrement (__assoc-itr-node itr)))
   itr)
 
 (locally (declare (optimize speed))
-  (defmethod advance ((itr set-const-iterator) (n integer))
+  (defmethod advance ((itr set_const_iterator) (n integer))
 	(declare (type fixnum n))
 	(let ((node (__assoc-itr-node itr)))
 	  (if (>= n 0)
@@ -567,7 +567,7 @@
 	nil))
 
 (locally (declare (optimize speed))
-  (defmethod distance ((itr1 set-const-iterator) (itr2 set-const-iterator))
+  (defmethod distance ((itr1 set_const_iterator) (itr2 set_const_iterator))
 	(let ((cnt 0))
 	  (declare (type fixnum cnt))
 	  (do ((node1 (__assoc-itr-node itr1))
@@ -577,73 +577,73 @@
 		(setf node1 (__rbnode-increment node1))))))
 
 ;; creating reverse iterator.
-(define-constructor reverse-iterator ((itr set-const-iterator))
-  (make-instance 'set-const-reverse-iterator
+(define-constructor reverse_iterator ((itr set_const_iterator))
+  (make-instance 'set_const_reverse_iterator
 				 :node (__rbnode-decrement (__assoc-itr-node itr))))
 
 
 ;;------------------------------------------------------------------------------
 ;;
-;; methods for set-iterator
+;; methods for set_iterator
 ;;
 ;;------------------------------------------------------------------------------
-(defmethod operator_clone ((itr set-iterator))
-  (make-instance 'set-iterator :node (__assoc-itr-node itr)))
+(defmethod operator_clone ((itr set_iterator))
+  (make-instance 'set_iterator :node (__assoc-itr-node itr)))
 
-(defmethod operator_cast ((itr set-iterator)
-						  (typename (eql 'set-const-iterator)))
-  (__check-exact-type-of-cast itr 'set-iterator 'set-const-iterator)
-  (make-instance 'set-const-iterator :node (__assoc-itr-node itr)))
+(defmethod operator_cast ((itr set_iterator)
+						  (typename (eql 'set_const_iterator)))
+  (__check-exact-type-of-cast itr 'set_iterator 'set_const_iterator)
+  (make-instance 'set_const_iterator :node (__assoc-itr-node itr)))
 
-(defmethod (setf operator_*) (new-val (itr set-iterator))
+(defmethod (setf operator_*) (new-val (itr set_iterator))
   (_= (__rbnode-value (__assoc-itr-node itr)) new-val))
 
 ;; creating reverse iterator.
-(define-constructor reverse-iterator ((itr set-iterator))
-  (make-instance 'set-reverse-iterator
+(define-constructor reverse_iterator ((itr set_iterator))
+  (make-instance 'set_reverse_iterator
 				 :node (__rbnode-decrement (__assoc-itr-node itr))))
 
 
 
 ;;------------------------------------------------------------------------------
 ;;
-;; methods for set-const-reverse-iterator
+;; methods for set_const_reverse_iterator
 ;;
 ;;------------------------------------------------------------------------------
-(defmethod operator_= ((itr1 set-const-reverse-iterator)
-					   (itr2 set-const-reverse-iterator))
-  (__error-when-const-removing-assign itr1 set-reverse-iterator
-									  itr2 set-const-reverse-iterator)
+(defmethod operator_= ((itr1 set_const_reverse_iterator)
+					   (itr2 set_const_reverse_iterator))
+  (__error-when-const-removing-assign itr1 set_reverse_iterator
+									  itr2 set_const_reverse_iterator)
   (setf (__assoc-rev-itr-node itr1) (__assoc-rev-itr-node itr2))
   itr1)
 
-(defmethod operator_clone ((itr set-const-reverse-iterator))
-  (make-instance 'set-const-reverse-iterator :node (__assoc-rev-itr-node itr)))
+(defmethod operator_clone ((itr set_const_reverse_iterator))
+  (make-instance 'set_const_reverse_iterator :node (__assoc-rev-itr-node itr)))
 
-(defmethod operator_== ((itr1 set-const-reverse-iterator)
-						(itr2 set-const-reverse-iterator))
+(defmethod operator_== ((itr1 set_const_reverse_iterator)
+						(itr2 set_const_reverse_iterator))
   (eq (__assoc-rev-itr-node itr1) (__assoc-rev-itr-node itr2)))
 
-(defmethod operator_/= ((itr1 set-const-reverse-iterator)
-						(itr2 set-const-reverse-iterator))
+(defmethod operator_/= ((itr1 set_const_reverse_iterator)
+						(itr2 set_const_reverse_iterator))
   (not (eq (__assoc-rev-itr-node itr1) (__assoc-rev-itr-node itr2))))
 
-(defmethod operator_* ((itr set-const-reverse-iterator))
+(defmethod operator_* ((itr set_const_reverse_iterator))
   (__rbnode-value (__assoc-rev-itr-node itr)))
 
-(defmethod (setf operator_*) (new-val (itr set-const-reverse-iterator))
-  (error 'setf-to-const :what "setf to (_* set-const-reverse-iterator)."))
+(defmethod (setf operator_*) (new-val (itr set_const_reverse_iterator))
+  (error 'setf-to-const :what "setf to (_* set_const_reverse_iterator)."))
 
-(defmethod operator_++ ((itr set-const-reverse-iterator))
+(defmethod operator_++ ((itr set_const_reverse_iterator))
   (setf (__assoc-rev-itr-node itr) (__rbnode-decrement (__assoc-rev-itr-node itr)))
   itr)
 
-(defmethod operator_-- ((itr set-const-reverse-iterator))
+(defmethod operator_-- ((itr set_const_reverse_iterator))
   (setf (__assoc-rev-itr-node itr) (__rbnode-increment (__assoc-rev-itr-node itr)))
   itr)
 
 (locally (declare (optimize speed))
-  (defmethod advance ((itr set-const-reverse-iterator) (n integer))
+  (defmethod advance ((itr set_const_reverse_iterator) (n integer))
 	(declare (type fixnum n))
 	(let ((node (__assoc-rev-itr-node itr)))
 	  (if (>= n 0)
@@ -661,8 +661,8 @@
 	nil))
 
 (locally (declare (optimize speed))
-  (defmethod distance ((itr1 set-const-reverse-iterator)
-					   (itr2 set-const-reverse-iterator))
+  (defmethod distance ((itr1 set_const_reverse_iterator)
+					   (itr2 set_const_reverse_iterator))
 	(let ((cnt 0))
 	  (declare (type fixnum cnt))
 	  (do ((node1 (__assoc-rev-itr-node itr1))
@@ -671,39 +671,39 @@
 		(incf cnt)
 		(setf node1 (__rbnode-decrement node1))))))
 
-(defmethod base ((rev-itr set-const-reverse-iterator))
-  (make-instance 'set-const-iterator
+(defmethod base ((rev-itr set_const_reverse_iterator))
+  (make-instance 'set_const_iterator
 				 :node  (__rbnode-increment (__assoc-rev-itr-node rev-itr))))
 
 ;; creating reverse iterator.
-(define-constructor reverse-iterator ((itr set-const-reverse-iterator))
-  (make-instance 'set-const-iterator
+(define-constructor reverse_iterator ((itr set_const_reverse_iterator))
+  (make-instance 'set_const_iterator
 				 :node (__rbnode-increment (__assoc-rev-itr-node itr))))
 
 
 ;;------------------------------------------------------------------------------
 ;;
-;; methods for set-reverse-iterator
+;; methods for set_reverse_iterator
 ;;
 ;;------------------------------------------------------------------------------
-(defmethod operator_clone ((itr set-reverse-iterator))
-  (make-instance 'set-reverse-iterator :node (__assoc-rev-itr-node itr)))
+(defmethod operator_clone ((itr set_reverse_iterator))
+  (make-instance 'set_reverse_iterator :node (__assoc-rev-itr-node itr)))
 
-(defmethod operator_cast ((itr set-reverse-iterator)
-						  (typename (eql 'set-const-reverse-iterator)))
-  (__check-exact-type-of-cast itr 'set-reverse-iterator 'set-const-reverse-iterator)
-  (make-instance 'set-const-reverse-iterator :node (__assoc-rev-itr-node itr)))
+(defmethod operator_cast ((itr set_reverse_iterator)
+						  (typename (eql 'set_const_reverse_iterator)))
+  (__check-exact-type-of-cast itr 'set_reverse_iterator 'set_const_reverse_iterator)
+  (make-instance 'set_const_reverse_iterator :node (__assoc-rev-itr-node itr)))
 
-(defmethod (setf operator_*) (new-val (itr set-reverse-iterator))
+(defmethod (setf operator_*) (new-val (itr set_reverse_iterator))
   (_= (__rbnode-value (__assoc-rev-itr-node itr)) new-val))
 
-(defmethod base ((rev-itr set-reverse-iterator))
-  (make-instance 'set-iterator
+(defmethod base ((rev-itr set_reverse_iterator))
+  (make-instance 'set_iterator
 				 :node  (__rbnode-increment (__assoc-rev-itr-node rev-itr))))
 
 ;; creating reverse iterator.
-(define-constructor reverse-iterator ((itr set-reverse-iterator))
-  (make-instance 'set-iterator
+(define-constructor reverse_iterator ((itr set_reverse_iterator))
+  (make-instance 'set_iterator
 				 :node (__rbnode-increment (__assoc-rev-itr-node itr))))
 
 
@@ -720,7 +720,7 @@
   nil)
 
 #+cl-stl-debug
-(defmethod check-integrity ((container stl::set) &optional (stream t))
+(defmethod check_integrity ((container stl::set) &optional (stream t))
   (declare (ignorable stream))
   (__rbtree-verify (__assoc-tree container)))
 

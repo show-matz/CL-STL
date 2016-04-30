@@ -1,12 +1,12 @@
 (in-package :cl-stl)
 
 #-cl-stl-0x98
-(declaim (inline make-tuple))
+(declaim (inline make_tuple))
 
 
 #-cl-stl-0x98
 (locally (declare (optimize speed))
-  (defun __make-tuple-from-list (lst)
+  (defun __make_tuple-from-list (lst)
 	(declare (type cl::list lst))
 	(let* ((cnt (length lst))
 		   (arr (make-array cnt :initial-element nil)))
@@ -19,7 +19,7 @@
 		  (setf lst (cdr lst)))))))
 
 #-cl-stl-0x98
-(defmacro __make-tuple-from-args ((&rest args) &key (is-move nil))
+(defmacro __make_tuple-from-args ((&rest args) &key (is-move nil))
   (let* ((cnt   (length args))
 		 (g-arr (gensym "ARR"))
 		 (assigns (do ((acc nil)
@@ -52,8 +52,8 @@
 
 
 #-cl-stl-0x98
-(defun make-tuple (&rest args)
-  (__make-tuple-from-list args))
+(defun make_tuple (&rest args)
+  (__make_tuple-from-list args))
 
 ;;----------------------------------------------------------
 ;; constructors
@@ -74,7 +74,7 @@
 ;;conversion from pair
 #-cl-stl-0x98
 (define-constructor tuple ((arg pair))
-  (__make-tuple-from-args ((first arg) (second arg))))
+  (__make_tuple-from-args ((first arg) (second arg))))
 
 ;; move constructor & move from pair
 #-cl-stl-0x98
@@ -82,7 +82,7 @@
   (let ((cont (funcall (the cl:function (__rm-ref-closure arg)))))
 	(typecase cont
 	  (stl:pair
-	   (__make-tuple-from-args ((first cont) (second cont)) :is-move t))
+	   (__make_tuple-from-args ((first cont) (second cont)) :is-move t))
 	  (stl:tuple
 	   (let ((arr (__tuple-items cont)))
 		 (declare (type simple-vector arr))
@@ -96,10 +96,10 @@
 #-cl-stl-0x98
 (progn
   (define-constructor tuple (arg)
-	(__make-tuple-from-args (arg)))
+	(__make_tuple-from-args (arg)))
 
   (define-constructor tuple (&rest args)
-	(__make-tuple-from-list args)))
+	(__make_tuple-from-list args)))
 
 
 #-cl-stl-0x98
@@ -218,7 +218,7 @@
 			 (let ((arr (__tuple-items obj)))
 			   (declare (type simple-vector arr))
 			   (unless (and (<= 0 idx) (< idx (length arr)))
-				 (error 'out-of-range :what "Index specified to get is out of range."))
+				 (error 'out_of_range :what "Index specified to get is out of range."))
 			   (aref arr idx))))
 	(declare (inline __get-imp))
 	(defmethod-overload get ((idx integer) (obj tuple))
@@ -234,7 +234,7 @@
 			 (let ((arr (__tuple-items obj)))
 			   (declare (type simple-vector arr))
 			   (unless (and (<= 0 idx) (< idx (length arr)))
-				 (error 'out-of-range :what "Index specified to get is out of range."))
+				 (error 'out_of_range :what "Index specified to get is out of range."))
 			   (_= (aref arr idx) new-val)
 			   new-val)))
 	(declare (inline __setf-get-imp))
@@ -248,7 +248,7 @@
 #-cl-stl-0x98
 (locally (declare (optimize speed))
   ;; MEMO : zero argument count is OK...
-  (defun tuple-cat (&rest args)
+  (defun tuple_cat (&rest args)
 	(labels ((count-imp (lst acc)
 			   (declare (type cl::list lst))
 			   (declare (type fixnum   acc))
@@ -302,7 +302,7 @@
 #-cl-stl-noextra
 (progn
   #-cl-stl-0x98
-  (defmacro with-tie ((&rest vars) tpl &body body)
+  (defmacro with_tie ((&rest vars) tpl &body body)
 	(let ((g-tpl (gensym "TPL")))
 	  (labels ((imp (lst idx acc)
 				 (if (null lst)
@@ -392,7 +392,7 @@
   #-cl-stl-0x98
   (defmethod dump ((tpl tuple) &optional (stream t) (print-item-fnc nil))
 	(setf print-item-fnc (if print-item-fnc
-							 (functor-function (clone print-item-fnc))
+							 (functor_function (clone print-item-fnc))
 							 (lambda (s x) (format s "~A" x))))
 	(format stream "begin dump ---------------------~%")
 	(let ((arr (__tuple-items tpl)))

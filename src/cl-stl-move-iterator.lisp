@@ -2,7 +2,7 @@
 (in-package :cl-stl)
 
 #-cl-stl-0x98
-(declaim (inline make-move-iterator))
+(declaim (inline make_move_iterator))
 
 
 ;;------------------------------------------------------------------------------
@@ -12,16 +12,16 @@
 ;;------------------------------------------------------------------------------
 #-cl-stl-0x98
 (progn
-  (defclass move-iterator_in (input-iterator)
+  (defclass move-iterator_in (input_iterator)
 	((itr  :initform nil
 		   :initarg  :iterator
 		   :accessor __moveitr-iterator)
 	 (rm   :type     :remove-reference
 		   :initarg  :rm-ref
 		   :accessor __moveitr-rm-ref)))
-  (defclass move-iterator_fwd (      forward-iterator move-iterator_in ) ())
-  (defclass move-iterator_bid (bidirectional-iterator move-iterator_fwd) ())
-  (defclass move-iterator_rdm ( randomaccess-iterator move-iterator_bid) ()))
+  (defclass move-iterator_fwd (      forward_iterator move-iterator_in ) ())
+  (defclass move-iterator_bid (bidirectional_iterator move-iterator_fwd) ())
+  (defclass move-iterator_rdm ( randomaccess_iterator move-iterator_bid) ()))
 
 
 #-cl-stl-0x98
@@ -30,13 +30,13 @@
 				(let* ((itr (clone itr))
 					   (rm  (move (_* itr))))
 				  (make-instance ',itr-type :iterator itr :rm-ref rm)))))
-  (movitr-ctor         input-iterator move-iterator_in)
-  (movitr-ctor       forward-iterator move-iterator_fwd)
-  (movitr-ctor bidirectional-iterator move-iterator_bid)
-  (movitr-ctor  randomaccess-iterator move-iterator_rdm))
+  (movitr-ctor         input_iterator move-iterator_in)
+  (movitr-ctor       forward_iterator move-iterator_fwd)
+  (movitr-ctor bidirectional_iterator move-iterator_bid)
+  (movitr-ctor  randomaccess_iterator move-iterator_rdm))
 
 #-cl-stl-0x98
-(defun make-move-iterator (itr)
+(defun make_move_iterator (itr)
   (new stl::move-iterator itr))
 
 
@@ -107,8 +107,8 @@
 
 ;; CAN'T creating reverse iterator.
 #-cl-stl-0x98
-(define-constructor reverse-iterator ((itr move-iterator_bid))
-  (error 'type-mismatch :what "reverse-iterator can't create from move-iterator"))
+(define-constructor reverse_iterator ((itr move-iterator_bid))
+  (error 'type-mismatch :what "reverse_iterator can't create from move-iterator"))
 
 ;;------------------------------------------------------------------------------
 ;; implementation of move-iterator_rdm
@@ -166,6 +166,6 @@
 
 ;; CAN'T creating reverse iterator.
 #-cl-stl-0x98
-(define-constructor reverse-iterator ((itr move-iterator_rdm))
-  (error 'type-mismatch :what "reverse-iterator can't create from move-iterator"))
+(define-constructor reverse_iterator ((itr move-iterator_rdm))
+  (error 'type-mismatch :what "reverse_iterator can't create from move-iterator"))
 

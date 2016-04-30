@@ -6,7 +6,7 @@
 ;;
 ;;------------------------------------------------------------------------------
 (defclass stack (clonable)
-  ((container :type     :pushable-back-container
+  ((container :type     :pushable_back_container
 			  :initform (new stl:deque)
 			  :initarg  :container
 			  :accessor __stck-container)))
@@ -18,8 +18,8 @@
 ;;------------------------------------------------------------------------------
 (defmacro check-underlying-container-of-stack (cont)
   (check-type cont symbol)
-  `(unless (typep ,cont 'pushable-back-container)
-	 (error 'type-mismatch :what "Underlying container of stack must be pushable-back-container.")))
+  `(unless (typep ,cont 'pushable_back_container)
+	 (error 'type-mismatch :what "Underlying container of stack must be pushable_back_container.")))
 
 
 ;;------------------------------------------------------------------------------
@@ -35,7 +35,7 @@
 
 ; initialize
 ; MEMO : container arg is copied.
-(define-constructor stack ((arg pushable-back-container))
+(define-constructor stack ((arg pushable_back_container))
   (make-instance 'stack :container (clone arg)))
 
 ; copy constructor
@@ -98,17 +98,17 @@
 ; modifiers
 ;-----------------------------------------------------
 (defmethod push ((cont stack) val)
-  (push-back (__stck-container cont) val)
+  (push_back (__stck-container cont) val)
   nil)
 
 (defmethod pop ((cont stack))
-  (pop-back (__stck-container cont))
+  (pop_back (__stck-container cont))
   nil)
 
 
 #-cl-stl-0x98    ; emplace
 (defmethod-overload emplace ((container stack) new-val)
-  (__emplace-back-2 (__stck-container container) new-val)
+  (__emplace_back-2 (__stck-container container) new-val)
   nil)
 
 #-cl-stl-0x98

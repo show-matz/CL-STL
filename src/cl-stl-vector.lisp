@@ -14,25 +14,25 @@
 ;  (dbgkey   nil :type symbol)
   (buffer   nil :type simple-vector))
 
-(defclass vector (randomaccess-container pushable-back-container)
+(defclass vector (randomaccess_container pushable_back_container)
   ((core :type     :vector-core
 		 :initform nil
 		 :initarg  :core
 		 :accessor vector-core)))
 
-(defclass vector-const-iterator (const-vector-pointer randomaccess-iterator) ())
+(defclass vector_const_iterator (const-vector-pointer randomaccess_iterator) ())
 ;  (#+cl-stl-debug
 ;   (debug-key :type     :symbol
 ;			  :initarg  :dbgkey
 ;			  :accessor vec-itr-dbgkey)))
-(defclass vector-iterator (vector-pointer vector-const-iterator) ())
+(defclass vector_iterator (vector-pointer vector_const_iterator) ())
 
-(defclass vector-const-reverse-iterator (const-reverse-vector-pointer randomaccess-iterator) ())
+(defclass vector_const_reverse_iterator (const-reverse-vector-pointer randomaccess_iterator) ())
 ;  (#+cl-stl-debug
 ;   (debug-key :type     :symbol
 ;			  :initarg  :dbgkey
 ;			  :accessor vec-rev-itr-dbgkey)))
-(defclass vector-reverse-iterator (reverse-vector-pointer vector-const-reverse-iterator) ())
+(defclass vector_reverse_iterator (reverse-vector-pointer vector_const_reverse_iterator) ())
 
 
 ;;--------------------------------------------------------------------
@@ -130,7 +130,7 @@
 				(<    ,idx-sym (if (null ,core-sym)
 								   0
 								   (vec-core-size ,core-sym))))
-	 (error 'out-of-range :what ,(format nil "index ~A is out of range." idx-sym))))
+	 (error 'out_of_range :what ,(format nil "index ~A is out of range." idx-sym))))
 
 (defmacro __vector-check-iterator-belong (itr cont)
   (declare (ignorable itr cont))
@@ -150,7 +150,7 @@
 ;;
 ;;--------------------------------------------------------------------
 (locally (declare (optimize speed))
-  (defun __vector-push-back (core new-val need-copy)
+  (defun __vector-push_back (core new-val need-copy)
 	(let ((size     (vec-core-size     core))
 		  (capacity (vec-core-capacity core)))
 	  (declare (type fixnum size capacity))
@@ -242,7 +242,7 @@
 		  (setf (vec-core-size core) count))
 	  (do ()
 		  ((eq next-val eos-sym) nil)
-		(__vector-push-back core next-val t)
+		(__vector-push_back core next-val t)
 		(setf next-val (funcall get-next-value))))))
 
 (locally (declare (optimize speed))
@@ -297,8 +297,8 @@
 ; constructor with initializer list
 #-cl-stl-0x98
 (locally (declare (optimize speed))
-  (define-constructor vector ((arg initializer-list))
-	(declare (type initializer-list arg))
+  (define-constructor vector ((arg initializer_list))
+	(declare (type initializer_list arg))
 	(let* ((idx 0)
 		   (arr (__initlist-data arg))
 		   (cnt (length arr))
@@ -332,17 +332,17 @@
 ;; range constructor 2
 (locally (declare (optimize speed))
 
-  (define-constructor vector ((itr1 input-iterator) (itr2 input-iterator))
+  (define-constructor vector ((itr1 input_iterator) (itr2 input_iterator))
 	(if (_== itr1 itr2)
 		(make-instance 'stl:vector)
-		;; get sequence length, only when randomaccess-iterator.
+		;; get sequence length, only when randomaccess_iterator.
 		;; otherwise, use auto-extend.
-		(let ((core (if (not (typep itr1 'randomaccess-iterator))
+		(let ((core (if (not (typep itr1 'randomaccess_iterator))
 						(__vector-create-core)
 						(__vector-create-core (_- itr2 itr1)))))
 		  (with-operators
 			  (for (((itr @~itr1)) (_/= itr itr2) ++itr)
-				(__vector-push-back core *itr t))
+				(__vector-push_back core *itr t))
 			(make-instance 'stl:vector :core core)))))
 
   (define-constructor vector ((itr1 const-vector-pointer) (itr2 const-vector-pointer))
@@ -356,7 +356,7 @@
 		  (make-instance 'stl:vector)
 		  (let ((core (__vector-create-core (the fixnum (- idx2 idx1)))))
 			(for (nil (< idx1 idx2) (incf idx1))
-			  (__vector-push-back core (aref buf idx1) t))
+			  (__vector-push_back core (aref buf idx1) t))
 			(make-instance 'stl:vector :core core))))))
 
 
@@ -400,7 +400,7 @@
 	cont1))
 
 #-cl-stl-0x98
-(defmethod operator_= ((cont stl:vector) (il initializer-list))
+(defmethod operator_= ((cont stl:vector) (il initializer_list))
   (assign cont il)
   cont)
 
@@ -423,7 +423,7 @@
 ;;MEMO : always returns nil.
 (locally (declare (optimize speed))
 
-  (defmethod-overload assign ((cont stl:vector) (itr1 input-iterator) (itr2 input-iterator))
+  (defmethod-overload assign ((cont stl:vector) (itr1 input_iterator) (itr2 input_iterator))
 	(if (_== itr1 itr2)
 		(__vector-clear (vector-core cont))
 		(let ((eos (gensym))
@@ -437,7 +437,7 @@
 	nil)
 
   (defmethod-overload assign ((cont stl:vector)
-							  (itr1 randomaccess-iterator) (itr2 randomaccess-iterator))
+							  (itr1 randomaccess_iterator) (itr2 randomaccess_iterator))
 	(if (_== itr1 itr2)
 		(__vector-clear (vector-core cont))
 		(let ((itr (clone itr1)))
@@ -471,8 +471,8 @@
 ;;MEMO : always returns nil.
 #-cl-stl-0x98
 (locally (declare (optimize speed))
-  (defmethod-overload assign ((cont stl:vector) (arg initializer-list))
-	(declare (type initializer-list arg))
+  (defmethod-overload assign ((cont stl:vector) (arg initializer_list))
+	(declare (type initializer_list arg))
 	(let* ((arr (__initlist-data arg))
 		   (cnt (length arr)))
 	  (declare (type simple-vector arr))
@@ -498,7 +498,7 @@
 (defmethod begin ((cont stl:vector))
   (__vector-ensure-core-exist cont)
   (let ((core (vector-core cont)))
-	(make-instance 'vector-iterator
+	(make-instance 'vector_iterator
 ;				   #+cl-stl-debug :dbgkey
 ;				   #+cl-stl-debug (vec-core-dbgkey core)
 				   :buffer (vec-core-buffer core)
@@ -507,34 +507,34 @@
 (defmethod end ((cont stl:vector))
   (__vector-ensure-core-exist cont)
   (let ((core (vector-core cont)))
-	(make-instance 'vector-iterator
+	(make-instance 'vector_iterator
 				   :buffer (vec-core-buffer core)
 				   :index (vec-core-size core))))
 
 (defmethod rbegin ((cont stl:vector))
   (__vector-ensure-core-exist cont)
   (let ((core (vector-core cont)))
-	(make-instance 'vector-reverse-iterator
+	(make-instance 'vector_reverse_iterator
 				   :buffer (vec-core-buffer core)
 				   :index (1- (vec-core-size core)))))
 
 (defmethod rend ((cont stl:vector))
   (__vector-ensure-core-exist cont)
   (let ((core (vector-core cont)))
-	(make-instance 'vector-reverse-iterator
+	(make-instance 'vector_reverse_iterator
 				   :buffer (vec-core-buffer core) :index -1)))
 
 #-cl-stl-0x98
 (defmethod cbegin ((cont stl:vector))
   (__vector-ensure-core-exist cont)
-  (make-instance 'vector-const-iterator
+  (make-instance 'vector_const_iterator
 				 :buffer (vec-core-buffer (vector-core cont)) :index 0))
 
 #-cl-stl-0x98
 (defmethod cend ((cont stl:vector))
   (__vector-ensure-core-exist cont)
   (let ((core (vector-core cont)))
-	(make-instance 'vector-const-iterator
+	(make-instance 'vector_const_iterator
 				   :buffer (vec-core-buffer core)
 				   :index (vec-core-size core))))
 
@@ -542,7 +542,7 @@
 (defmethod crbegin ((cont stl:vector))
   (__vector-ensure-core-exist cont)
   (let ((core (vector-core cont)))
-	(make-instance 'vector-const-reverse-iterator
+	(make-instance 'vector_const_reverse_iterator
 				   :buffer (vec-core-buffer core)
 				   :index (1- (vec-core-size core)))))
 
@@ -550,7 +550,7 @@
 (defmethod crend ((cont stl:vector))
   (__vector-ensure-core-exist cont)
   (let ((core (vector-core cont)))
-	(make-instance 'vector-const-reverse-iterator
+	(make-instance 'vector_const_reverse_iterator
 				   :buffer (vec-core-buffer core) :index -1)))
 
 ;-----------------------------------------------------
@@ -567,7 +567,7 @@
 		0
 		(vec-core-size core))))
 
-(defmethod max-size ((cont stl:vector))
+(defmethod max_size ((cont stl:vector))
   most-positive-fixnum)
 
 (labels ((imp (cont new-size initial-element)
@@ -640,7 +640,7 @@
 	(if (zerop cnt)
 		(error 'undefined-behavior :what "operator_& for empty vector.")
 		(if (or (< idx 0) (< cnt idx))
-			(error 'out-of-range :what (format nil "index ~A is out of range." idx))
+			(error 'out_of_range :what (format nil "index ~A is out of range." idx))
 			(make-instance 'vector-pointer :buffer (vec-core-buffer core) :index idx)))))
   
 (defmethod operator_const& ((cont stl:vector) (idx integer))
@@ -649,7 +649,7 @@
 	(if (zerop cnt)
 		(error 'undefined-behavior :what "operator_const& for empty vector.")
 		(if (or (< idx 0) (< cnt idx))
-			(error 'out-of-range :what (format nil "index ~A is out of range." idx))
+			(error 'out_of_range :what (format nil "index ~A is out of range." idx))
 			(make-instance 'const-vector-pointer :buffer (vec-core-buffer core) :index idx)))))
 
 
@@ -661,25 +661,25 @@
 ;-----------------------------------------------------
 ; modifiers
 ;-----------------------------------------------------
-(defmethod push-back ((container stl:vector) new-val)
+(defmethod push_back ((container stl:vector) new-val)
   (__vector-ensure-core-exist container)
-  (__vector-push-back (vector-core container) new-val t)
+  (__vector-push_back (vector-core container) new-val t)
   nil)
 
-(defmethod pop-back ((cont stl:vector))
+(defmethod pop_back ((cont stl:vector))
   (let ((core (vector-core cont)))
-	(__vector-error-when-empty core "pop-back")
+	(__vector-error-when-empty core "pop_back")
 	(decf (vec-core-size core))
 	(setf (svref (vec-core-buffer core) (vec-core-size core)) nil)))
 
-#-cl-stl-0x98    ; emplace-back
-(defmethod-overload emplace-back ((container stl:vector) new-val)
+#-cl-stl-0x98    ; emplace_back
+(defmethod-overload emplace_back ((container stl:vector) new-val)
   (__vector-ensure-core-exist container)
-  (__vector-push-back (vector-core container) new-val nil)
+  (__vector-push_back (vector-core container) new-val nil)
   nil)
 
-#-cl-stl-0x98    ; shrink-to-fit
-(defmethod shrink-to-fit ((cont stl:vector))
+#-cl-stl-0x98    ; shrink_to_fit
+(defmethod shrink_to_fit ((cont stl:vector))
   (let ((core (vector-core cont)))
 	(when core
 	  (let* ((size    (vec-core-size core))
@@ -691,38 +691,38 @@
 
 ;; insert ( single elemente ) - returns iterator
 (defmethod-overload insert ((cont stl:vector)
-							(itr #+cl-stl-0x98 vector-iterator
-								 #-cl-stl-0x98 vector-const-iterator) value)
+							(itr #+cl-stl-0x98 vector_iterator
+								 #-cl-stl-0x98 vector_const_iterator) value)
   (__vector-check-iterator-belong itr cont)
   (let ((idx (opr::vec-ptr-index itr))
 		(core (vector-core cont)))
 	(declare (type fixnum idx))
 	(if (= idx (vec-core-size core))
-		(__vector-push-back core value t)
+		(__vector-push_back core value t)
 		(__vector-counted-insert core itr 1 (lambda () value) t))
-	(make-instance 'vector-iterator
+	(make-instance 'vector_iterator
 				   :buffer (vec-core-buffer core) :index idx)))
 
 ;; insert ( fill )
 (defmethod-overload insert ((cont stl:vector)
-							(itr #+cl-stl-0x98 vector-iterator
-								 #-cl-stl-0x98 vector-const-iterator) (count integer) value)
+							(itr #+cl-stl-0x98 vector_iterator
+								 #-cl-stl-0x98 vector_const_iterator) (count integer) value)
   ;; MEMO : in C++98, always returns nil. but C++11, returns iterator.
   (__error-unless-non-negative-fixnum insert count)
   (__vector-check-iterator-belong itr cont)
   (let ((core (vector-core cont)))
 	(__vector-counted-insert core itr count (lambda () value) t)
 	#+cl-stl-0x98 nil
-	#-cl-stl-0x98 (make-instance 'vector-iterator 
+	#-cl-stl-0x98 (make-instance 'vector_iterator 
 								 :buffer (vec-core-buffer core) :index (opr::vec-ptr-index itr))))
 
 ;; range insert.
 ;; MEMO : in C++98, always returns nil. but C++11, returns iterator.
 (locally (declare (optimize speed))
 
-  (defmethod-overload insert ((cont stl:vector) (itr #+cl-stl-0x98 vector-iterator
-													 #-cl-stl-0x98 vector-const-iterator)
-							  (itr1 input-iterator) (itr2 input-iterator))
+  (defmethod-overload insert ((cont stl:vector) (itr #+cl-stl-0x98 vector_iterator
+													 #-cl-stl-0x98 vector_const_iterator)
+							  (itr1 input_iterator) (itr2 input_iterator))
 	(__vector-check-iterator-belong itr cont)
 	(if (_== itr1 itr2)
 		(progn
@@ -735,7 +735,7 @@
 			((= idx (vec-core-size core))
 			 (with-operators
 				 (for (((itr1 @~itr1)) (_/= itr1 itr2) ++itr1)
-				   (__vector-push-back core *itr1 t))))
+				   (__vector-push_back core *itr1 t))))
 			(t
 			 (locally (declare (optimize speed))
 			   (let* ((tmp (new stl:vector itr1 itr2))
@@ -749,13 +749,13 @@
 												(svref buf idx)
 											  (incf idx))) t)))))
 		  #+cl-stl-0x98 nil
-		  #-cl-stl-0x98 (make-instance 'vector-iterator 
+		  #-cl-stl-0x98 (make-instance 'vector_iterator 
 									   :buffer (vec-core-buffer core)
 									   :index  (opr::vec-ptr-index itr)))))
 
-  (defmethod-overload insert ((cont stl:vector) (itr #+cl-stl-0x98 vector-iterator
-													 #-cl-stl-0x98 vector-const-iterator)
-							  (itr1 forward-iterator) (itr2 forward-iterator))
+  (defmethod-overload insert ((cont stl:vector) (itr #+cl-stl-0x98 vector_iterator
+													 #-cl-stl-0x98 vector_const_iterator)
+							  (itr1 forward_iterator) (itr2 forward_iterator))
 	(__vector-check-iterator-belong itr cont)
 	(if (_== itr1 itr2)
 		(progn
@@ -769,12 +769,12 @@
 									 (with-operators
 										 (prog1 *itr1 ++itr1))) t)
 		  #+cl-stl-0x98 nil
-		  #-cl-stl-0x98 (make-instance 'vector-iterator 
+		  #-cl-stl-0x98 (make-instance 'vector_iterator 
 									   :buffer (vec-core-buffer core)
 									   :index  (opr::vec-ptr-index itr)))))
 
-  (defmethod-overload insert ((cont stl:vector) (itr #+cl-stl-0x98 vector-iterator
-													 #-cl-stl-0x98 vector-const-iterator)
+  (defmethod-overload insert ((cont stl:vector) (itr #+cl-stl-0x98 vector_iterator
+													 #-cl-stl-0x98 vector_const_iterator)
 							  (itr1 const-vector-pointer) (itr2 const-vector-pointer))
 	(__vector-check-iterator-belong itr cont)
 	(__pointer-check-iterator-range itr1 itr2)
@@ -794,7 +794,7 @@
 									 (lambda ()
 									   (prog1 (aref buf idx1) (incf idx1))) t)
 			#+cl-stl-0x98 nil
-			#-cl-stl-0x98 (make-instance 'vector-iterator 
+			#-cl-stl-0x98 (make-instance 'vector_iterator 
 										 :buffer (vec-core-buffer core)
 										 :index  (opr::vec-ptr-index itr)))))))
 
@@ -802,12 +802,12 @@
 ;; insert ( move ) - returns iterator
 #-cl-stl-0x98
 (defmethod-overload insert ((cont stl:vector)
-							(itr  vector-const-iterator) (rm remove-reference))
+							(itr  vector_const_iterator) (rm remove-reference))
   (__vector-check-iterator-belong itr cont)
   (let ((val (funcall (the cl:function (__rm-ref-closure rm)))))
 	(__vector-counted-insert (vector-core cont) itr 1 (lambda () val) nil)
 	(funcall (the cl:function (__rm-ref-closure rm)) nil))
-  (make-instance 'vector-iterator
+  (make-instance 'vector_iterator
 				 :buffer (vec-core-buffer (vector-core cont))
 				 :index (opr::vec-ptr-index itr)))
 
@@ -815,8 +815,8 @@
 #-cl-stl-0x98
 (locally (declare (optimize speed))
   (defmethod-overload insert ((cont stl:vector)
-							  (itr  vector-const-iterator) (il initializer-list))
-	(declare (type initializer-list il))
+							  (itr  vector_const_iterator) (il initializer_list))
+	(declare (type initializer_list il))
 	(__vector-check-iterator-belong itr cont)
 	(let* ((arr (__initlist-data il))
 		   (idx 0)
@@ -829,25 +829,25 @@
 								   (prog1
 									   (svref arr idx)
 									 (incf idx))) t)))
-	(make-instance 'vector-iterator
+	(make-instance 'vector_iterator
 				   :buffer (vec-core-buffer (vector-core cont))
 				   :index (opr::vec-ptr-index itr))))
 
 #-cl-stl-0x98    ; emplace
 (defmethod-overload emplace ((cont stl:vector)
-							 (itr vector-const-iterator) new-val)
+							 (itr vector_const_iterator) new-val)
   (__vector-check-iterator-belong itr cont)
   (let ((idx (opr::vec-ptr-index itr))
 		(core (vector-core cont)))
 	(if (= idx (vec-core-size core))
-		(__vector-push-back core new-val nil)
+		(__vector-push_back core new-val nil)
 		(__vector-counted-insert core itr 1 (lambda () new-val) nil))
-	(make-instance 'vector-iterator
+	(make-instance 'vector_iterator
 				   :buffer (vec-core-buffer core) :index idx)))
 
 (defmethod-overload erase ((cont stl:vector)
-						   (itr #+cl-stl-0x98 vector-iterator
-								#-cl-stl-0x98 vector-const-iterator))
+						   (itr #+cl-stl-0x98 vector_iterator
+								#-cl-stl-0x98 vector_const_iterator))
   (__vector-check-iterator-belong itr cont)
   (let ((idx (opr::vec-ptr-index itr))
 		(core (vector-core cont)))
@@ -856,14 +856,14 @@
 		(progn
 		  (decf (vec-core-size core))
 		  (setf (svref (vec-core-buffer core) (vec-core-size core)) nil)))
-	(make-instance 'vector-iterator
+	(make-instance 'vector_iterator
 				   :buffer (vec-core-buffer core) :index idx)))
 
 (defmethod-overload erase ((cont stl:vector)
-						   (first #+cl-stl-0x98 vector-iterator
-								  #-cl-stl-0x98 vector-const-iterator)
-						   (last  #+cl-stl-0x98 vector-iterator
-								  #-cl-stl-0x98 vector-const-iterator))
+						   (first #+cl-stl-0x98 vector_iterator
+								  #-cl-stl-0x98 vector_const_iterator)
+						   (last  #+cl-stl-0x98 vector_iterator
+								  #-cl-stl-0x98 vector_const_iterator))
   (__vector-check-iterator-belong first cont)
   (__pointer-check-iterator-range first last)
   (let ((idx1 (opr::vec-ptr-index first))
@@ -876,7 +876,7 @@
 	   (__vector-resize core idx1 nil))
 	  (t
 	   (__vector-erase (vector-core cont) (opr::vec-ptr-index first) (_- last first))))
-	(make-instance 'vector-iterator
+	(make-instance 'vector_iterator
 				   :buffer (vec-core-buffer core) :index idx1)))
 
 (defmethod-overload swap ((cont1 stl:vector) (cont2 stl:vector))
@@ -982,148 +982,148 @@
 
 ;;------------------------------------------------------------------------------
 ;;
-;; methods for vector-const-iterator
+;; methods for vector_const_iterator
 ;;
 ;;------------------------------------------------------------------------------
-(defmethod operator_= ((itr1 vector-const-iterator) (itr2 vector-const-iterator))
-  (__error-when-const-removing-assign itr1 vector-iterator
-									  itr2 vector-const-iterator)
+(defmethod operator_= ((itr1 vector_const_iterator) (itr2 vector_const_iterator))
+  (__error-when-const-removing-assign itr1 vector_iterator
+									  itr2 vector_const_iterator)
   (setf (opr::vec-ptr-buffer itr1) (opr::vec-ptr-buffer itr2))
   (setf (opr::vec-ptr-index  itr1) (opr::vec-ptr-index  itr2))
   itr1)
 
-(defmethod operator_clone ((itr vector-const-iterator))
-  (make-instance 'vector-const-iterator
+(defmethod operator_clone ((itr vector_const_iterator))
+  (make-instance 'vector_const_iterator
 				 :buffer (opr::vec-ptr-buffer itr)
 				 :index  (opr::vec-ptr-index  itr)))
 
-(defmethod operator_+ ((itr vector-const-iterator) (n integer))
-  (make-instance 'vector-const-iterator
+(defmethod operator_+ ((itr vector_const_iterator) (n integer))
+  (make-instance 'vector_const_iterator
 				 :buffer (opr::vec-ptr-buffer itr)
 				 :index  (+ n (opr::vec-ptr-index itr))))
 
-(defmethod operator_- ((itr vector-const-iterator) (n integer))
-  (make-instance 'vector-const-iterator
+(defmethod operator_- ((itr vector_const_iterator) (n integer))
+  (make-instance 'vector_const_iterator
 				 :buffer (opr::vec-ptr-buffer itr)
 				 :index  (- (opr::vec-ptr-index itr) n)))
 
 ;; creating reverse iterator.
-(define-constructor reverse-iterator ((itr vector-const-iterator))
-  (make-instance 'vector-const-reverse-iterator
+(define-constructor reverse_iterator ((itr vector_const_iterator))
+  (make-instance 'vector_const_reverse_iterator
 				 :buffer (opr::vec-ptr-buffer itr)
 				 :index  (1- (opr::vec-ptr-index  itr))))
 
 
 ;;------------------------------------------------------------------------------
 ;;
-;; methods for vector-iterator
+;; methods for vector_iterator
 ;;
 ;;------------------------------------------------------------------------------
-(defmethod operator_clone ((itr vector-iterator))
-  (make-instance 'vector-iterator
+(defmethod operator_clone ((itr vector_iterator))
+  (make-instance 'vector_iterator
 				 :buffer (opr::vec-ptr-buffer itr)
 				 :index  (opr::vec-ptr-index  itr)))
 
-(defmethod operator_cast ((itr vector-iterator)
-						  (typename (eql 'vector-const-iterator)))
-  (__check-exact-type-of-cast itr 'vector-iterator 'vector-const-iterator)
-  (make-instance 'vector-const-iterator
+(defmethod operator_cast ((itr vector_iterator)
+						  (typename (eql 'vector_const_iterator)))
+  (__check-exact-type-of-cast itr 'vector_iterator 'vector_const_iterator)
+  (make-instance 'vector_const_iterator
 				 :buffer (opr::vec-ptr-buffer itr)
 				 :index  (opr::vec-ptr-index  itr)))
 
-(defmethod operator_+ ((itr vector-iterator) (n integer))
-  (make-instance 'vector-iterator
+(defmethod operator_+ ((itr vector_iterator) (n integer))
+  (make-instance 'vector_iterator
 				 :buffer (opr::vec-ptr-buffer itr)
 				 :index  (+ n (opr::vec-ptr-index itr))))
 
-(defmethod operator_- ((itr vector-iterator) (n integer))
-  (make-instance 'vector-iterator
+(defmethod operator_- ((itr vector_iterator) (n integer))
+  (make-instance 'vector_iterator
 				 :buffer (opr::vec-ptr-buffer itr)
 				 :index  (- (opr::vec-ptr-index itr) n)))
 
 ;; creating reverse iterator.
-(define-constructor reverse-iterator ((itr vector-iterator))
-  (make-instance 'vector-reverse-iterator
+(define-constructor reverse_iterator ((itr vector_iterator))
+  (make-instance 'vector_reverse_iterator
 				 :buffer (opr::vec-ptr-buffer itr)
 				 :index  (1- (opr::vec-ptr-index  itr))))
 
 
 ;;------------------------------------------------------------------------------
 ;;
-;; methods for vector-const-reverse-iterator
+;; methods for vector_const_reverse_iterator
 ;;
 ;;------------------------------------------------------------------------------
-(defmethod operator_= ((itr1 vector-const-reverse-iterator)
-					  (itr2 vector-const-reverse-iterator))
-  (__error-when-const-removing-assign itr1 vector-reverse-iterator
-									  itr2 vector-const-reverse-iterator)
+(defmethod operator_= ((itr1 vector_const_reverse_iterator)
+					  (itr2 vector_const_reverse_iterator))
+  (__error-when-const-removing-assign itr1 vector_reverse_iterator
+									  itr2 vector_const_reverse_iterator)
   (setf (opr::rev-vec-ptr-buffer itr1) (opr::rev-vec-ptr-buffer itr2))
   (setf (opr::rev-vec-ptr-index  itr1) (opr::rev-vec-ptr-index  itr2))
   itr1)
 
-(defmethod operator_clone ((itr vector-const-reverse-iterator))
-  (make-instance 'vector-const-reverse-iterator
+(defmethod operator_clone ((itr vector_const_reverse_iterator))
+  (make-instance 'vector_const_reverse_iterator
 				 :buffer (opr::rev-vec-ptr-buffer itr)
 				 :index  (opr::rev-vec-ptr-index  itr)))
 
-(defmethod operator_+ ((itr vector-const-reverse-iterator) (n integer))
-  (make-instance 'vector-const-reverse-iterator
+(defmethod operator_+ ((itr vector_const_reverse_iterator) (n integer))
+  (make-instance 'vector_const_reverse_iterator
 				 :buffer (opr::rev-vec-ptr-buffer itr)
 				 :index  (- (opr::rev-vec-ptr-index itr) n)))
 
-(defmethod operator_- ((itr vector-const-reverse-iterator) (n integer))
-  (make-instance 'vector-const-reverse-iterator
+(defmethod operator_- ((itr vector_const_reverse_iterator) (n integer))
+  (make-instance 'vector_const_reverse_iterator
 				 :buffer (opr::rev-vec-ptr-buffer itr)
 				 :index  (+ (opr::rev-vec-ptr-index itr) n)))
 
-(defmethod base ((rev-itr vector-const-reverse-iterator))
-  (make-instance 'vector-const-iterator
+(defmethod base ((rev-itr vector_const_reverse_iterator))
+  (make-instance 'vector_const_iterator
 				 :buffer (opr::rev-vec-ptr-buffer rev-itr)
 				 :index  (1+ (opr::rev-vec-ptr-index rev-itr))))
 
 ;; creating reverse iterator.
-(define-constructor reverse-iterator ((itr vector-const-reverse-iterator))
-  (make-instance 'vector-const-iterator
+(define-constructor reverse_iterator ((itr vector_const_reverse_iterator))
+  (make-instance 'vector_const_iterator
 				 :buffer (opr::rev-vec-ptr-buffer itr)
 				 :index  (1+ (opr::rev-vec-ptr-index  itr))))
 
 
 ;;------------------------------------------------------------------------------
 ;;
-;; methods for vector-reverse-iterator
+;; methods for vector_reverse_iterator
 ;;
 ;;------------------------------------------------------------------------------
-(defmethod operator_clone ((itr vector-reverse-iterator))
-  (make-instance 'vector-reverse-iterator
+(defmethod operator_clone ((itr vector_reverse_iterator))
+  (make-instance 'vector_reverse_iterator
 				 :buffer (opr::rev-vec-ptr-buffer itr)
 				 :index  (opr::rev-vec-ptr-index  itr)))
 
-(defmethod operator_cast ((itr vector-reverse-iterator)
-						  (typename (eql 'vector-const-reverse-iterator)))
-  (__check-exact-type-of-cast itr 'vector-reverse-iterator
-								  'vector-const-reverse-iterator)
-  (make-instance 'vector-const-reverse-iterator
+(defmethod operator_cast ((itr vector_reverse_iterator)
+						  (typename (eql 'vector_const_reverse_iterator)))
+  (__check-exact-type-of-cast itr 'vector_reverse_iterator
+								  'vector_const_reverse_iterator)
+  (make-instance 'vector_const_reverse_iterator
 				 :buffer (opr::rev-vec-ptr-buffer itr)
 				 :index  (opr::rev-vec-ptr-index  itr)))
 
-(defmethod operator_+ ((itr vector-reverse-iterator) (n integer))
-  (make-instance 'vector-reverse-iterator
+(defmethod operator_+ ((itr vector_reverse_iterator) (n integer))
+  (make-instance 'vector_reverse_iterator
 				 :buffer (opr::rev-vec-ptr-buffer itr)
 				 :index  (+ n (opr::rev-vec-ptr-index itr))))
 
-(defmethod operator_- ((itr vector-reverse-iterator) (n integer))
-  (make-instance 'vector-reverse-iterator
+(defmethod operator_- ((itr vector_reverse_iterator) (n integer))
+  (make-instance 'vector_reverse_iterator
 				 :buffer (opr::rev-vec-ptr-buffer itr)
 				 :index  (- (opr::rev-vec-ptr-index itr) n)))
 
-(defmethod base ((rev-itr vector-reverse-iterator))
-  (make-instance 'vector-iterator
+(defmethod base ((rev-itr vector_reverse_iterator))
+  (make-instance 'vector_iterator
 				 :buffer (opr::rev-vec-ptr-buffer rev-itr)
 				 :index  (1+ (opr::rev-vec-ptr-index rev-itr))))
 
 ;; creating reverse iterator.
-(define-constructor reverse-iterator ((itr vector-reverse-iterator))
-  (make-instance 'vector-iterator
+(define-constructor reverse_iterator ((itr vector_reverse_iterator))
+  (make-instance 'vector_iterator
 				 :buffer (opr::rev-vec-ptr-buffer itr)
 				 :index  (1+ (opr::rev-vec-ptr-index  itr))))
 
@@ -1144,7 +1144,7 @@
   (let ((core (vector-core container)))
 	(when core
 	  (setf print-item-fnc (if print-item-fnc
-							   (functor-function (clone print-item-fnc))
+							   (functor_function (clone print-item-fnc))
 							   (lambda (s x) (format s "~A" x))))
 	  (let ((cnt (size container))
 			(buf (vec-core-buffer core)))
@@ -1156,7 +1156,7 @@
   nil)
 
 #+cl-stl-debug
-(defmethod check-integrity ((container stl:vector) &optional (stream t))
+(defmethod check_integrity ((container stl:vector) &optional (stream t))
   (let ((err-count 0))
 	(format stream "begin integrity check -----------------------~%")
 	(let ((core (vector-core container)))

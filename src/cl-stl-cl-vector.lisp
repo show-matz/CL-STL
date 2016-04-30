@@ -8,7 +8,7 @@
 				(<    ,idx-sym (if (null ,buf-sym)
 								   0
 								   (length ,buf-sym))))
-	 (error 'out-of-range :what ,(format nil "index ~A is out of range." idx-sym))))
+	 (error 'out_of_range :what ,(format nil "index ~A is out of range." idx-sym))))
 
 (defmacro __pointer-check-iterator-range (itr1 itr2)
   (declare (ignorable itr1 itr2))
@@ -36,7 +36,7 @@
   (- (opr::vec-ptr-index itr2) (opr::vec-ptr-index itr1)))
 
 ;; creating reverse iterator.
-(define-constructor reverse-iterator ((itr const-vector-pointer))
+(define-constructor reverse_iterator ((itr const-vector-pointer))
   (make-instance 'const-reverse-vector-pointer
 				 :buffer (opr::vec-ptr-buffer itr)
 				 :index  (1- (opr::vec-ptr-index  itr))))
@@ -48,7 +48,7 @@
 ;;
 ;;------------------------------------------------------------------------------
 ;; creating reverse iterator.
-(define-constructor reverse-iterator ((itr vector-pointer))
+(define-constructor reverse_iterator ((itr vector-pointer))
   (make-instance 'reverse-vector-pointer
 				 :buffer (opr::vec-ptr-buffer itr)
 				 :index  (1- (opr::vec-ptr-index  itr))))
@@ -73,7 +73,7 @@
 				 :index  (1+ (opr::rev-vec-ptr-index rev-itr))))
 
 ;; creating reverse iterator.
-(define-constructor reverse-iterator ((itr const-reverse-vector-pointer))
+(define-constructor reverse_iterator ((itr const-reverse-vector-pointer))
   (make-instance 'const-vector-pointer
 				 :buffer (opr::rev-vec-ptr-buffer itr)
 				 :index  (1+ (opr::rev-vec-ptr-index  itr))))
@@ -90,7 +90,7 @@
 				 :index  (1+ (opr::rev-vec-ptr-index rev-itr))))
 
 ;; creating reverse iterator.
-(define-constructor reverse-iterator ((itr reverse-vector-pointer))
+(define-constructor reverse_iterator ((itr reverse-vector-pointer))
   (make-instance 'vector-pointer
 				 :buffer (opr::rev-vec-ptr-buffer itr)
 				 :index  (1+ (opr::rev-vec-ptr-index  itr))))

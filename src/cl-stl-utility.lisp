@@ -1,6 +1,6 @@
 (in-package :cl-stl)
 
-(declaim (inline make-pair))
+(declaim (inline make_pair))
 
 ;;------------------------------------------------------------------------------
 ;;
@@ -22,7 +22,7 @@
 ;; utilities
 ;;
 ;;------------------------------------------------------------------------------
-(defun make-pair (&optional (first nil) (second nil))
+(defun make_pair (&optional (first nil) (second nil))
   (make-instance 'pair :first first :second second))
 
 
@@ -104,12 +104,12 @@
 	(case idx
 	  (0 (stl:first  obj))
 	  (1 (stl:second obj))
-	  (t (error 'out-of-range :what "Index specified to get is out of range."))))
+	  (t (error 'out_of_range :what "Index specified to get is out of range."))))
   (defmethod __tie-get ((idx integer) (obj pair))
 	(case idx
 	  (0 (stl:first  obj))
 	  (1 (stl:second obj))
-	  (t (error 'out-of-range :what "Index specified to get is out of range.")))))
+	  (t (error 'out_of_range :what "Index specified to get is out of range.")))))
 	
 
 #-cl-stl-0x98
@@ -118,14 +118,14 @@
 	(case idx
 	  (0 (setf (stl:first  obj) new-val))
 	  (1 (setf (stl:second obj) new-val))
-	  (t (error 'out-of-range :what "Index specified to get is out of range.")))
+	  (t (error 'out_of_range :what "Index specified to get is out of range.")))
 	new-val)
   #-cl-stl-noextra
   (defmethod (setf __tie-get) (new-val (idx integer) (obj pair))
 	(case idx
 	  (0 (setf (stl:first  obj) new-val))
 	  (1 (setf (stl:second obj) new-val))
-	  (t (error 'out-of-range :what "Index specified to get is out of range.")))
+	  (t (error 'out_of_range :what "Index specified to get is out of range.")))
 	new-val))
 
 ;-----------------------------------------------------

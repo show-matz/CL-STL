@@ -7,7 +7,7 @@
 ;;------------------------------------------------------------------------------
 (locally (declare (optimize speed))
 
-  (defclass map (bidirectional-container)
+  (defclass map (bidirectional_container)
 	((rbtree :type     :rbtree
 			 :initform nil
 			 :initarg  :core
@@ -19,20 +19,20 @@
 ;TMP;			 :accessor __instance-id)
 	))
 
-  (defclass map-const-iterator (bidirectional-iterator)
+  (defclass map_const_iterator (bidirectional_iterator)
 	((node :type     :rbnode
 		   :initform nil
 		   :initarg  :node
 		   :accessor __assoc-itr-node)))
 
-  (defclass map-const-reverse-iterator (bidirectional-iterator)
+  (defclass map_const_reverse_iterator (bidirectional_iterator)
 	((node :type     :rbnode
 		   :initform nil
 		   :initarg  :node
 		   :accessor __assoc-rev-itr-node)))
 
-  (defclass map-iterator (map-const-iterator) ())
-  (defclass map-reverse-iterator (map-const-reverse-iterator) ()))
+  (defclass map_iterator (map_const_iterator) ())
+  (defclass map_reverse_iterator (map_const_reverse_iterator) ()))
 
 
 ;;--------------------------------------------------------------------
@@ -56,7 +56,7 @@
 				 (let ((val (__rbnode-value node)))
 				   (handler-case
 					   (and (typep val 'pair)
-							(eq node (__rbtree-lower-bound tree (stl:first val))))
+							(eq node (__rbtree-lower_bound tree (stl:first val))))
 					 (error () nil)))))))
 
   (defun __map-check-iterator-belong (itr cont)
@@ -78,9 +78,9 @@
 			  (if (handler-case
 					  (let ((key1 (stl:first (__rbnode-value node1)))
 							(key2 (stl:first (__rbnode-value node2))))
-						(and (eq node1 (__rbtree-lower-bound tree key1))
-							 (eq node2 (__rbtree-lower-bound tree key2))
-							 (not (functor-call (key-comp cont) key2 key1))))
+						(and (eq node1 (__rbtree-lower_bound tree key1))
+							 (eq node2 (__rbtree-lower_bound tree key2))
+							 (not (functor_call (key_comp cont) key2 key1))))
 					(error () nil))
 				  t
 				  (error 'undefined-behavior :what "Invalid iterator range.")))))))
@@ -93,25 +93,25 @@
 ;;--------------------------------------------------------------------
 (locally (declare (optimize speed))
 
-  (defun __create-map (key-comp)
-	;; MEMO : key-comp copy in __rbtree-ctor.
-	(let ((tree (__rbtree-ctor key-comp #'stl:first)))
+  (defun __create-map (key_comp)
+	;; MEMO : key_comp copy in __rbtree-ctor.
+	(let ((tree (__rbtree-ctor key_comp #'stl:first)))
 	  #+cl-stl-debug (setf (__rbtree-checker tree) #'__map-item-checker)
 	  (make-instance 'stl::map :core tree)))
 
-  (defun __create-map-with-range (key-comp itr1 itr2)
-	;; MEMO : key-comp copy in __rbtree-ctor.
-	;; MEMO : [itr1, itr2) is 'input-iterator'...
-	(let ((tree (__rbtree-ctor key-comp #'stl:first)))
+  (defun __create-map-with-range (key_comp itr1 itr2)
+	;; MEMO : key_comp copy in __rbtree-ctor.
+	;; MEMO : [itr1, itr2) is 'input_iterator'...
+	(let ((tree (__rbtree-ctor key_comp #'stl:first)))
 	  #+cl-stl-debug (setf (__rbtree-checker tree) #'__map-item-checker)
 	  (__rbtree-insert-range-unique tree itr1 itr2 t)
 	  (make-instance 'stl::map :core tree)))
 
-  (defun __create-map-with-array (key-comp arr idx1 idx2)
+  (defun __create-map-with-array (key_comp arr idx1 idx2)
 	(declare (type cl:vector arr))
 	(declare (type fixnum idx1 idx2))
-	;; MEMO : key-comp copy in __rbtree-ctor.
-	(let ((tree (__rbtree-ctor key-comp #'stl:first)))
+	;; MEMO : key_comp copy in __rbtree-ctor.
+	(let ((tree (__rbtree-ctor key_comp #'stl:first)))
 	  #+cl-stl-debug (setf (__rbtree-checker tree) #'__map-item-checker)
 	  (__rbtree-insert-array-unique tree arr idx1 idx2 t)
 	  (make-instance 'stl::map :core tree))))
@@ -134,7 +134,7 @@
 
 ; empty constructor 3
 (define-constructor map ((comp #-cl-stl-0x98 functor
-							   #+cl-stl-0x98 binary-function))
+							   #+cl-stl-0x98 binary_function))
   (__create-map comp))
 
 ; copy constructor
@@ -143,26 +143,26 @@
 
 ; constructor with initializer list 1
 #-cl-stl-0x98
-(define-constructor map ((il initializer-list))
-  (declare (type initializer-list il))
+(define-constructor map ((il initializer_list))
+  (declare (type initializer_list il))
   (let ((arr (__initlist-data il)))
 	(declare (type simple-vector arr))
 	(__create-map-with-array #'operator_< arr 0 (length arr))))
 
 ; constructor with initializer list 2
 #-cl-stl-0x98
-(define-constructor map ((il initializer-list) (comp cl:function))
-  (declare (type initializer-list il))
+(define-constructor map ((il initializer_list) (comp cl:function))
+  (declare (type initializer_list il))
   (let ((arr (__initlist-data il)))
 	(declare (type simple-vector arr))
 	(__create-map-with-array comp arr 0 (length arr))))
 
 ; constructor with initializer list 3
 #-cl-stl-0x98
-(define-constructor map ((il   initializer-list)
+(define-constructor map ((il   initializer_list)
 						 (comp #-cl-stl-0x98 functor
-							   #+cl-stl-0x98 binary-function))
-  (declare (type initializer-list il))
+							   #+cl-stl-0x98 binary_function))
+  (declare (type initializer_list il))
   (let ((arr (__initlist-data il)))
 	(declare (type simple-vector arr))
 	(__create-map-with-array comp arr 0 (length arr))))
@@ -172,21 +172,21 @@
 (define-constructor map ((arg remove-reference))
   (let ((cont (funcall (the cl:function (__rm-ref-closure arg)))))
 	(__check-type-of-move-constructor cont stl::map)
-	(let ((obj (__create-map (key-comp cont))))
+	(let ((obj (__create-map (key_comp cont))))
 	  (__rbtree-swap (__assoc-tree obj) (__assoc-tree cont))
 	  obj)))
 
 ;; range constructor
-(define-constructor map ((itr1 input-iterator) (itr2 input-iterator))
+(define-constructor map ((itr1 input_iterator) (itr2 input_iterator))
   (__create-map-with-range #'operator_< itr1 itr2))
 
-(define-constructor map ((itr1 input-iterator)
-						 (itr2 input-iterator) (comp cl:function))
+(define-constructor map ((itr1 input_iterator)
+						 (itr2 input_iterator) (comp cl:function))
   (__create-map-with-range comp itr1 itr2))
 
-(define-constructor map ((itr1 input-iterator)
-						 (itr2 input-iterator) (comp #-cl-stl-0x98 functor
-													 #+cl-stl-0x98 binary-function))
+(define-constructor map ((itr1 input_iterator)
+						 (itr2 input_iterator) (comp #-cl-stl-0x98 functor
+													 #+cl-stl-0x98 binary_function))
   (__create-map-with-range comp itr1 itr2))
 
 ;; range constructor for const-vector-pointer.
@@ -207,7 +207,7 @@
 
 (define-constructor map ((ptr1 const-vector-pointer)
 						 (ptr2 const-vector-pointer) (comp #-cl-stl-0x98 functor
-														   #+cl-stl-0x98 binary-function))
+														   #+cl-stl-0x98 binary_function))
   (__pointer-check-iterator-range ptr1 ptr2)
   (__create-map-with-array comp
 							(opr::vec-ptr-buffer ptr1)
@@ -242,12 +242,12 @@
 			(tree2 (__assoc-tree cont2)))
 		(__rbtree-clear tree1)
 		(__rbtree-swap tree1 tree2)
-		(setf (__rbtree-key-comp tree2) (clone (__rbtree-key-comp tree1)))))
+		(setf (__rbtree-key_comp tree2) (clone (__rbtree-key_comp tree1)))))
 	(values cont1 cont2))
 
   #-cl-stl-0x98
-  (defmethod operator_= ((cont stl::map) (il initializer-list))
-	(declare (type initializer-list il))
+  (defmethod operator_= ((cont stl::map) (il initializer_list))
+	(declare (type initializer_list il))
 	(let ((tree (__assoc-tree cont))
 		  (arr  (__initlist-data il)))
 	  (declare (type rbtree        tree))
@@ -263,39 +263,39 @@
 (locally (declare (optimize speed))
 
   (defmethod begin ((container stl::map))
-	(make-instance 'map-iterator
+	(make-instance 'map_iterator
 				   :node (__rbtree-begin (__assoc-tree container))))
 
   (defmethod end ((container stl::map))
-	(make-instance 'map-iterator
+	(make-instance 'map_iterator
 				   :node (__rbtree-end (__assoc-tree container))))
 
   (defmethod rbegin ((container stl::map))
-	(make-instance 'map-reverse-iterator
+	(make-instance 'map_reverse_iterator
 				   :node (__rbtree-rbegin (__assoc-tree container))))
 
   (defmethod rend ((container stl::map))
-	(make-instance 'map-reverse-iterator
+	(make-instance 'map_reverse_iterator
 				   :node (__rbtree-rend (__assoc-tree container))))
 
   #-cl-stl-0x98
   (defmethod cbegin ((container stl::map))
-	(make-instance 'map-const-iterator
+	(make-instance 'map_const_iterator
 				   :node (__rbtree-begin (__assoc-tree container))))
 
   #-cl-stl-0x98
   (defmethod cend ((container stl::map))
-	(make-instance 'map-const-iterator
+	(make-instance 'map_const_iterator
 				   :node (__rbtree-end (__assoc-tree container))))
 
   #-cl-stl-0x98
   (defmethod crbegin ((container stl::map))
-	(make-instance 'map-const-reverse-iterator
+	(make-instance 'map_const_reverse_iterator
 				   :node (__rbtree-rbegin (__assoc-tree container))))
 
   #-cl-stl-0x98
   (defmethod crend ((container stl::map))
-	(make-instance 'map-const-reverse-iterator
+	(make-instance 'map_const_reverse_iterator
 				   :node (__rbtree-rend (__assoc-tree container)))))
 
 
@@ -310,8 +310,8 @@
   (defmethod size ((container stl::map))
 	(__rbtree-size (__assoc-tree container)))
 
-  (defmethod max-size ((container stl::map))
-	(__rbtree-max-size (__assoc-tree container))))
+  (defmethod max_size ((container stl::map))
+	(__rbtree-max_size (__assoc-tree container))))
 
 ;;----------------------------------------------------------
 ;; element access
@@ -321,53 +321,53 @@
   (defmethod at ((cont stl::map) key)
 	(let ((tree (__assoc-tree cont)))
 	  (declare (type rbtree tree))
-	  (let ((key-cmp (__rbtree-key-comp tree))
-			(node    (__rbtree-lower-bound tree key)))
+	  (let ((key-cmp (__rbtree-key_comp tree))
+			(node    (__rbtree-lower_bound tree key)))
 		(declare (type cl:function key-cmp))
 		(declare (type rbnode      node))
 		(when (or (eq node (__rbtree-end tree))
 				  (funcall key-cmp key (stl:first (__rbnode-value node))))
-		  (error 'out-of-range :what "(stl:at stl::map key)"))
+		  (error 'out_of_range :what "(stl:at stl::map key)"))
 		(stl:second (__rbnode-value node)))))
 
   (defmethod (setf at) (val (cont stl::map) key)
 	(let ((tree (__assoc-tree cont)))
 	  (declare (type rbtree tree))
-	  (let ((key-cmp (__rbtree-key-comp tree))
-			(node    (__rbtree-lower-bound tree key)))
+	  (let ((key-cmp (__rbtree-key_comp tree))
+			(node    (__rbtree-lower_bound tree key)))
 		(declare (type cl:function key-cmp))
 		(declare (type rbnode      node))
 		(when (or (eq node (__rbtree-end tree))
 				  (funcall key-cmp key (stl:first (__rbnode-value node))))
-		  (error 'out-of-range :what "(stl:at stl::map key)"))
+		  (error 'out_of_range :what "(stl:at stl::map key)"))
 		(_= (stl:second (__rbnode-value node)) val))))
 
   (defmethod operator_[] ((cont stl::map) key)
 	(let ((tree (__assoc-tree cont)))
 	  (declare (type rbtree tree))
-	  (let ((key-cmp (__rbtree-key-comp tree))
-			(node    (__rbtree-lower-bound tree key)))
+	  (let ((key-cmp (__rbtree-key_comp tree))
+			(node    (__rbtree-lower_bound tree key)))
 		(declare (type cl:function key-cmp))
 		(declare (type rbnode      node))
 		(when (or (eq node (__rbtree-end tree))
 				  (funcall key-cmp key (stl:first (__rbnode-value node))))
 		  (setf node
-				#+cl-stl-0x98 (__rbtree-insert-hint-unique  tree node (stl:make-pair key nil) nil)
-				#-cl-stl-0x98 (__rbtree-emplace-hint-unique tree node (stl:make-pair key nil))))
+				#+cl-stl-0x98 (__rbtree-insert-hint-unique  tree node (stl:make_pair key nil) nil)
+				#-cl-stl-0x98 (__rbtree-emplace_hint-unique tree node (stl:make_pair key nil))))
 		(stl:second (__rbnode-value node)))))
 
   (defmethod (setf operator_[]) (val (cont stl::map) key)
 	(let ((tree (__assoc-tree cont)))
 	  (declare (type rbtree tree))
-	  (let ((key-cmp (__rbtree-key-comp tree))
-			(node    (__rbtree-lower-bound tree key)))
+	  (let ((key-cmp (__rbtree-key_comp tree))
+			(node    (__rbtree-lower_bound tree key)))
 		(declare (type cl:function key-cmp))
 		(declare (type rbnode      node))
 		(when (or (eq node (__rbtree-end tree))
 				  (funcall key-cmp key (stl:first (__rbnode-value node))))
 		  (setf node
-				#+cl-stl-0x98 (__rbtree-insert-hint-unique  tree node (stl:make-pair key nil) nil)
-				#-cl-stl-0x98 (__rbtree-emplace-hint-unique tree node (stl:make-pair key nil))))
+				#+cl-stl-0x98 (__rbtree-insert-hint-unique  tree node (stl:make_pair key nil) nil)
+				#-cl-stl-0x98 (__rbtree-emplace_hint-unique tree node (stl:make_pair key nil))))
 		(_= (stl:second (__rbnode-value node)) val))))
 
   (defmethod operator_& ((cont stl::map) key)
@@ -386,7 +386,7 @@
   (defmethod-overload insert ((container stl::map) value)
 	(multiple-value-bind (node success)
 		(__rbtree-insert-unique (__assoc-tree container) value t)
-	  (make-pair (make-instance 'map-iterator :node node) success)))
+	  (make_pair (make-instance 'map_iterator :node node) success)))
 
   ;; insert ( single element by remove reference ) - returns pair<iterator,bool>.
   #-cl-stl-0x98
@@ -395,38 +395,38 @@
 	  (funcall (the cl:function (__rm-ref-closure rm)) nil)
 	  (multiple-value-bind (node success)
 		  (__rbtree-insert-unique (__assoc-tree container) val nil)
-		(make-pair (make-instance 'map-iterator :node node) success))))
+		(make_pair (make-instance 'map_iterator :node node) success))))
 
   ;; insert ( single element with hint ) - returns iterator.
   (defmethod-overload insert ((container stl::map)
-							  (itr #+cl-stl-0x98 map-iterator
-								   #-cl-stl-0x98 map-const-iterator) value)
+							  (itr #+cl-stl-0x98 map_iterator
+								   #-cl-stl-0x98 map_const_iterator) value)
 	#+cl-stl-0x98  ;; HACK
-	(when (and (typep itr   'map-const-iterator)
-			   (typep value 'map-const-iterator))
+	(when (and (typep itr   'map_const_iterator)
+			   (typep value 'map_const_iterator))
 	  (__rbtree-insert-range-unique (__assoc-tree container) itr value t)
 	  (return-from __insert-3 nil))
 	
 	#+cl-stl-debug (__map-check-iterator-belong itr container)
-	(make-instance 'map-iterator
+	(make-instance 'map_iterator
 				   :node (__rbtree-insert-hint-unique (__assoc-tree container)
 													  (__assoc-itr-node itr) value t)))
 
   ;; insert ( single element with hint by remove reference ) - returns iterator.
   #-cl-stl-0x98
   (defmethod-overload insert ((container stl::map)
-							  (itr map-const-iterator) (rm remove-reference))
+							  (itr map_const_iterator) (rm remove-reference))
 	#+cl-stl-debug (__map-check-iterator-belong itr container)
 	(let ((val (funcall (the cl:function (__rm-ref-closure rm)))))
 	  (funcall (the cl:function (__rm-ref-closure rm)) nil)
-	  (make-instance 'map-iterator
+	  (make-instance 'map_iterator
 					 :node (__rbtree-insert-hint-unique (__assoc-tree container)
 														(__assoc-itr-node itr) val nil))))
 
   ;; insert ( initializer list ) - returns nil.
   #-cl-stl-0x98
-  (defmethod-overload insert ((container stl::map) (il initializer-list))
-	(declare (type initializer-list il))
+  (defmethod-overload insert ((container stl::map) (il initializer_list))
+	(declare (type initializer_list il))
 	(let* ((arr (__initlist-data il))
 		   (cnt (length arr)))
 	  (declare (type simple-vector arr))
@@ -437,12 +437,12 @@
 ;; range insert - returns nil.
 (locally (declare (optimize speed))
 
-  (defmethod-overload insert ((container stl::map) (itr1 input-iterator) (itr2 input-iterator))
+  (defmethod-overload insert ((container stl::map) (itr1 input_iterator) (itr2 input_iterator))
 	(__rbtree-insert-range-unique (__assoc-tree container) itr1 itr2 t)
 	nil)
 
   (defmethod-overload insert ((container stl::map)
-							  (itr1 map-const-iterator) (itr2 map-const-iterator))
+							  (itr1 map_const_iterator) (itr2 map_const_iterator))
 	(__rbtree-insert-range-unique (__assoc-tree container) itr1 itr2 t)
 	nil)
 
@@ -463,14 +463,14 @@
   (defmethod-overload emplace ((container stl::map) new-val)
 	(multiple-value-bind (node success)
 		(__rbtree-emplace-unique (__assoc-tree container) new-val)
-	  (make-pair (make-instance 'map-iterator :node node) success)))
+	  (make_pair (make-instance 'map_iterator :node node) success)))
 
   ;;returns iterator
-  (defmethod-overload emplace-hint ((container stl::map)
-									(itr map-const-iterator) new-val)
+  (defmethod-overload emplace_hint ((container stl::map)
+									(itr map_const_iterator) new-val)
 	#+cl-stl-debug (__map-check-iterator-belong itr container)
-	(make-instance 'map-iterator
-				   :node (__rbtree-emplace-hint-unique (__assoc-tree container)
+	(make-instance 'map_iterator
+				   :node (__rbtree-emplace_hint-unique (__assoc-tree container)
 													   (__assoc-itr-node itr) new-val))))
 
 
@@ -479,24 +479,24 @@
 
   ;; In 0x98, returns nil. In 0x11 returns iterator.
   (defmethod-overload erase ((container stl::map)
-							 (itr #+cl-stl-0x98 map-iterator
-								  #-cl-stl-0x98 map-const-iterator))
+							 (itr #+cl-stl-0x98 map_iterator
+								  #-cl-stl-0x98 map_const_iterator))
 	#+cl-stl-debug (__map-check-iterator-belong itr container)
 	(let ((node (__rbtree-erase-node (__assoc-tree container) (__assoc-itr-node itr))))
 	  (declare (ignorable node))
 	  #+cl-stl-0x98 nil
-	  #-cl-stl-0x98 (make-instance 'map-iterator :node node)))
+	  #-cl-stl-0x98 (make-instance 'map_iterator :node node)))
 
   ;; In 0x98, returns nil. In 0x11 returns iterator.
   (defmethod-overload erase ((container stl::map)
-							 (first #+cl-stl-0x98 map-iterator #-cl-stl-0x98 map-const-iterator)
-							 (last  #+cl-stl-0x98 map-iterator #-cl-stl-0x98 map-const-iterator))
+							 (first #+cl-stl-0x98 map_iterator #-cl-stl-0x98 map_const_iterator)
+							 (last  #+cl-stl-0x98 map_iterator #-cl-stl-0x98 map_const_iterator))
 	#+cl-stl-debug (__map-check-iterator-range  container first last)
 	(let ((node (__rbtree-erase-range (__assoc-tree container)
 									  (__assoc-itr-node first) (__assoc-itr-node last))))
 	  (declare (ignorable node))
 	  #+cl-stl-0x98 nil
-	  #-cl-stl-0x98 (make-instance 'map-iterator :node node)))
+	  #-cl-stl-0x98 (make-instance 'map_iterator :node node)))
 
   ;; returns deleted node count.
   (defmethod-overload erase ((container stl::map) key)
@@ -519,7 +519,7 @@
 
   ;; returns iterator.
   (defmethod-overload find ((container stl::map) key)
-	(make-instance 'map-iterator
+	(make-instance 'map_iterator
 				   :node (__rbtree-find (__assoc-tree container) key)))
   
   ;; returns fixnum.
@@ -527,22 +527,22 @@
 	(__rbtree-count (__assoc-tree container) key))
 
   ;; returns iterator.
-  (defmethod-overload lower-bound ((container stl::map) key)
-	(make-instance 'map-iterator
-				   :node (__rbtree-lower-bound (__assoc-tree container) key)))
+  (defmethod-overload lower_bound ((container stl::map) key)
+	(make-instance 'map_iterator
+				   :node (__rbtree-lower_bound (__assoc-tree container) key)))
 
   ;; returns iterator.
-  (defmethod-overload upper-bound ((container stl::map) key)
-	(make-instance 'map-iterator
-				   :node (__rbtree-upper-bound (__assoc-tree container) key)))
+  (defmethod-overload upper_bound ((container stl::map) key)
+	(make-instance 'map_iterator
+				   :node (__rbtree-upper_bound (__assoc-tree container) key)))
 
   ;; returns pair(itr,itr).
-  (defmethod-overload equal-range ((container stl::map) key)
+  (defmethod-overload equal_range ((container stl::map) key)
 	(let ((tree (__assoc-tree container)))
-	  (make-pair (make-instance 'map-iterator
-								:node (__rbtree-lower-bound tree key))
-				 (make-instance 'map-iterator
-								:node (__rbtree-upper-bound tree key))))))
+	  (make_pair (make-instance 'map_iterator
+								:node (__rbtree-lower_bound tree key))
+				 (make-instance 'map_iterator
+								:node (__rbtree-upper_bound tree key))))))
 
 
 ;;----------------------------------------------------------
@@ -550,11 +550,11 @@
 ;;----------------------------------------------------------
 (locally (declare (optimize speed))
 
-  (defmethod key-comp ((container stl::map))
-	(clone (__rbtree-key-comp (__assoc-tree container))))
+  (defmethod key_comp ((container stl::map))
+	(clone (__rbtree-key_comp (__assoc-tree container))))
 
-  (defmethod value-comp ((container stl::map))
-	(let ((fnc (functor-function (clone (__rbtree-key-comp (__assoc-tree container))))))
+  (defmethod value_comp ((container stl::map))
+	(let ((fnc (functor_function (clone (__rbtree-key_comp (__assoc-tree container))))))
 	  (declare (type cl:function fnc))
 	  (lambda (pr1 pr2)
 		(funcall fnc (stl:first pr1) (stl:first pr2))))))
@@ -596,40 +596,40 @@
 
 ;;------------------------------------------------------------------------------
 ;;
-;; methods for map-const-iterator
+;; methods for map_const_iterator
 ;;
 ;;------------------------------------------------------------------------------
-(defmethod operator_= ((itr1 map-const-iterator) (itr2 map-const-iterator))
-  (__error-when-const-removing-assign itr1 map-iterator
-									  itr2 map-const-iterator)
+(defmethod operator_= ((itr1 map_const_iterator) (itr2 map_const_iterator))
+  (__error-when-const-removing-assign itr1 map_iterator
+									  itr2 map_const_iterator)
   (setf (__assoc-itr-node itr1) (__assoc-itr-node itr2))
   itr1)
 
-(defmethod operator_clone ((itr map-const-iterator))
-  (make-instance 'map-const-iterator :node (__assoc-itr-node itr)))
+(defmethod operator_clone ((itr map_const_iterator))
+  (make-instance 'map_const_iterator :node (__assoc-itr-node itr)))
 
-(defmethod operator_== ((itr1 map-const-iterator) (itr2 map-const-iterator))
+(defmethod operator_== ((itr1 map_const_iterator) (itr2 map_const_iterator))
   (eq (__assoc-itr-node itr1) (__assoc-itr-node itr2)))
 
-(defmethod operator_/= ((itr1 map-const-iterator) (itr2 map-const-iterator))
+(defmethod operator_/= ((itr1 map_const_iterator) (itr2 map_const_iterator))
   (not (eq (__assoc-itr-node itr1) (__assoc-itr-node itr2))))
 
-(defmethod operator_* ((itr map-const-iterator))
+(defmethod operator_* ((itr map_const_iterator))
   (__rbnode-value (__assoc-itr-node itr)))
 
-(defmethod (setf operator_*) (new-val (itr map-const-iterator))
-  (error 'setf-to-const :what "setf to (_* map-const-iterator)."))
+(defmethod (setf operator_*) (new-val (itr map_const_iterator))
+  (error 'setf-to-const :what "setf to (_* map_const_iterator)."))
 
-(defmethod operator_++ ((itr map-const-iterator))
+(defmethod operator_++ ((itr map_const_iterator))
   (setf (__assoc-itr-node itr) (__rbnode-increment (__assoc-itr-node itr)))
   itr)
 
-(defmethod operator_-- ((itr map-const-iterator))
+(defmethod operator_-- ((itr map_const_iterator))
   (setf (__assoc-itr-node itr) (__rbnode-decrement (__assoc-itr-node itr)))
   itr)
 
 (locally (declare (optimize speed))
-  (defmethod advance ((itr map-const-iterator) (n integer))
+  (defmethod advance ((itr map_const_iterator) (n integer))
 	(declare (type fixnum n))
 	(let ((node (__assoc-itr-node itr)))
 	  (if (>= n 0)
@@ -647,7 +647,7 @@
 	nil))
 
 (locally (declare (optimize speed))
-  (defmethod distance ((itr1 map-const-iterator) (itr2 map-const-iterator))
+  (defmethod distance ((itr1 map_const_iterator) (itr2 map_const_iterator))
 	(let ((cnt 0))
 	  (declare (type fixnum cnt))
 	  (do ((node1 (__assoc-itr-node itr1))
@@ -657,73 +657,73 @@
 		(setf node1 (__rbnode-increment node1))))))
 
 ;; creating reverse iterator.
-(define-constructor reverse-iterator ((itr map-const-iterator))
-  (make-instance 'map-const-reverse-iterator
+(define-constructor reverse_iterator ((itr map_const_iterator))
+  (make-instance 'map_const_reverse_iterator
 				 :node (__rbnode-decrement (__assoc-itr-node itr))))
 
 
 ;;------------------------------------------------------------------------------
 ;;
-;; methods for map-iterator
+;; methods for map_iterator
 ;;
 ;;------------------------------------------------------------------------------
-(defmethod operator_clone ((itr map-iterator))
-  (make-instance 'map-iterator :node (__assoc-itr-node itr)))
+(defmethod operator_clone ((itr map_iterator))
+  (make-instance 'map_iterator :node (__assoc-itr-node itr)))
 
-(defmethod operator_cast ((itr map-iterator)
-						  (typename (eql 'map-const-iterator)))
-  (__check-exact-type-of-cast itr 'map-iterator 'map-const-iterator)
-  (make-instance 'map-const-iterator :node (__assoc-itr-node itr)))
+(defmethod operator_cast ((itr map_iterator)
+						  (typename (eql 'map_const_iterator)))
+  (__check-exact-type-of-cast itr 'map_iterator 'map_const_iterator)
+  (make-instance 'map_const_iterator :node (__assoc-itr-node itr)))
 
-(defmethod (setf operator_*) (new-val (itr map-iterator))
+(defmethod (setf operator_*) (new-val (itr map_iterator))
   (_= (__rbnode-value (__assoc-itr-node itr)) new-val))
 
 ;; creating reverse iterator.
-(define-constructor reverse-iterator ((itr map-iterator))
-  (make-instance 'map-reverse-iterator
+(define-constructor reverse_iterator ((itr map_iterator))
+  (make-instance 'map_reverse_iterator
 				 :node (__rbnode-decrement (__assoc-itr-node itr))))
 
 
 
 ;;------------------------------------------------------------------------------
 ;;
-;; methods for map-const-reverse-iterator
+;; methods for map_const_reverse_iterator
 ;;
 ;;------------------------------------------------------------------------------
-(defmethod operator_= ((itr1 map-const-reverse-iterator)
-					   (itr2 map-const-reverse-iterator))
-  (__error-when-const-removing-assign itr1 map-reverse-iterator
-									  itr2 map-const-reverse-iterator)
+(defmethod operator_= ((itr1 map_const_reverse_iterator)
+					   (itr2 map_const_reverse_iterator))
+  (__error-when-const-removing-assign itr1 map_reverse_iterator
+									  itr2 map_const_reverse_iterator)
   (setf (__assoc-rev-itr-node itr1) (__assoc-rev-itr-node itr2))
   itr1)
 
-(defmethod operator_clone ((itr map-const-reverse-iterator))
-  (make-instance 'map-const-reverse-iterator :node (__assoc-rev-itr-node itr)))
+(defmethod operator_clone ((itr map_const_reverse_iterator))
+  (make-instance 'map_const_reverse_iterator :node (__assoc-rev-itr-node itr)))
 
-(defmethod operator_== ((itr1 map-const-reverse-iterator)
-						(itr2 map-const-reverse-iterator))
+(defmethod operator_== ((itr1 map_const_reverse_iterator)
+						(itr2 map_const_reverse_iterator))
   (eq (__assoc-rev-itr-node itr1) (__assoc-rev-itr-node itr2)))
 
-(defmethod operator_/= ((itr1 map-const-reverse-iterator)
-						(itr2 map-const-reverse-iterator))
+(defmethod operator_/= ((itr1 map_const_reverse_iterator)
+						(itr2 map_const_reverse_iterator))
   (not (eq (__assoc-rev-itr-node itr1) (__assoc-rev-itr-node itr2))))
 
-(defmethod operator_* ((itr map-const-reverse-iterator))
+(defmethod operator_* ((itr map_const_reverse_iterator))
   (__rbnode-value (__assoc-rev-itr-node itr)))
 
-(defmethod (setf operator_*) (new-val (itr map-const-reverse-iterator))
-  (error 'setf-to-const :what "setf to (_* map-const-reverse-iterator)."))
+(defmethod (setf operator_*) (new-val (itr map_const_reverse_iterator))
+  (error 'setf-to-const :what "setf to (_* map_const_reverse_iterator)."))
 
-(defmethod operator_++ ((itr map-const-reverse-iterator))
+(defmethod operator_++ ((itr map_const_reverse_iterator))
   (setf (__assoc-rev-itr-node itr) (__rbnode-decrement (__assoc-rev-itr-node itr)))
   itr)
 
-(defmethod operator_-- ((itr map-const-reverse-iterator))
+(defmethod operator_-- ((itr map_const_reverse_iterator))
   (setf (__assoc-rev-itr-node itr) (__rbnode-increment (__assoc-rev-itr-node itr)))
   itr)
 
 (locally (declare (optimize speed))
-  (defmethod advance ((itr map-const-reverse-iterator) (n integer))
+  (defmethod advance ((itr map_const_reverse_iterator) (n integer))
 	(declare (type fixnum n))
 	(let ((node (__assoc-rev-itr-node itr)))
 	  (if (>= n 0)
@@ -741,8 +741,8 @@
 	nil))
 
 (locally (declare (optimize speed))
-  (defmethod distance ((itr1 map-const-reverse-iterator)
-					   (itr2 map-const-reverse-iterator))
+  (defmethod distance ((itr1 map_const_reverse_iterator)
+					   (itr2 map_const_reverse_iterator))
 	(let ((cnt 0))
 	  (declare (type fixnum cnt))
 	  (do ((node1 (__assoc-rev-itr-node itr1))
@@ -751,39 +751,39 @@
 		(incf cnt)
 		(setf node1 (__rbnode-decrement node1))))))
 
-(defmethod base ((rev-itr map-const-reverse-iterator))
-  (make-instance 'map-const-iterator
+(defmethod base ((rev-itr map_const_reverse_iterator))
+  (make-instance 'map_const_iterator
 				 :node  (__rbnode-increment (__assoc-rev-itr-node rev-itr))))
 
 ;; creating reverse iterator.
-(define-constructor reverse-iterator ((itr map-const-reverse-iterator))
-  (make-instance 'map-const-iterator
+(define-constructor reverse_iterator ((itr map_const_reverse_iterator))
+  (make-instance 'map_const_iterator
 				 :node (__rbnode-increment (__assoc-rev-itr-node itr))))
 
 
 ;;------------------------------------------------------------------------------
 ;;
-;; methods for map-reverse-iterator
+;; methods for map_reverse_iterator
 ;;
 ;;------------------------------------------------------------------------------
-(defmethod operator_clone ((itr map-reverse-iterator))
-  (make-instance 'map-reverse-iterator :node (__assoc-rev-itr-node itr)))
+(defmethod operator_clone ((itr map_reverse_iterator))
+  (make-instance 'map_reverse_iterator :node (__assoc-rev-itr-node itr)))
 
-(defmethod operator_cast ((itr map-reverse-iterator)
-						  (typename (eql 'map-const-reverse-iterator)))
-  (__check-exact-type-of-cast itr 'map-reverse-iterator 'map-const-reverse-iterator)
-  (make-instance 'map-const-reverse-iterator :node (__assoc-rev-itr-node itr)))
+(defmethod operator_cast ((itr map_reverse_iterator)
+						  (typename (eql 'map_const_reverse_iterator)))
+  (__check-exact-type-of-cast itr 'map_reverse_iterator 'map_const_reverse_iterator)
+  (make-instance 'map_const_reverse_iterator :node (__assoc-rev-itr-node itr)))
 
-(defmethod (setf operator_*) (new-val (itr map-reverse-iterator))
+(defmethod (setf operator_*) (new-val (itr map_reverse_iterator))
   (_= (__rbnode-value (__assoc-rev-itr-node itr)) new-val))
 
-(defmethod base ((rev-itr map-reverse-iterator))
-  (make-instance 'map-iterator
+(defmethod base ((rev-itr map_reverse_iterator))
+  (make-instance 'map_iterator
 				 :node  (__rbnode-increment (__assoc-rev-itr-node rev-itr))))
 
 ;; creating reverse iterator.
-(define-constructor reverse-iterator ((itr map-reverse-iterator))
-  (make-instance 'map-iterator
+(define-constructor reverse_iterator ((itr map_reverse_iterator))
+  (make-instance 'map_iterator
 				 :node (__rbnode-increment (__assoc-rev-itr-node itr))))
 
 
@@ -800,7 +800,7 @@
   nil)
 
 #+cl-stl-debug
-(defmethod check-integrity ((container stl::map) &optional (stream t))
+(defmethod check_integrity ((container stl::map) &optional (stream t))
   (declare (ignorable stream))
   (__rbtree-verify (__assoc-tree container)))
 
