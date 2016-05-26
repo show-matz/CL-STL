@@ -212,9 +212,10 @@
 				;functional
 				:functor
 				:functor_function
-				:functor_call
+				:functor_call      ; deprecated in version 0.8.3 or later
 				:unary_function    ; deprecated in 0x11 or later
 				:binary_function   ; deprecated in 0x11 or later
+				:define-functor
 				;classes
 				:plus
 				:minus
@@ -513,12 +514,8 @@ e				; 25.3.4, merge:
 (defgeneric functor_function (func))
 
 (defmacro functor_call (func &rest args)
-  #+cl-stl-0x98
-  (ecase (length args)
-	(1 `(funcall (functor_function ,func) ,@args))
-	(2 `(funcall (functor_function ,func) ,@args)))
-  #-cl-stl-0x98
-  `(funcall (functor_function ,func) ,@args))
+  #+cl-stl-warn-deprecated (warn "functor_call is deprecated.")
+  `(funcall ,func ,@args))
 
 
 ;;------------------------------------------------------------------------------

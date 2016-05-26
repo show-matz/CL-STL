@@ -80,7 +80,7 @@
 							(key2 (stl:first (__rbnode-value node2))))
 						(and (eq node1 (__rbtree-lower_bound tree key1))
 							 (eq node2 (__rbtree-lower_bound tree key2))
-							 (not (functor_call (key_comp cont) key2 key1))))
+							 (not (funcall (key_comp cont) key2 key1))))
 					(error () nil))
 				  t
 				  (error 'undefined-behavior :what "Invalid iterator range.")))))))

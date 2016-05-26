@@ -1,9 +1,10 @@
 (defsystem :CL-STL
   :description "CL-STL : a port of C++ standard template library for Common Lisp."
-  :version "0.8.2"
+  :version "0.8.3"
   :author "Show MATSUOKA <show@architect-matsuoka.jpn.org>"
-  :licence "GPL v2.0"
-  :depends-on ("cl-overload"
+  :licence "LLGPL"
+  :depends-on ("closer-mop"
+			   "cl-overload"
 			   "cl-operator")
   :components ((:file "cl-stl-base")
 			   (:file "cl-stl-utility"          :depends-on ("cl-stl-base"))

@@ -209,9 +209,10 @@
 				;functional
 				:functor
 				:functor_function
-				:functor_call
+				:functor_call      ; deprecated in version 0.8.3 or later
 				:unary_function    ; deprecated in 0x11 or later
 				:binary_function   ; deprecated in 0x11 or later
+				:define-functor
 				;classes
 				:plus
 				:minus

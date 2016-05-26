@@ -34,6 +34,19 @@
 ; default methods for functor
 ;
 ;-------------------------------------------------------------------------------
+(labels ((empty-fnc (&rest args)
+		   (declare (ignore args))
+		   (error 'bad_function_call :what "empty function.")))
+  (defmethod initialize-instance :after ((fnctr functor) &key)
+	(let ((closure (__functor-closure fnctr)))
+	  (if (null closure)
+		  (setf (__functor-closure fnctr) #'empty-fnc)
+		  (closer-mop:set-funcallable-instance-function fnctr closure))))
+  (defmethod (setf __functor-closure) :after (closure (fnctr functor))
+	  (if (null closure)
+		  (setf (__functor-closure fnctr) #'empty-fnc)
+		  (closer-mop:set-funcallable-instance-function fnctr closure))))
+
 (defmethod functor_function ((func cl:function))
   func)
 
@@ -48,6 +61,12 @@
   (make-instance (type-of func)
 				 :closure (__functor-closure func)))
 
+(defmacro define-functor (name (&rest superclasses) (&rest slot-specifiers) &rest class-options)
+  `(defclass ,name (,@superclasses closer-mop:funcallable-standard-object)
+	 ,slot-specifiers
+	 (:metaclass closer-mop:funcallable-standard-class)
+	 ,@class-options))
+
 
 ;-------------------------------------------------------------------------------
 ;
@@ -58,8 +77,8 @@
 ;------------------------------------------------------------
 ; class plus
 ;------------------------------------------------------------
-(defclass plus (#-cl-stl-0x98 functor
-				#+cl-stl-0x98 binary_function) ())
+(define-functor plus (#-cl-stl-0x98 functor
+					  #+cl-stl-0x98 binary_function) ())
 
 (declare-constructor plus (0))
 
@@ -71,8 +90,8 @@
 ;------------------------------------------------------------
 ; class minus
 ;------------------------------------------------------------
-(defclass minus (#-cl-stl-0x98 functor
-				 #+cl-stl-0x98 binary_function) ())
+(define-functor minus (#-cl-stl-0x98 functor
+					   #+cl-stl-0x98 binary_function) ())
 
 (declare-constructor minus (0))
 
@@ -84,8 +103,8 @@
 ;------------------------------------------------------------
 ; class multiplies
 ;------------------------------------------------------------
-(defclass multiplies (#-cl-stl-0x98 functor
-					  #+cl-stl-0x98 binary_function) ())
+(define-functor multiplies (#-cl-stl-0x98 functor
+							#+cl-stl-0x98 binary_function) ())
 
 (declare-constructor multiplies (0))
 
@@ -97,8 +116,8 @@
 ;------------------------------------------------------------
 ; class divides
 ;------------------------------------------------------------
-(defclass divides (#-cl-stl-0x98 functor
-				   #+cl-stl-0x98 binary_function) ())
+(define-functor divides (#-cl-stl-0x98 functor
+						 #+cl-stl-0x98 binary_function) ())
 
 (declare-constructor divides (0))
 
@@ -110,8 +129,8 @@
 ;------------------------------------------------------------
 ; class modulus
 ;------------------------------------------------------------
-(defclass modulus (#-cl-stl-0x98 functor
-				   #+cl-stl-0x98 binary_function) ())
+(define-functor modulus (#-cl-stl-0x98 functor
+						 #+cl-stl-0x98 binary_function) ())
 
 (declare-constructor modulus (0))
 
@@ -123,8 +142,8 @@
 ;------------------------------------------------------------
 ; class negate
 ;------------------------------------------------------------
-(defclass negate (#-cl-stl-0x98 functor
-				  #+cl-stl-0x98 unary_function) ())
+(define-functor negate (#-cl-stl-0x98 functor
+						#+cl-stl-0x98 unary_function) ())
 
 (declare-constructor negate (0))
 
@@ -142,8 +161,8 @@
 ;------------------------------------------------------------
 ; class equal_to
 ;------------------------------------------------------------
-(defclass equal_to (#-cl-stl-0x98 functor
-					#+cl-stl-0x98 binary_function)
+(define-functor equal_to (#-cl-stl-0x98 functor
+						  #+cl-stl-0x98 binary_function)
   ((op  :initform nil
 		:initarg  :operator
 		:accessor equal_to-operator)))
@@ -169,8 +188,8 @@
 ;------------------------------------------------------------
 ; class not_equal_to
 ;------------------------------------------------------------
-(defclass not_equal_to (#-cl-stl-0x98 functor
-						#+cl-stl-0x98 binary_function)
+(define-functor not_equal_to (#-cl-stl-0x98 functor
+							  #+cl-stl-0x98 binary_function)
   ((op  :initform nil
 		:initarg  :operator
 		:accessor not_equal_to-operator)))
@@ -196,8 +215,8 @@
 ;------------------------------------------------------------
 ; class greater
 ;------------------------------------------------------------
-(defclass greater (#-cl-stl-0x98 functor
-				   #+cl-stl-0x98 binary_function)
+(define-functor greater (#-cl-stl-0x98 functor
+						 #+cl-stl-0x98 binary_function)
   ((op  :initform nil
 		:initarg  :operator
 		:accessor greater-operator)))
@@ -223,8 +242,8 @@
 ;------------------------------------------------------------
 ; class less
 ;------------------------------------------------------------
-(defclass less (#-cl-stl-0x98 functor
-				#+cl-stl-0x98 binary_function)
+(define-functor less (#-cl-stl-0x98 functor
+					  #+cl-stl-0x98 binary_function)
   ((op  :initform nil
 		:initarg  :operator
 		:accessor less-operator)))
@@ -250,8 +269,8 @@
 ;------------------------------------------------------------
 ; class greater_equal
 ;------------------------------------------------------------
-(defclass greater_equal (#-cl-stl-0x98 functor
-						 #+cl-stl-0x98 binary_function)
+(define-functor greater_equal (#-cl-stl-0x98 functor
+							   #+cl-stl-0x98 binary_function)
   ((op  :initform nil
 		:initarg  :operator
 		:accessor greater_equal-operator)))
@@ -277,8 +296,8 @@
 ;------------------------------------------------------------
 ; class less_equal
 ;------------------------------------------------------------
-(defclass less_equal (#-cl-stl-0x98 functor
-					  #+cl-stl-0x98 binary_function)
+(define-functor less_equal (#-cl-stl-0x98 functor
+							#+cl-stl-0x98 binary_function)
   ((op  :initform nil
 		:initarg  :operator
 		:accessor less_equal-operator)))
@@ -310,8 +329,8 @@
 ;------------------------------------------------------------
 ; class logical_and
 ;------------------------------------------------------------
-(defclass logical_and (#-cl-stl-0x98 functor
-					   #+cl-stl-0x98 binary_function) ())
+(define-functor logical_and (#-cl-stl-0x98 functor
+							 #+cl-stl-0x98 binary_function) ())
 
 (declare-constructor logical_and (0))
 
@@ -324,8 +343,8 @@
 ;------------------------------------------------------------
 ; class logical_or
 ;------------------------------------------------------------
-(defclass logical_or (#-cl-stl-0x98 functor
-					  #+cl-stl-0x98 binary_function) ())
+(define-functor logical_or (#-cl-stl-0x98 functor
+							#+cl-stl-0x98 binary_function) ())
 
 (declare-constructor logical_or (0))
 
@@ -338,8 +357,8 @@
 ;------------------------------------------------------------
 ; class logical_not
 ;------------------------------------------------------------
-(defclass logical_not (#-cl-stl-0x98 functor
-					   #+cl-stl-0x98 unary_function) ())
+(define-functor logical_not (#-cl-stl-0x98 functor
+							 #+cl-stl-0x98 unary_function) ())
 
 (declare-constructor logical_not (0))
 
@@ -359,8 +378,8 @@
 ;------------------------------------------------------------
 ; class unary_negate & function not1
 ;------------------------------------------------------------
-(defclass unary_negate (#-cl-stl-0x98 functor
-						#+cl-stl-0x98 unary_function)
+(define-functor unary_negate (#-cl-stl-0x98 functor
+							  #+cl-stl-0x98 unary_function)
   ((op  :initform nil
 		:initarg  :operator
 		:accessor unary_negate-operator)))
@@ -396,8 +415,8 @@
 ;------------------------------------------------------------
 ; class binary_negate & function not2
 ;------------------------------------------------------------
-(defclass binary_negate (#-cl-stl-0x98 functor
-						 #+cl-stl-0x98 binary_function)
+(define-functor binary_negate (#-cl-stl-0x98 functor
+							   #+cl-stl-0x98 binary_function)
   ((op  :initform nil
 		:initarg  :operator
 		:accessor binary_negate-operator)))
@@ -440,8 +459,8 @@
 ;------------------------------------------------------------
 ; class binder1st & function bind1st
 ;------------------------------------------------------------
-(defclass binder1st (#-cl-stl-0x98 functor
-					 #+cl-stl-0x98 unary_function)
+(define-functor binder1st (#-cl-stl-0x98 functor
+						   #+cl-stl-0x98 unary_function)
   ((op	:initform nil
 		:initarg  :operator
 		:accessor binder1st-operator)
@@ -490,8 +509,8 @@
 ;------------------------------------------------------------
 ; class binder2nd & function bind2nd
 ;------------------------------------------------------------
-(defclass binder2nd (#-cl-stl-0x98 functor
-					 #+cl-stl-0x98 unary_function)
+(define-functor binder2nd (#-cl-stl-0x98 functor
+						   #+cl-stl-0x98 unary_function)
   ((op	:initform nil
 		:initarg  :operator
 		:accessor binder2nd-operator)
@@ -547,8 +566,8 @@
 ; class pointer_to_unary_function & function ptr_fun1
 ;                                     ( NONSENSE in CL-STL )
 ;------------------------------------------------------------
-(defclass pointer_to_unary_function (#-cl-stl-0x98 functor
-									 #+cl-stl-0x98 unary_function)
+(define-functor pointer_to_unary_function (#-cl-stl-0x98 functor
+										   #+cl-stl-0x98 unary_function)
   ((op	:type     cl:function
 		:initform nil
 		:initarg  :operator
@@ -587,8 +606,8 @@
 ; class pointer_to_binary_function & function ptr_fun2
 ;                                     ( NONSENSE in CL-STL )
 ;------------------------------------------------------------
-(defclass pointer_to_binary_function (#-cl-stl-0x98 functor
-									  #+cl-stl-0x98 binary_function)
+(define-functor pointer_to_binary_function (#-cl-stl-0x98 functor
+											#+cl-stl-0x98 binary_function)
   ((op	:type     cl:function
 		:initform nil
 		:initarg  :operator
@@ -634,8 +653,8 @@
 ; class mem_fun_t & function mem_fun etc.
 ;                                      ( NONSENSE in CL-STL )
 ;------------------------------------------------------------
-(defclass mem_fun_t (#-cl-stl-0x98 functor
-					 #+cl-stl-0x98 unary_function)
+(define-functor mem_fun_t (#-cl-stl-0x98 functor
+						   #+cl-stl-0x98 unary_function)
   ((op	:type     cl:function
 		:initform nil
 		:initarg  :operator
@@ -684,8 +703,8 @@
 ; class mem_fun1_t & function mem_fun1 etc.
 ;                                      ( NONSENSE in CL-STL )
 ;------------------------------------------------------------
-(defclass mem_fun1_t (#-cl-stl-0x98 functor
-					  #+cl-stl-0x98 unary_function)
+(define-functor mem_fun1_t (#-cl-stl-0x98 functor
+							#+cl-stl-0x98 unary_function)
   ((op	:type     cl:function
 		:initform nil
 		:initarg  :operator
@@ -764,7 +783,7 @@
 ; class __binded-expr
 ;------------------------------------------------------------
 #-cl-stl-0x98
-(defclass __binded-expr (functor)
+(define-functor __binded-expr (functor)
   ((bindee	:initarg  :bindee
 			:accessor __binded-expr-bindee)
    (params	:type     cl:vector
@@ -852,7 +871,7 @@
 ;------------------------------------------------------------
 #-cl-stl-0x98
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defclass function (functor)
+  (define-functor function (functor)
 	((target :initform nil
 			 :initarg  :target
 			 :accessor __function-target))))
@@ -863,17 +882,15 @@
 #-cl-stl-0x98
 (labels ((__function-ctor (op)
 		   (if (null op)
-			   (make-instance 'function)
-			   (let* ((target  (clone op))
-					  (closure (functor_function target)))
+			   (make-instance 'function :target nil :closure nil)
+			   (let* ((target  (clone op)))
 				 (make-instance 'function
-								:target  target
-								:closure (lambda (&rest args)
-										   (apply closure args)))))))
+								:target target
+								:closure (functor_function target))))))
   (define-constructor function ()
-	(make-instance 'function))
+	(__function-ctor nil))
   (define-constructor function ((op (eql nil)))
-	(make-instance 'function))
+	(__function-ctor nil))
   (define-constructor function ((op cl:function))
 	(__function-ctor op))
   (define-constructor function ((op functor))
@@ -885,21 +902,13 @@
 
 #-cl-stl-0x98
 (define-constructor function ((rm remove-reference))
-  (let ((fnc (funcall (the cl:function (__rm-ref-closure rm)))))
-	(__check-type-of-move-constructor fnc function)
-	(let ((obj (make-instance 'function)))
-	  (setf (__function-target obj) (__function-target fnc))
-	  (setf (__functor-closure obj) (__functor-closure fnc))
-	  (setf (__function-target fnc) nil)
-	  (setf (__functor-closure fnc) nil)
-	  obj)))
-
-#-cl-stl-0x98
-(defmethod functor_function ((func function))
-  (let ((closure (__functor-closure func)))
-	(unless closure
-	  (error 'bad_function_call :what "empty function."))
-	closure))
+  (let ((fnctr (funcall (the cl:function (__rm-ref-closure rm)))))
+	(__check-type-of-move-constructor fnctr function)
+	(let ((target  (__function-target fnctr))
+		  (closure (__functor-closure fnctr)))
+	  (setf (__function-target fnctr) nil)
+	  (setf (__functor-closure fnctr) nil)
+	  (make-instance 'function :target  target :closure closure))))
 
 #-cl-stl-0x98
 (defmethod operator_cast ((fn function) (typename (eql 'boolean)))
@@ -916,9 +925,7 @@
 				 (let* ((target  (clone op))
 						(closure (functor_function op)))
 				   (setf (__function-target fnc) target)
-				   (setf (__functor-closure fnc) (locally (declare (type cl:function closure))
-												   (lambda (&rest args)
-													 (apply closure args))))))))
+				   (setf (__functor-closure fnc) closure)))))
 	(declare (inline __assign))
 	(defmethod operator_= ((lhs function) rhs)
 	  (error 'type-mismatch :what (format nil "Can't convert ~A to stl:function." rhs))
@@ -979,7 +986,7 @@
 ; class bit_and
 ;------------------------------------------------------------
 #-cl-stl-0x98
-(defclass bit_and (functor) ())
+(define-functor bit_and (functor) ())
 
 #-cl-stl-0x98
 (declare-constructor bit_and (0))
@@ -994,7 +1001,7 @@
 ; class bit_or
 ;------------------------------------------------------------
 #-cl-stl-0x98
-(defclass bit_or (functor) ())
+(define-functor bit_or (functor) ())
 
 #-cl-stl-0x98
 (declare-constructor bit_or (0))
@@ -1009,7 +1016,7 @@
 ; class bit_xor
 ;------------------------------------------------------------
 #-cl-stl-0x98
-(defclass bit_xor (functor) ())
+(define-functor bit_xor (functor) ())
 
 #-cl-stl-0x98
 (declare-constructor bit_xor (0))
@@ -1024,7 +1031,7 @@
 ;; class mem_fn
 ;;------------------------------------------------------------
 #-cl-stl-0x98
-(defclass mem_fn (functor)
+(define-functor mem_fn (functor)
   ((method :type     cl:function
 		   :initform nil
 		   :initarg  :method

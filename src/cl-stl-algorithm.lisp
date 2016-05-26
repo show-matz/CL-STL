@@ -17866,7 +17866,7 @@
   (if (_< b a) b a))
 
 (defmethod-overload min (a b comp)
-  (if (functor_call (clone comp) b a) b a))
+  (if (funcall (clone comp) b a) b a))
 
 ;; il       : initializer_list
 ;; comp     : binary_function or function ( default #'operator_< )
@@ -17902,7 +17902,7 @@
   (if (_< a b) b a))
 
 (defmethod-overload max (a b comp)
-  (if (functor_call (clone comp) a b) b a))
+  (if (funcall (clone comp) a b) b a))
 
 ;; il       : initializer_list
 ;; comp     : binary_function or function ( default #'operator_< )
@@ -17942,7 +17942,7 @@
 
 #-cl-stl-0x98 ; minmax
 (defmethod-overload minmax (a b comp)
-  (if (functor_call (clone comp) b a)
+  (if (funcall (clone comp) b a)
 	  (make_pair b a)
 	  (make_pair a b)))
 

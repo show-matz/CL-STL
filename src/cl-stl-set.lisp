@@ -71,7 +71,7 @@
 							(val2 (__rbnode-value node2)))
 						(and (eq node1 (__rbtree-lower_bound tree val1))
 							 (eq node2 (__rbtree-lower_bound tree val2))
-							 (not (functor_call (value_comp cont) val2 val1))))
+							 (not (funcall (value_comp cont) val2 val1))))
 					(error () nil))
 				  t
 				  (error 'undefined-behavior :what "Invalid iterator range.")))))))
