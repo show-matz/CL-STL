@@ -28,7 +28,7 @@
 (macrolet ((movitr-ctor (param-type itr-type)
 			 `(define-constructor move-iterator ((itr ,param-type))
 				(let* ((itr (clone itr))
-					   (rm  (move (_* itr))))
+					   (rm  (opr:move (_* itr))))
 				  (make-instance ',itr-type :iterator itr :rm-ref rm)))))
   (movitr-ctor         input_iterator move-iterator_in)
   (movitr-ctor       forward_iterator move-iterator_fwd)
@@ -50,8 +50,8 @@
 
 #-cl-stl-0x98
 (defmethod operator_clone ((itr move-iterator_in))
-  (let* ((tmp (clone (__moveitr-iterator itr)))
-		 (rm  (move (_* tmp))))
+  (let* ((tmp (clone    (__moveitr-iterator itr)))
+		 (rm  (opr:move (_* tmp))))
 	(make-instance (type-of itr) :iterator tmp :rm-ref rm)))
 
 #-cl-stl-0x98
@@ -157,7 +157,7 @@
 
 #-cl-stl-0x98
 (defmethod operator_[] ((itr move-iterator_rdm) (idx integer))
-  (move (_[] (__moveitr-iterator itr) idx)))
+  (opr:move (_[] (__moveitr-iterator itr) idx)))
 
 #-cl-stl-0x98
 (defmethod (setf operator_[]) (new-val (itr move-iterator_rdm) (idx integer))

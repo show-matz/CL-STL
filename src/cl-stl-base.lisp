@@ -7,10 +7,6 @@
 				:cl-operator)
   (:export		:stl_version
 				;--------------------------------------------------------------------
-				; operators
-				;--------------------------------------------------------------------
-  #-cl-stl-0x98 :operator_move
-				;--------------------------------------------------------------------
 				; exceptions
 				;--------------------------------------------------------------------
 				:logic_error
@@ -399,6 +395,7 @@ e				; 25.3.4, merge:
 				:merge
 				:min
 				:mismatch
+				:move
 				:remove
 				:replace
 				:reverse
@@ -453,6 +450,7 @@ e				; 25.3.4, merge:
 ;;
 ;;------------------------------------------------------------------------------
 (eval-when (:compile-toplevel :load-toplevel :execute)
+  ;; use only in 'swap'
   (defun __setf-form-p (form)
 	(handler-case
 		(destructuring-bind (_call (_func (_setf sym)) _newval &rest args) form
@@ -463,9 +461,11 @@ e				; 25.3.4, merge:
 			(cadr form)))
 	  (error (c) (declare (ignorable c)) nil)))
 
+  ;; use only in 'swap'
   (defun __setter-exist-p (form)
 	(handler-case (eval form)
 	  (error (c) (declare (ignorable c)) nil))))
+
 
 (defmacro __check-type-of-move-constructor (cont type &optional (typename type))
   (check-type cont symbol)
@@ -489,21 +489,6 @@ e				; 25.3.4, merge:
 	 (error 'invalid_argument :what ,(format nil "~A : ~A is not non-negative fixnum." op val))))
 
 
-
-;;------------------------------------------------------------------------------
-;;
-;; operator declaration
-;;
-;;------------------------------------------------------------------------------
-
-#-cl-stl-0x98 (defgeneric operator_move (lhs rhs))
-
-;; helper class fo move semantics.
-#-cl-stl-0x98
-(defclass remove-reference ()
-  ((closure :type     cl:function
-			:initarg  :closure
-			:accessor __rm-ref-closure)))
 
 
 ;;------------------------------------------------------------------------------
@@ -1415,43 +1400,19 @@ e				; 25.3.4, merge:
   iterator point to the top of the copied sequence.
 "))
 
-#-cl-stl-0x98
-(progn
-  (declare-macro-overload move (1 3)
-  :documentation "
+#-cl-stl-0x98 (defgeneric move (first last result)
+  (:documentation "
 <<signature>>
-  1)  (cl-stl:move place)                [0x11]
-  2)  (cl-stl:move first last result)    [0x11]
+  (cl-stl:move first last result)    [0x11]
 
 <<parameters>>
-  place  : place to move source.
   first  : input_iterator.
   last   : input_iterator.
   result : output_iterator.
 
 <<return value>>
-  1) remove-reference to place.
-  2) iterator point to end of moved sequence.
-")
-  (declare-method-overload move (3) :make-top nil)
-  (defmacro-overload move (first last result)
-	`(,(make-overload-name 'cl-stl:move 3) ,first ,last ,result))
-  (defmacro-overload move (place)
-	(labels ((fix-setter (form v)
-			   (let ((setter (__setf-form-p form)))
-				 (if (or (null setter) (__setter-exist-p setter)) form v))))
-	  (let ((g-tag (gensym "TAG"))
-			(g-obj (gensym "OBJ")))
-		(multiple-value-bind (vars forms var set ref) (get-setf-expansion place)
-		  `(let* (,@(mapcar #'cl:list vars forms)
-				  (,g-obj ,ref))
-			 (if (eq (type-of ,g-obj) 'remove-reference)
-				 ,g-obj
-				 (make-instance 'remove-reference
-								:closure (lambda (&optional (,@var ',g-tag))
-										   (if (eq ,@var ',g-tag)
-											   ,g-obj
-											   ,(fix-setter set (car var))))))))))))
+  iterator point to end of moved sequence.
+"))
 
 
 #-cl-stl-0x98 (defgeneric move_backward (first last result)
@@ -2518,25 +2479,6 @@ e				; 25.3.4, merge:
 ;; default operator implementation.
 ;;
 ;;------------------------------------------------------------------------------
-
-
-#-cl-stl-0x98    ; for move semantics
-(progn
-  (defmethod operator_= :around (a (b remove-reference))
-	(multiple-value-bind (lhs rhs)
-		(operator_move a (funcall (the cl:function (__rm-ref-closure b))))
-	  (funcall (the cl:function (__rm-ref-closure b)) rhs)
-	  lhs))
-
-  (defmethod operator_cast ((obj remove-reference) typename)
-	(operator_cast (funcall (the cl:function (__rm-ref-closure obj))) typename))
-
-  (defmethod operator_move (lhs rhs)
-	(if (eq lhs rhs)
-		(values lhs rhs)
-		(values rhs nil))))
-
-
 
 ;; operator_* ( for move semantics & operator_= ).
 (progn

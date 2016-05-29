@@ -8882,20 +8882,20 @@
 (locally (declare (optimize speed))
 
   ;;PTN; move : 0 -  i  x  o 
-  (defmethod-overload move ((first input_iterator)
-							(last  input_iterator) (result output_iterator))
+  (defmethod move ((first input_iterator)
+				   (last  input_iterator) (result output_iterator))
 	(__move-imp-0 first last result))
 
   ;;PTN; move : 1 - cci x  o
   #-(and cl-stl-noextra cl-stl-0x98)
-  (defmethod-overload move ((first cons_const_iterator)
-							(last  cons_const_iterator) (result output_iterator))
+  (defmethod move ((first cons_const_iterator)
+				   (last  cons_const_iterator) (result output_iterator))
 	(__move-imp-1 (__cons-itr-cons first)
 				  (__cons-itr-cons  last) (clone result)))
 
   ;;PTN; move : 2 - cvp x  o 
-  (defmethod-overload move ((first const-vector-pointer)
-							(last  const-vector-pointer) (result output_iterator))
+  (defmethod move ((first const-vector-pointer)
+				   (last  const-vector-pointer) (result output_iterator))
 	;;(format t "specialized move for const-vector-pointer & output_iterator is invoked.~%")
 	(__pointer-check-iterator-range first last)
 	(__move-imp-2 (opr::vec-ptr-index  first)
@@ -8904,8 +8904,8 @@
 
   ;;PTN; move : 3 -  i  x  ci
   #-(and cl-stl-noextra cl-stl-0x98)
-  (defmethod-overload move ((first input_iterator)
-							(last  input_iterator) (result cons_iterator))
+  (defmethod move ((first input_iterator)
+				   (last  input_iterator) (result cons_iterator))
 	;;(format t "specialized move for input_iterator & cons_iterator is invoked.~%")
 	(__algo-make-cns-iterator result
 							   (__move-imp-3 first last
@@ -8913,8 +8913,8 @@
 
   ;;PTN; move : 4 - cci x  ci
   #-(and cl-stl-noextra cl-stl-0x98)
-  (defmethod-overload move ((first cons_const_iterator)
-							(last  cons_const_iterator) (result cons_iterator))
+  (defmethod move ((first cons_const_iterator)
+				   (last  cons_const_iterator) (result cons_iterator))
 	;;(format t "specialized move for const-vector-pointer & cons_iterator is invoked.~%")
 	(__algo-make-cns-iterator result
 							   (__move-imp-4 (__cons-itr-cons  first)
@@ -8923,8 +8923,8 @@
 
   ;;PTN; move : 5 - cvp x  ci
   #-(and cl-stl-noextra cl-stl-0x98)
-  (defmethod-overload move ((first const-vector-pointer)
-							(last  const-vector-pointer) (result cons_iterator))
+  (defmethod move ((first const-vector-pointer)
+				   (last  const-vector-pointer) (result cons_iterator))
 	;;(format t "specialized move for const-vector-pointer & cons_iterator is invoked.~%")
 	(__pointer-check-iterator-range first last)
 	(__algo-make-cns-iterator result
@@ -8934,8 +8934,8 @@
 											 (__cons-itr-cons result))))
 
   ;;PTN; move : 6 -  i  x  vp
-  (defmethod-overload move ((first input_iterator)
-							(last  input_iterator) (result vector-pointer))
+  (defmethod move ((first input_iterator)
+				   (last  input_iterator) (result vector-pointer))
 	;;(format t "specialized move for input_iterator & vector-pointer is invoked.~%")
 	(__algo-make-vct-iterator result
 							   (__move-imp-6 first last
@@ -8944,8 +8944,8 @@
 
   ;;PTN; move : 7 - cci x  vp
   #-(and cl-stl-noextra cl-stl-0x98)
-  (defmethod-overload move ((first cons_const_iterator)
-							(last  cons_const_iterator) (result vector-pointer))
+  (defmethod move ((first cons_const_iterator)
+				   (last  cons_const_iterator) (result vector-pointer))
 	;;(format t "specialized move for const-vector-pointer & vector-pointer is invoked.~%")
 	(__algo-make-vct-iterator result
 							   (__move-imp-7 (__cons-itr-cons first)
@@ -8954,8 +8954,8 @@
 											 (opr::vec-ptr-buffer result))))
 
   ;;PTN; move : 8 - cvp x  vp
-  (defmethod-overload move ((first const-vector-pointer)
-							(last  const-vector-pointer) (result vector-pointer))
+  (defmethod move ((first const-vector-pointer)
+				   (last  const-vector-pointer) (result vector-pointer))
 	;;(format t "specialized move for const-vector-pointer & vector-pointer is invoked.~%")
 	(__pointer-check-iterator-range first last)
 	(__algo-make-vct-iterator result

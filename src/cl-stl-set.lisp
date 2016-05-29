@@ -155,7 +155,7 @@
 ; move constructor
 #-cl-stl-0x98
 (define-constructor set ((arg remove-reference))
-  (let ((cont (funcall (the cl:function (__rm-ref-closure arg)))))
+  (let ((cont (funcall (the cl:function (opr::__rm-ref-closure arg)))))
 	(__check-type-of-move-constructor cont stl::set)
 	(let ((obj (__create-set (key_comp cont))))
 	  (__rbtree-swap (__assoc-tree obj) (__assoc-tree cont))
@@ -319,8 +319,8 @@
   ;; insert ( single element by remove reference ) - returns pair<iterator,bool>.
   #-cl-stl-0x98
   (defmethod-overload insert ((container stl::set) (rm remove-reference))
-	(let ((val (funcall (the cl:function (__rm-ref-closure rm)))))
-	  (funcall (the cl:function (__rm-ref-closure rm)) nil)
+	(let ((val (funcall (the cl:function (opr::__rm-ref-closure rm)))))
+	  (funcall (the cl:function (opr::__rm-ref-closure rm)) nil)
 	  (multiple-value-bind (node success)
 		  (__rbtree-insert-unique (__assoc-tree container) val nil)
 		(make_pair (make-instance 'set_iterator :node node) success))))
@@ -345,8 +345,8 @@
   (defmethod-overload insert ((container stl::set)
 							  (itr set_const_iterator) (rm remove-reference))
 	#+cl-stl-debug (__set-check-iterator-belong itr container)
-	(let ((val (funcall (the cl:function (__rm-ref-closure rm)))))
-	  (funcall (the cl:function (__rm-ref-closure rm)) nil)
+	(let ((val (funcall (the cl:function (opr::__rm-ref-closure rm)))))
+	  (funcall (the cl:function (opr::__rm-ref-closure rm)) nil)
 	  (make-instance 'set_iterator
 					 :node (__rbtree-insert-hint-unique (__assoc-tree container)
 														(__assoc-itr-node itr) val nil))))

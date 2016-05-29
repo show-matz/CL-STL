@@ -233,7 +233,7 @@
 #-cl-stl-0x98
 (locally (declare (optimize speed))
   (define-constructor list ((arg remove-reference))
-	(let ((cont (funcall (the cl:function (__rm-ref-closure arg)))))
+	(let ((cont (funcall (the cl:function (opr::__rm-ref-closure arg)))))
 	  (__check-type-of-move-constructor cont stl:list)
 	  (prog1
 		  (make-instance 'stl:list
@@ -579,9 +579,9 @@
 							(itr list_const_iterator) (rm remove-reference))
   (__list-check-iterator-belong itr cont)
   (let ((node (list-itr-node itr))
-		(val (funcall (the cl:function (__rm-ref-closure rm)))))
+		(val (funcall (the cl:function (opr::__rm-ref-closure rm)))))
 	(__list-insert node (__list-new-node val nil))
-	(funcall (the cl:function (__rm-ref-closure rm)) nil))
+	(funcall (the cl:function (opr::__rm-ref-closure rm)) nil))
   (incf (list-size-cache cont))
   (prev itr))
 

@@ -902,7 +902,7 @@
 
 #-cl-stl-0x98
 (define-constructor function ((rm remove-reference))
-  (let ((fnctr (funcall (the cl:function (__rm-ref-closure rm)))))
+  (let ((fnctr (funcall (the cl:function (opr::__rm-ref-closure rm)))))
 	(__check-type-of-move-constructor fnctr function)
 	(let ((target  (__function-target fnctr))
 		  (closure (__functor-closure fnctr)))

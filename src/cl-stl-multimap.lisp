@@ -176,7 +176,7 @@
 ; move constructor
 #-cl-stl-0x98
 (define-constructor multimap ((arg remove-reference))
-  (let ((cont (funcall (the cl:function (__rm-ref-closure arg)))))
+  (let ((cont (funcall (the cl:function (opr::__rm-ref-closure arg)))))
 	(__check-type-of-move-constructor cont multimap)
 	(let ((obj (__create-multimap (key_comp cont))))
 	  (__rbtree-swap (__assoc-tree obj) (__assoc-tree cont))
@@ -338,8 +338,8 @@
   ;; insert ( single element by remove reference ) - returns iterator.
   #-cl-stl-0x98
   (defmethod-overload insert ((container multimap) (rm remove-reference))
-	(let ((val (funcall (the cl:function (__rm-ref-closure rm)))))
-	  (funcall (the cl:function (__rm-ref-closure rm)) nil)
+	(let ((val (funcall (the cl:function (opr::__rm-ref-closure rm)))))
+	  (funcall (the cl:function (opr::__rm-ref-closure rm)) nil)
 	  (make-instance 'multimap_iterator
 					 :node (__rbtree-insert-equal (__assoc-tree container) val nil))))
 
@@ -363,8 +363,8 @@
   (defmethod-overload insert ((container multimap)
 							  (itr multimap_const_iterator) (rm remove-reference))
 	#+cl-stl-debug (__multimap-check-iterator-belong itr container)
-	(let ((val (funcall (the cl:function (__rm-ref-closure rm)))))
-	  (funcall (the cl:function (__rm-ref-closure rm)) nil)
+	(let ((val (funcall (the cl:function (opr::__rm-ref-closure rm)))))
+	  (funcall (the cl:function (opr::__rm-ref-closure rm)) nil)
 	  (make-instance 'multimap_iterator
 					 :node (__rbtree-insert-hint-equal (__assoc-tree container)
 													   (__assoc-itr-node itr) val nil))))

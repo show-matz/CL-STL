@@ -79,7 +79,7 @@
 ;; move constructor & move from pair
 #-cl-stl-0x98
 (define-constructor tuple ((arg remove-reference))
-  (let ((cont (funcall (the cl:function (__rm-ref-closure arg)))))
+  (let ((cont (funcall (the cl:function (opr::__rm-ref-closure arg)))))
 	(typecase cont
 	  (stl:pair
 	   (__make_tuple-from-args ((first cont) (second cont)) :is-move t))

@@ -49,7 +49,7 @@
 ; move constructor & move init constructor
 #-cl-stl-0x98
 (define-constructor queue ((arg remove-reference))
-  (let ((cont (funcall (the cl:function (__rm-ref-closure arg)))))
+  (let ((cont (funcall (the cl:function (opr::__rm-ref-closure arg)))))
 	(if (eq (type-of cont) 'queue)
 		(let* ((src-cont (__que-container cont))
 			   (new-cont (dynamic-new (type-of src-cont))))

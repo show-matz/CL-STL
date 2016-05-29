@@ -314,7 +314,7 @@
 #-cl-stl-0x98
 (locally (declare (optimize speed))
   (define-constructor vector ((arg remove-reference))
-	(let ((cont (funcall (the cl:function (__rm-ref-closure arg)))))
+	(let ((cont (funcall (the cl:function (opr::__rm-ref-closure arg)))))
 	  (__check-type-of-move-constructor cont stl:vector)
 	  (let ((core (vector-core cont)))
 		(setf (vector-core cont) nil)
@@ -804,9 +804,9 @@
 (defmethod-overload insert ((cont stl:vector)
 							(itr  vector_const_iterator) (rm remove-reference))
   (__vector-check-iterator-belong itr cont)
-  (let ((val (funcall (the cl:function (__rm-ref-closure rm)))))
+  (let ((val (funcall (the cl:function (opr::__rm-ref-closure rm)))))
 	(__vector-counted-insert (vector-core cont) itr 1 (lambda () val) nil)
-	(funcall (the cl:function (__rm-ref-closure rm)) nil))
+	(funcall (the cl:function (opr::__rm-ref-closure rm)) nil))
   (make-instance 'vector_iterator
 				 :buffer (vec-core-buffer (vector-core cont))
 				 :index (opr::vec-ptr-index itr)))
