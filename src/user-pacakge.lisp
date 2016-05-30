@@ -132,7 +132,7 @@
   #-cl-stl-0x98 :emplace_after
 				:erase
   #-cl-stl-0x98 :erase_after
-;				:swap        ; ( exported in algorithm )
+;				:swap        ; ( moved to CL-OPERATOR )
 				:clear
 				:top
 ;				:push                            ; shadowed
@@ -292,7 +292,7 @@
 ; #-cl-stl-0x98 :move                            ; shadowed
   #-cl-stl-0x98 :move_backward
 				; 25.2.2, swap:
-				:swap
+;				:swap            ( moved to CL-OPERATOR )
 				:swap_ranges
 				:iter_swap
 				:transform

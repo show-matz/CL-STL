@@ -1,6 +1,6 @@
 (defsystem :CL-STL-USER
   :description "CL-STL-USER : ..."
-  :version "0.8.3"
+  :version "0.8.4"
   :author "show-matz <show@architect-matsuoka.jpn.org>"
   :licence "LLGPL"
   :depends-on ("cl-stl")

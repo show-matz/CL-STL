@@ -135,7 +135,7 @@
   #-cl-stl-0x98 :emplace_after
 				:erase
   #-cl-stl-0x98 :erase_after
-;				:swap        ; ( exported in algorithm )
+;				:swap        ; ( moved to CL-OPERATOR )
 				:clear
 				:top
 				:push
@@ -295,7 +295,7 @@
   #-cl-stl-0x98 :move
   #-cl-stl-0x98 :move_backward
 				; 25.2.2, swap:
-				:swap
+;				:swap                ( moved to CL-OPERATOR )
 				:swap_ranges
 				:iter_swap
 				:transform
@@ -449,24 +449,6 @@ e				; 25.3.4, merge:
 ;; internal utilities
 ;;
 ;;------------------------------------------------------------------------------
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  ;; use only in 'swap'
-  (defun __setf-form-p (form)
-	(handler-case
-		(destructuring-bind (_call (_func (_setf sym)) _newval &rest args) form
-		  (declare (ignorable sym _newval args))
-		  (when (and (eq _call 'cl:funcall)
-					 (eq _func 'cl:function)
-					 (eq _setf 'cl:setf))
-			(cadr form)))
-	  (error (c) (declare (ignorable c)) nil)))
-
-  ;; use only in 'swap'
-  (defun __setter-exist-p (form)
-	(handler-case (eval form)
-	  (error (c) (declare (ignorable c)) nil))))
-
-
 (defmacro __check-type-of-move-constructor (cont type &optional (typename type))
   (check-type cont symbol)
   (check-type typename symbol)
@@ -864,7 +846,7 @@ e				; 25.3.4, merge:
 (declare-method-overload erase (2 3))
 #-cl-stl-0x98 (declare-method-overload erase_after (2 3))
 
-;(defgeneric swap (cont1 cont2))                                   ; nil                 ; A V D L S MS M MM ( declare in algorithm )
+;(defgeneric swap (cont1 cont2))                                   ; nil                 ; A V D L S MS M MM ( moved to CL-OPERATOR )
 (defgeneric clear (container))                                     ; nil                 ; - V D L S MS M MM
 
 ; specific operations
@@ -1432,34 +1414,8 @@ e				; 25.3.4, merge:
 
 ;; 25.2.2, swap:
 
-; returns : nil
-(declare-method-overload swap (2) :make-top nil)
-(defmacro swap (a b)
-  "
-<<signature>>
-  (cl-stl:swap a b)
-
-<<parameters>>
-  a  : place of contents swapped.
-  b  : place of contents swapped.
-
-<<return value>>
-  nil.
-"
-  (labels ((fix-setter (form)
-			 (let ((setter (__setf-form-p form)))
-			   (when (or (null setter) (__setter-exist-p setter))
-				 form))))
-	(multiple-value-bind (vars1 forms1 var1 set1 ref1) (get-setf-expansion a)
-	  (multiple-value-bind (vars2 forms2 var2 set2 ref2) (get-setf-expansion b)
-		`(let* (,@(mapcar #'cl:list vars1 forms1)
-				,@(mapcar #'cl:list vars2 forms2))
-		   (multiple-value-bind (,@var1 ,@var2)
-			   (,(make-overload-name 'cl-stl:swap 2) ,ref1 ,ref2)
-			 (declare (ignorable ,@var1 ,@var2))
-			 ,(fix-setter set1)
-			 ,(fix-setter set2)
-			 nil))))))
+;(declare-method-overload swap (2) :make-top nil)  -> moved to CL-OPERATOR
+;(defmacro swap (a b) ... )                        -> moved to CL-OPERATOR
 
 
 (defgeneric swap_ranges (first1 last1 first2)

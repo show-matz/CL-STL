@@ -9016,63 +9016,11 @@
 
 ;; 25.2.2, swap:
 
-#+cl-stl-0x98
-(defmethod-overload swap (a b)
-  (let ((tmp nil))
-	(_= tmp   a)
-	(_=   a   b)
-	(_=   b tmp)
-	(values a   b)))
-
-#-cl-stl-0x98
-(locally (declare (optimize speed))
-
-  (defmethod-overload swap (a b)
-	(let ((tmp nil))
-	  (multiple-value-bind (x y) (operator_move tmp   a) (setf tmp x) (setf   a y))
-	  (multiple-value-bind (x y) (operator_move   a   b) (setf   a x) (setf   b y))
-	  (multiple-value-bind (x y) (operator_move   b tmp) (setf   b x) (setf tmp y))
-	  (values a b)))
-
-  (defmethod-overload swap ((arr1 cl:vector) (arr2 cl:vector))
-	(declare (type cl:vector arr1 arr2))
-	(let ((len1 (length arr1))
-		  (len2 (length arr2)))
-	  (declare (type fixnum len1 len2))
-	  (unless (= len1 len2)
-		(error 'type-mismatch :what "Type mismatch in swap of cl:vector."))
-	  (let ((idx 0))
-		(declare (type fixnum idx))
-		(for (nil (< idx len1) (incf idx))
-		  (swap (aref arr1 idx) (aref arr2 idx)))))
-	(values arr1 arr2))
-
-  (defmethod-overload swap ((str1 cl:string) (str2 cl:string))
-	(values str2 str1)))
-
-#-cl-stl-noextra
-(locally (declare (optimize speed))
-  (labels ((imp (lst1 lst2)
-			 (stl:swap (car lst1) (car lst2))
-			 (let ((cdr1 (cdr lst1))
-				   (cdr2 (cdr lst2)))
-			   (if (and cdr1 cdr2)
-				   (imp cdr1 cdr2)
-				   (if (and (null cdr1) (null cdr2))
-					   nil
-					   (if (null cdr1)
-						   (progn
-							 (setf (cdr lst1) cdr2)
-							 (setf (cdr lst2) nil))
-						   (progn
-							 (setf (cdr lst2) cdr1)
-							 (setf (cdr lst1) nil))))))))
-	(defmethod-overload swap ((lst1 cl:list) (lst2 cl:list))
-	  (if (or (null lst1) (null lst2))
-		  (values lst2 lst1)
-		  (progn
-			(imp lst1 lst2)
-			(values lst1 lst2))))))
+;#+cl-stl-0x98 (defmethod-overload swap (a b) ...)    ; move to CL-OPERATOR
+;#-cl-stl-0x98 (defmethod-overload swap (a b) ... )   ; move to CL-OPERATOR
+;#-cl-stl-0x98 (defmethod-overload swap ((arr1 cl:vector) (arr2 cl:vector)) ... )  ; move to CL-OPERATOR
+;#-cl-stl-0x98 (defmethod-overload swap ((str1 cl:string) (str2 cl:string)) ... )) ; move to CL-OPERATOR
+;#-cl-stl-noextra (defmethod-overload swap ((lst1 cl:list) (lst2 cl:list)) ...))   ; move to CL-OPERATOR
 
 
 
@@ -12355,7 +12303,7 @@
 				   (for (nil (< 0 i) (decf i))
 					 (let ((n (funcall gen i)))
 					   (multiple-value-bind (v1 v2)
-						   (__swap-2 (_[] first i) (_[] first n))
+						   (opr::__swap-2 (_[] first i) (_[] first n))
 						 (setf (_[] first i) v1)
 						 (setf (_[] first n) v2))))))))
 	
@@ -12375,7 +12323,7 @@
 				   (for (nil (< 0 i) (decf i))
 					 (let ((n (funcall gen i)))
 					   (multiple-value-bind (v1 v2)
-						   (__swap-2 (aref buffer i) (aref buffer n))
+						   (opr::__swap-2 (aref buffer i) (aref buffer n))
 						 (setf (aref buffer i) v1)
 						 (setf (aref buffer n) v2))))))))
 
