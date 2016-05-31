@@ -313,12 +313,13 @@
 ; move constructor
 #-cl-stl-0x98
 (locally (declare (optimize speed))
-  (define-constructor vector ((arg remove-reference))
-	(let ((cont (funcall (the cl:function (opr::__rm-ref-closure arg)))))
-	  (__check-type-of-move-constructor cont stl:vector)
-	  (let ((core (vector-core cont)))
-		(setf (vector-core cont) nil)
-		(make-instance 'stl:vector :core core)))))
+  (define-constructor vector ((arg& remove-reference))
+	(with-reference (arg)
+	  (let ((cont arg))
+		(__check-type-of-move-constructor cont stl:vector)
+		(let ((core (vector-core cont)))
+		  (setf (vector-core cont) nil)
+		  (make-instance 'stl:vector :core core))))))
 
 ; fill constructor 1
 (define-constructor vector ((arg integer))
@@ -802,14 +803,14 @@
 ;; insert ( move ) - returns iterator
 #-cl-stl-0x98
 (defmethod-overload insert ((cont stl:vector)
-							(itr  vector_const_iterator) (rm remove-reference))
+							(itr  vector_const_iterator) (rm& remove-reference))
   (__vector-check-iterator-belong itr cont)
-  (let ((val (funcall (the cl:function (opr::__rm-ref-closure rm)))))
-	(__vector-counted-insert (vector-core cont) itr 1 (lambda () val) nil)
-	(funcall (the cl:function (opr::__rm-ref-closure rm)) nil))
+  (with-reference (rm)
+	(__vector-counted-insert (vector-core cont) itr 1 (lambda () rm) nil)
+	(setf rm nil))
   (make-instance 'vector_iterator
 				 :buffer (vec-core-buffer (vector-core cont))
-				 :index (opr::vec-ptr-index itr)))
+				 :index  (opr::vec-ptr-index itr)))
 
 ;; insert ( initializer list ) - returns iterator
 #-cl-stl-0x98

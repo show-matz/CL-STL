@@ -45,18 +45,19 @@
 
 ; move constructor & move init constructor
 #-cl-stl-0x98
-(define-constructor stack ((arg remove-reference))
-  (let ((cont (funcall (the cl:function (opr::__rm-ref-closure arg)))))
-	(if (eq (type-of cont) 'stack)
-		(let* ((src-cont (__stck-container cont))
-			   (new-cont (dynamic-new (type-of src-cont))))
-		  (swap new-cont src-cont)
-		  (make-instance 'stack :container new-cont))
-		(progn
-		  (check-underlying-container-of-stack cont)
-		  (let ((new-cont (dynamic-new (type-of cont))))
-			(swap new-cont cont)
-			(make-instance 'stack :container new-cont))))))
+(define-constructor stack ((arg& remove-reference))
+  (with-reference (arg)
+	(let ((cont arg))
+	  (if (eq (type-of cont) 'stack)
+		  (let* ((src-cont (__stck-container cont))
+				 (new-cont (dynamic-new (type-of src-cont))))
+			(swap new-cont src-cont)
+			(make-instance 'stack :container new-cont))
+		  (progn
+			(check-underlying-container-of-stack cont)
+			(let ((new-cont (dynamic-new (type-of cont))))
+			  (swap new-cont cont)
+			  (make-instance 'stack :container new-cont)))))))
 
 ;; take internal container type
 ;; example : (new stl:stack foo:cont)

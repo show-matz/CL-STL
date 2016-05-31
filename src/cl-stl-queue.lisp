@@ -48,18 +48,19 @@
 
 ; move constructor & move init constructor
 #-cl-stl-0x98
-(define-constructor queue ((arg remove-reference))
-  (let ((cont (funcall (the cl:function (opr::__rm-ref-closure arg)))))
-	(if (eq (type-of cont) 'queue)
-		(let* ((src-cont (__que-container cont))
-			   (new-cont (dynamic-new (type-of src-cont))))
-		  (swap new-cont src-cont)
-		  (make-instance 'queue :container new-cont))
-		(progn
-		  (check-underlying-container-of-queue cont)
-		  (let ((new-cont (dynamic-new (type-of cont))))
-			(swap new-cont cont)
-			(make-instance 'queue :container new-cont))))))
+(define-constructor queue ((arg& remove-reference))
+  (with-reference (arg)
+	(let ((cont arg))
+	  (if (eq (type-of cont) 'queue)
+		  (let* ((src-cont (__que-container cont))
+				 (new-cont (dynamic-new (type-of src-cont))))
+			(swap new-cont src-cont)
+			(make-instance 'queue :container new-cont))
+		  (progn
+			(check-underlying-container-of-queue cont)
+			(let ((new-cont (dynamic-new (type-of cont))))
+			  (swap new-cont cont)
+			  (make-instance 'queue :container new-cont)))))))
 
 ;; take internal container type
 ; example : (new stl:queue foo:cont)

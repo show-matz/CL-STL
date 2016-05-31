@@ -232,20 +232,21 @@
 ; move constructor
 #-cl-stl-0x98
 (locally (declare (optimize speed))
-  (define-constructor list ((arg remove-reference))
-	(let ((cont (funcall (the cl:function (opr::__rm-ref-closure arg)))))
-	  (__check-type-of-move-constructor cont stl:list)
-	  (prog1
-		  (make-instance 'stl:list
-						 :size (list-size-cache    cont)
-						 :top  (list-top-sentinel  cont)
-						 :last (list-last-sentinel cont))
-		(let ((s1 (make-list-node))
-			  (s2 (make-list-node)))
-		  (setf (list-size-cache    cont)  0)
-		  (setf (list-top-sentinel  cont) s1)
-		  (setf (list-last-sentinel cont) s2)
-		  (__list-connect-node s1 s2))))))
+  (define-constructor list ((arg& remove-reference))
+	(with-reference (arg)
+	  (let ((cont arg))
+		(__check-type-of-move-constructor cont stl:list)
+		(prog1
+			(make-instance 'stl:list
+						   :size (list-size-cache    cont)
+						   :top  (list-top-sentinel  cont)
+						   :last (list-last-sentinel cont))
+		  (let ((s1 (make-list-node))
+				(s2 (make-list-node)))
+			(setf (list-size-cache    cont)  0)
+			(setf (list-top-sentinel  cont) s1)
+			(setf (list-last-sentinel cont) s2)
+			(__list-connect-node s1 s2)))))))
 
 
 ; fill constructor 1
@@ -576,12 +577,13 @@
 ;; insert ( move ) - returns iterator.
 #-cl-stl-0x98
 (defmethod-overload insert ((cont stl:list)
-							(itr list_const_iterator) (rm remove-reference))
+							(itr list_const_iterator) (rm& remove-reference))
   (__list-check-iterator-belong itr cont)
-  (let ((node (list-itr-node itr))
-		(val (funcall (the cl:function (opr::__rm-ref-closure rm)))))
-	(__list-insert node (__list-new-node val nil))
-	(funcall (the cl:function (opr::__rm-ref-closure rm)) nil))
+  (with-reference (rm)
+	(let ((node (list-itr-node itr))
+		  (val  rm))
+	  (__list-insert node (__list-new-node val nil))
+	  (setf rm nil)))
   (incf (list-size-cache cont))
   (prev itr))
 

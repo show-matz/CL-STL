@@ -154,12 +154,13 @@
 
 ; move constructor
 #-cl-stl-0x98
-(define-constructor set ((arg remove-reference))
-  (let ((cont (funcall (the cl:function (opr::__rm-ref-closure arg)))))
-	(__check-type-of-move-constructor cont stl::set)
-	(let ((obj (__create-set (key_comp cont))))
-	  (__rbtree-swap (__assoc-tree obj) (__assoc-tree cont))
-	  obj)))
+(define-constructor set ((arg& remove-reference))
+  (with-reference (arg)
+	(let ((cont arg))
+	  (__check-type-of-move-constructor cont stl::set)
+	  (let ((obj (__create-set (key_comp cont))))
+		(__rbtree-swap (__assoc-tree obj) (__assoc-tree cont))
+		obj))))
 
 ; range constructor
 (define-constructor set ((itr1 input_iterator) (itr2 input_iterator))
@@ -318,12 +319,13 @@
 
   ;; insert ( single element by remove reference ) - returns pair<iterator,bool>.
   #-cl-stl-0x98
-  (defmethod-overload insert ((container stl::set) (rm remove-reference))
-	(let ((val (funcall (the cl:function (opr::__rm-ref-closure rm)))))
-	  (funcall (the cl:function (opr::__rm-ref-closure rm)) nil)
-	  (multiple-value-bind (node success)
-		  (__rbtree-insert-unique (__assoc-tree container) val nil)
-		(make_pair (make-instance 'set_iterator :node node) success))))
+  (defmethod-overload insert ((container stl::set) (rm& remove-reference))
+	(with-reference (rm)
+	  (let ((val rm))
+		(setf rm nil)
+		(multiple-value-bind (node success)
+			(__rbtree-insert-unique (__assoc-tree container) val nil)
+		  (make_pair (make-instance 'set_iterator :node node) success)))))
 
   ;; insert ( single element with hint ) - returns iterator.
   (defmethod-overload insert ((container stl::set)
@@ -343,13 +345,14 @@
   ;; insert ( single element with hint by remove reference ) - returns iterator.
   #-cl-stl-0x98
   (defmethod-overload insert ((container stl::set)
-							  (itr set_const_iterator) (rm remove-reference))
+							  (itr set_const_iterator) (rm& remove-reference))
 	#+cl-stl-debug (__set-check-iterator-belong itr container)
-	(let ((val (funcall (the cl:function (opr::__rm-ref-closure rm)))))
-	  (funcall (the cl:function (opr::__rm-ref-closure rm)) nil)
-	  (make-instance 'set_iterator
-					 :node (__rbtree-insert-hint-unique (__assoc-tree container)
-														(__assoc-itr-node itr) val nil))))
+	(with-reference (rm)
+	  (let ((val rm))
+		(setf rm nil)
+		(make-instance 'set_iterator
+					   :node (__rbtree-insert-hint-unique (__assoc-tree container)
+														  (__assoc-itr-node itr) val nil)))))
 
   ;; insert ( initializer list ) - returns nil.
   #-cl-stl-0x98

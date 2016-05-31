@@ -78,19 +78,20 @@
 
 ;; move constructor & move from pair
 #-cl-stl-0x98
-(define-constructor tuple ((arg remove-reference))
-  (let ((cont (funcall (the cl:function (opr::__rm-ref-closure arg)))))
-	(typecase cont
-	  (stl:pair
-	   (__make_tuple-from-args ((first cont) (second cont)) :is-move t))
-	  (stl:tuple
-	   (let ((arr (__tuple-items cont)))
-		 (declare (type simple-vector arr))
-		 (prog1 (make-instance 'tuple :items arr)
-		   (setf (__tuple-items cont)
-				 (make-array (length arr) :initial-element nil)))))
-	  (t
-	   (error 'type-mismatch :what "Can't convert to tuple.")))))
+(define-constructor tuple ((arg& remove-reference))
+  (with-reference (arg)
+	(let ((cont arg))
+	  (typecase cont
+		(stl:pair
+		 (__make_tuple-from-args ((first cont) (second cont)) :is-move t))
+		(stl:tuple
+		 (let ((arr (__tuple-items cont)))
+		   (declare (type simple-vector arr))
+		   (prog1 (make-instance 'tuple :items arr)
+			 (setf (__tuple-items cont)
+				   (make-array (length arr) :initial-element nil)))))
+		(t
+		 (error 'type-mismatch :what "Can't convert to tuple."))))))
   
 ;;initialzation
 #-cl-stl-0x98

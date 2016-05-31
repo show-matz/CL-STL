@@ -149,71 +149,75 @@
 ; move-initialize - 1
 #-cl-stl-0x98
 (define-constructor priority_queue ((comp cl:function)
-									(rm-ref remove-reference))
-  (let ((cont (funcall (the cl:function (opr::__rm-ref-closure rm-ref)))))
-	(check-underlying-container-of-prique cont)
-	(let ((tmp (dynamic-new (type-of cont))))
-	  (swap tmp cont)
-	  (make_heap (begin tmp) (end tmp) comp)
-	  (make-instance 'priority_queue :pred comp :container tmp))))
+									(rm& remove-reference))
+  (with-reference (rm)
+	(let ((cont rm))
+	  (check-underlying-container-of-prique cont)
+	  (let ((tmp (dynamic-new (type-of cont))))
+		(swap tmp cont)
+		(make_heap (begin tmp) (end tmp) comp)
+		(make-instance 'priority_queue :pred comp :container tmp)))))
 
 ; move-initialize - 2
 #-cl-stl-0x98
 (define-constructor priority_queue ((comp #-cl-stl-0x98 functor
 										  #+cl-stl-0x98 binary_function)
-									(rm-ref remove-reference))
-  (let ((cont (funcall (the cl:function (opr::__rm-ref-closure rm-ref)))))
-	(check-underlying-container-of-prique cont)
-	(let ((tmp (dynamic-new (type-of cont))))
-	  (swap tmp cont)
-	  (make_heap (begin tmp) (end tmp) comp)
-	  (make-instance 'priority_queue :pred (clone comp) :container tmp))))
+									(rm& remove-reference))
+  (with-reference (rm)
+	(let ((cont rm))
+	  (check-underlying-container-of-prique cont)
+	  (let ((tmp (dynamic-new (type-of cont))))
+		(swap tmp cont)
+		(make_heap (begin tmp) (end tmp) comp)
+		(make-instance 'priority_queue :pred (clone comp) :container tmp)))))
 
 #-cl-stl-0x98
-(labels ((__ctor-imp (itr1 itr2 comp rm-ref)
-		   (let ((cont (funcall (the cl:function (opr::__rm-ref-closure rm-ref)))))
-			 (check-underlying-container-of-prique cont)
-			 (let ((tmp (dynamic-new (type-of cont))))
-			   ;;(funcall (the cl:function (opr::__rm-ref-closure rm-ref)) nil)
-			   (swap tmp cont)
-			   (insert tmp (end tmp) itr1 itr2)
-			   (make_heap (begin tmp) (end tmp) comp)
-			   (make-instance 'priority_queue :pred comp :container tmp)))))
+(labels ((__ctor-imp (itr1 itr2 comp rm&)
+		   (with-reference (rm)
+			 (let ((cont rm))
+			   (check-underlying-container-of-prique cont)
+			   (let ((tmp (dynamic-new (type-of cont))))
+				 ;;(setf rm nil)
+				 (swap tmp cont)
+				 (insert tmp (end tmp) itr1 itr2)
+				 (make_heap (begin tmp) (end tmp) comp)
+				 (make-instance 'priority_queue :pred comp :container tmp))))))
 
   ;; move-range - 1
   (define-constructor priority_queue ((itr1 input_iterator) (itr2 input_iterator)
-									  (comp cl:function) (rm-ref remove-reference))
-	(__ctor-imp itr1 itr2 comp rm-ref))
+									  (comp cl:function) (rm remove-reference))
+	(__ctor-imp itr1 itr2 comp rm))
   
   (define-constructor priority_queue ((itr1 const-vector-pointer) (itr2 const-vector-pointer)
-									  (comp cl:function) (rm-ref remove-reference))
+									  (comp cl:function) (rm remove-reference))
 	(__pointer-check-iterator-range itr1 itr2)
-	(__ctor-imp itr1 itr2 comp rm-ref))
+	(__ctor-imp itr1 itr2 comp rm))
 
   ;; move-range - 2
   (define-constructor priority_queue ((itr1 input_iterator) (itr2 input_iterator)
 									  (comp #-cl-stl-0x98 functor
-											#+cl-stl-0x98 binary_function) (rm-ref remove-reference))
-	(__ctor-imp itr1 itr2 comp rm-ref))
+											#+cl-stl-0x98 binary_function) (rm remove-reference))
+	(__ctor-imp itr1 itr2 comp rm))
 
   (define-constructor priority_queue ((itr1 const-vector-pointer) (itr2 const-vector-pointer)
 									  (comp #-cl-stl-0x98 functor
-											#+cl-stl-0x98 binary_function) (rm-ref remove-reference))
+											#+cl-stl-0x98 binary_function) (rm remove-reference))
 	(__pointer-check-iterator-range itr1 itr2)
-	(__ctor-imp itr1 itr2 comp rm-ref)))
+	(__ctor-imp itr1 itr2 comp rm)))
 
 ; move constructor.
 #-cl-stl-0x98
-(define-constructor priority_queue ((rm-ref remove-reference))
-  (let ((cont (funcall (the cl:function (opr::__rm-ref-closure rm-ref)))))
-	(__check-type-of-move-constructor cont priority_queue)
-	(let* ((src-pred (__prique-pred cont))
-		   (src-cont (__prique-container cont))
-		   (new-pred (clone src-pred))
-		   (new-cont (dynamic-new (type-of src-cont))))
-	  (swap new-cont src-cont)
-	  (make-instance 'priority_queue
-					 :pred new-pred :container new-cont))))
+(define-constructor priority_queue ((rm& remove-reference))
+  (with-reference (rm)
+	(let ((cont rm))
+	  (__check-type-of-move-constructor cont priority_queue)
+	  (let* ((src-pred (__prique-pred cont))
+			 (src-cont (__prique-container cont))
+			 (new-pred (clone src-pred))
+			 (new-cont (dynamic-new (type-of src-cont))))
+		(swap new-cont src-cont)
+		(make-instance 'priority_queue
+					   :pred new-pred :container new-cont)))))
 
 
 

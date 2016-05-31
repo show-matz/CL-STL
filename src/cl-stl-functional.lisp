@@ -901,14 +901,15 @@
 	(__function-ctor (__function-target fn))))
 
 #-cl-stl-0x98
-(define-constructor function ((rm remove-reference))
-  (let ((fnctr (funcall (the cl:function (opr::__rm-ref-closure rm)))))
-	(__check-type-of-move-constructor fnctr function)
-	(let ((target  (__function-target fnctr))
-		  (closure (__functor-closure fnctr)))
-	  (setf (__function-target fnctr) nil)
-	  (setf (__functor-closure fnctr) nil)
-	  (make-instance 'function :target  target :closure closure))))
+(define-constructor function ((rm& remove-reference))
+  (with-reference (rm)
+	(let ((fnctr rm))
+	  (__check-type-of-move-constructor fnctr function)
+	  (let ((target  (__function-target fnctr))
+			(closure (__functor-closure fnctr)))
+		(setf (__function-target fnctr) nil)
+		(setf (__functor-closure fnctr) nil)
+		(make-instance 'function :target  target :closure closure)))))
 
 #-cl-stl-0x98
 (defmethod operator_cast ((fn function) (typename (eql 'boolean)))

@@ -46,23 +46,23 @@
 
 ;; move constructor
 #-cl-stl-0x98
-(define-constructor pair ((rm-ref remove-reference))
-  (let ((pr (funcall (the cl:function (opr::__rm-ref-closure rm-ref)))))
-	(__check-type-of-move-constructor pr pair)
-	(prog1 (make-instance 'pair :first  (stl:first  pr)
-								:second (stl:second pr))
-	  (setf (stl:first  pr) nil)
-	  (setf (stl:second pr) nil))))
+(define-constructor pair ((rm& remove-reference))
+  (with-reference (rm)
+	(let ((pr rm))
+	  (__check-type-of-move-constructor pr pair)
+	  (prog1 (make-instance 'pair :first  (stl:first  pr)
+								  :second (stl:second pr))
+		(setf (stl:first  pr) nil)
+		(setf (stl:second pr) nil)))))
 
 ;; move initialization
 #-cl-stl-0x98
-(define-constructor pair ((rm-ref1 remove-reference)
-						  (rm-ref2 remove-reference))
-  (let ((v1 (funcall (the cl:function (opr::__rm-ref-closure rm-ref1))))
-		(v2 (funcall (the cl:function (opr::__rm-ref-closure rm-ref2)))))
-	(prog1 (make-instance 'pair :first v1 :second v2)
-	  (funcall (the cl:function (opr::__rm-ref-closure rm-ref1)) nil)
-	  (funcall (the cl:function (opr::__rm-ref-closure rm-ref2)) nil))))
+(define-constructor pair ((rm1& remove-reference)
+						  (rm2& remove-reference))
+  (with-reference (rm1 rm2)
+	(prog1 (make-instance 'pair :first rm1 :second rm2)
+	  (setf rm1 nil)
+	  (setf rm2 nil))))
 
 (defmethod operator_clone ((obj pair))
   (make-instance 'pair :first  (stl:first  obj)

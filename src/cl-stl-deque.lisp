@@ -487,12 +487,13 @@
 ; move constructor
 #-cl-stl-0x98
 (locally (declare (optimize speed))
-  (define-constructor deque ((arg remove-reference))
-	(let ((cont (funcall (the cl:function (opr::__rm-ref-closure arg)))))
-	  (__check-type-of-move-constructor cont deque)
-	  (let ((core (deque-core cont)))
-		(setf (deque-core cont) nil)
-		(make-instance 'deque :core core)))))
+  (define-constructor deque ((arg& remove-reference))
+	(with-reference (arg)
+	  (let ((cont arg))
+		(__check-type-of-move-constructor cont deque)
+		(let ((core (deque-core cont)))
+		  (setf (deque-core cont) nil)
+		  (make-instance 'deque :core core))))))
 
 
 ; fill constructor 1
@@ -1096,13 +1097,13 @@
 ;; insert ( move ) - returns iterator.
 #-cl-stl-0x98
 (defmethod-overload insert ((cont deque)
-							(itr  deque_const_iterator) (rm remove-reference))
+							(itr  deque_const_iterator) (rm& remove-reference))
   (__deque-check-iterator-belong itr cont)
   (let ((core (deque-core cont)))
-	(let ((val (funcall (the cl:function (opr::__rm-ref-closure rm)))))
+	(with-reference (rm)
 	  (prog1
-		  (__deque-insert core itr val nil)
-		(funcall (the cl:function (opr::__rm-ref-closure rm)) nil)))))
+		  (__deque-insert core itr rm nil)
+		(setf rm nil)))))
 
 
 ;; insert ( initializer list ) - returns iterator.

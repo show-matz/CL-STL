@@ -132,14 +132,15 @@
 
 ; move constructor
 #-cl-stl-0x98
-(define-constructor forward_list ((arg remove-reference))
-  (let ((cont (funcall (the cl:function (opr::__rm-ref-closure arg)))))
-	(__check-type-of-move-constructor cont forward_list)
-	(let ((lst (__slst-top-node cont)))
-	  (prog1
-		  (make-instance 'forward_list
-						 :top (__slst-newnode nil (cdr lst) nil))
-		(setf (cdr lst) nil)))))
+(define-constructor forward_list ((arg& remove-reference))
+  (with-reference (arg)
+	(let ((cont arg))
+	  (__check-type-of-move-constructor cont forward_list)
+	  (let ((lst (__slst-top-node cont)))
+		(prog1
+			(make-instance 'forward_list
+						   :top (__slst-newnode nil (cdr lst) nil))
+		  (setf (cdr lst) nil))))))
 
 
 ; fill constructor 1
@@ -409,14 +410,15 @@
 
 	;; insert_after ( move ) - returns iterator
 	(defmethod-overload insert_after ((cont forward_list)
-									  (itr  forward_list_const_iterator) (rm remove-reference))
+									  (itr  forward_list_const_iterator) (rm& remove-reference))
 	  (__slst-check-iterator-belong itr cont)
-	  (let ((node (__cons-itr-cons itr))
-			(val  (funcall (the cl:function (opr::__rm-ref-closure rm)))))
-		(funcall (the cl:function (opr::__rm-ref-closure rm)) nil)
-		(__insert-imp node nil (lambda ()
-								 (prog1 val (setf val eos))))
-		(make-instance 'forward_list_iterator :node (cdr node))))
+	  (with-reference (rm)
+		(let ((node (__cons-itr-cons itr))
+			  (val  rm))
+		  (setf rm nil)
+		  (__insert-imp node nil (lambda ()
+								   (prog1 val (setf val eos))))
+		  (make-instance 'forward_list_iterator :node (cdr node)))))
 
 	;; insert_after ( fill ) - returns iterator
 	(defmethod-overload insert_after ((cont forward_list)
