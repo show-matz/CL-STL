@@ -32,22 +32,6 @@
 
 #-(and cl-stl-noextra cl-stl-0x98)
 (locally (declare (optimize speed))
-  (defun __conslist-clone (lst)
-	(labels ((imp (src top last)
-			   (if (null src)
-				   top
-				   (let ((node (cons nil nil)))
-					 (_= (car node) (car src))
-					 (setf (cdr last) node)
-					 (imp (cdr src) top node)))))
-	  (if (null lst)
-		  nil
-		  (let ((top (cons nil nil)))
-			(_= (car top) (car lst))
-			(imp (cdr lst) top top))))))
-
-#-(and cl-stl-noextra cl-stl-0x98)
-(locally (declare (optimize speed))
   (defun __conslist-equal (lst1 lst2)
 	(if (and (null lst1) (null lst2))
 		t
@@ -171,9 +155,7 @@
   (defmethod end    ((cont cl:list)) (make-instance 'cons_iterator :node nil))
 
   #-cl-stl-0x98 (defmethod cbegin ((cont cl:list)) (make-instance 'cons_const_iterator :node cont))
-  #-cl-stl-0x98 (defmethod cend   ((cont cl:list)) (make-instance 'cons_const_iterator :node nil))
-
-  (defmethod operator_clone ((obj cl:list)) (__conslist-clone obj)))
+  #-cl-stl-0x98 (defmethod cend   ((cont cl:list)) (make-instance 'cons_const_iterator :node nil)))
 
 
 ;-----------------------------------------------------

@@ -1,6 +1,6 @@
 (defsystem :CL-STL
   :description "CL-STL : a port of C++ standard template library for Common Lisp."
-  :version "0.8.5"
+  :version "0.8.6"
   :author "show-matz <show@architect-matsuoka.jpn.org>"
   :licence "LLGPL"
   :depends-on ("closer-mop"

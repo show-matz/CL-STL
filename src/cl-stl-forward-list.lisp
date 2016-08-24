@@ -168,7 +168,7 @@
 #-cl-stl-0x98
 (defmethod operator_clone ((container forward_list))
   (let* ((src (cdr (__slst-top-node container)))
-		 (lst (__conslist-clone src)))
+		 (lst (cl-operator::__conslist-clone src)))
 	(make-instance 'forward_list
 				   :top (__slst-newnode nil lst nil))))
 
