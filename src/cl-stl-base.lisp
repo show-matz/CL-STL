@@ -339,7 +339,7 @@
 				:upper_bound
 				:equal_range
 				:binary_search
-e				; 25.3.4, merge:
+				; 25.3.4, merge:
 				:merge
 				:inplace_merge
 				; 25.3.5, set operations:
