@@ -916,7 +916,7 @@
 	  (destructuring-bind (inits condition update &key (returns nil)) args
 		`(do ,inits
 			 ((not ,condition) ,returns)
-		   (progn
+		   (locally
 			 ,@body
 			 ,update)))
 	  #+cl-stl-0x98 (error "0x11 style for is not supported.")
