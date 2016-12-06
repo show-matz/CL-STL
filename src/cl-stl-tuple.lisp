@@ -1,8 +1,5 @@
 (in-package :cl-stl)
 
-#-cl-stl-0x98
-(declaim (inline make_tuple))
-
 
 #-cl-stl-0x98
 (locally (declare (optimize speed))
@@ -54,6 +51,19 @@
 #-cl-stl-0x98
 (defun make_tuple (&rest args)
   (__make_tuple-from-list args))
+
+#-cl-stl-0x98
+(define-compiler-macro make_tuple (&rest args)
+  (let ((g-arr (gensym "ARR")))
+	`(locally (declare (optimize speed))
+	   (let ((,g-arr (make-array ,(length args))))
+		 (declare (type cl:simple-vector ,g-arr))
+		 ,@(let ((idx 0))
+			(mapcar (lambda (arg)
+					  (prog1 `(setf (svref ,g-arr ,idx) ,arg)
+						(incf idx))) args))
+		 (make-instance 'tuple :items ,g-arr)))))
+
 
 ;;----------------------------------------------------------
 ;; constructors
