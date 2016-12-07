@@ -23,8 +23,12 @@
 ;;
 ;;------------------------------------------------------------------------------
 (defun make_pair (&optional (first nil) (second nil))
-  (make-instance 'pair :first first :second second))
-
+  (let ((1st nil)
+		(2nd nil))
+	(_= 1st  first)
+	(_= 2nd second)
+	(make-instance 'pair :first 1st :second 2nd)))
+	
 
 ;;------------------------------------------------------------------------------
 ;; constructor
@@ -37,12 +41,11 @@
 
 ;; copy constructor
 (define-constructor pair ((arg pair))
-  (make-instance 'pair :first  (stl:first  arg)
-					   :second (stl:second arg)))
+  (make_pair (stl:first arg) (stl:second arg)))
 
 ;; normal constructor
 (define-constructor pair (first second)
-  (make-instance 'pair :first first :second second))
+  (make_pair first second))
 
 ;; move constructor
 #-cl-stl-0x98
@@ -55,26 +58,15 @@
 		(setf (stl:first  pr) nil)
 		(setf (stl:second pr) nil)))))
 
-;; move initialization
-#-cl-stl-0x98
-(define-constructor pair ((rm1& remove-reference)
-						  (rm2& remove-reference))
-  (with-reference (rm1 rm2)
-	(prog1 (make-instance 'pair :first rm1 :second rm2)
-	  (setf rm1 nil)
-	  (setf rm2 nil))))
-
 (defmethod operator_clone ((obj pair))
-  (make-instance 'pair :first  (stl:first  obj)
-					   :second (stl:second obj)))
+  (make_pair (stl:first obj) (stl:second obj)))
 
 
 ;-----------------------------------------------------
 ; assignment
 ;-----------------------------------------------------
 (defmethod operator_= ((lhs (eql nil)) (rhs pair))
-  (make-instance 'pair :first  (stl:first  rhs)
-					   :second (stl:second rhs)))
+  (make_pair (stl:first rhs) (stl:second rhs)))
 
 (defmethod operator_= ((lhs pair) (rhs pair))
   (_= (stl:first  lhs) (stl:first  rhs))
