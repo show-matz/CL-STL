@@ -11,7 +11,7 @@
 	((buffer :type     :simple-vector
 			 :initform nil
 			 :initarg  :buffer
-			 :accessor array-data))))
+			 :accessor __inner-array))))
 
 #-cl-stl-0x98
 (defclass array_const_iterator (const-vector-pointer randomaccess_iterator) ())
@@ -69,7 +69,7 @@
 ; copy constructor
 #-cl-stl-0x98
 (define-constructor array ((arg1 integer) (arg2 stl:array))
-  (let* ((src-buf (array-data arg2))
+  (let* ((src-buf (__inner-array arg2))
 		 (size (length src-buf)))
 	(if (/= arg1 size)
 		(error 'type-mismatch :what (format nil "Can't convert array<~A> to array<~A>." size arg1))
@@ -95,7 +95,7 @@
 		(error 'type-mismatch :what (format nil "Too many initializer for array<~A>." arg1))
 		(let* ((obj (__create-array arg1))
 			   (cnt arg1)
-			   (dst (array-data obj))
+			   (dst (__inner-array obj))
 			   (src (__initlist-data arg2)))
 		  (declare (type fixnum cnt))
 		  (declare (type simple-vector dst src) )
@@ -110,7 +110,7 @@
 ; copy constructor
 #-cl-stl-0x98
 (defmethod operator_clone ((container stl:array))
-  (let ((src-buf (array-data container)))
+  (let ((src-buf (__inner-array container)))
 	(if (null src-buf)
 		(make-instance 'stl:array)
 		(let* ((size    (length src-buf))
@@ -139,8 +139,8 @@
   (defmethod operator_= ((cont1 stl:array) (cont2 stl:array))
 	(if (eq cont1 cont2)
 		cont1
-		(let* ((buf1 (array-data cont1))
-			   (buf2 (array-data cont2))
+		(let* ((buf1 (__inner-array cont1))
+			   (buf2 (__inner-array cont2))
 			   (cnt1 (if (null buf1) 0 (length buf1)))
 			   (cnt2 (if (null buf2) 0 (length buf2))))
 		  (declare (type simple-vector buf1 buf2))
@@ -155,7 +155,7 @@
 #-cl-stl-0x98
 (locally (declare (optimize speed))
   (defmethod operator_= ((cont stl:array) (il initializer_list))
-	(let* ((dst (array-data cont))
+	(let* ((dst (__inner-array cont))
 		   (dst-cnt (length dst))
 		   (src (__initlist-data il))
 		   (cnt (length src)))
@@ -182,12 +182,12 @@
 		(if (/= (the fixnum (size cont1))
 				(the fixnum (size cont2)))
 			(error 'type-mismatch :what "Type mismatch in move of array.")
-			(let* ((tmp (array-data cont1))
+			(let* ((tmp (__inner-array cont1))
 				   (cnt (length tmp)))
 			  (declare (type simple-vector tmp))
 			  (declare (type fixnum cnt))
-			  (setf (array-data cont1) (array-data cont2))
-			  (setf (array-data cont2) tmp)
+			  (setf (__inner-array cont1) (__inner-array cont2))
+			  (setf (__inner-array cont2) tmp)
 			  (do ((idx 0 (incf idx)))
 				  ((= cnt idx) (values cont1 cont2))
 				(setf (svref tmp idx) nil)))))))
@@ -199,45 +199,45 @@
 ;-----------------------------------------------------
 #-cl-stl-0x98
 (defmethod begin ((cont stl:array))
-  (make-instance 'array_iterator :buffer (array-data cont) :index 0))
+  (make-instance 'array_iterator :buffer (__inner-array cont) :index 0))
 
 #-cl-stl-0x98
 (defmethod end ((cont stl:array))
-  (let ((buf (array-data cont)))
+  (let ((buf (__inner-array cont)))
 	(make-instance 'array_iterator :buffer buf
 								   :index (length buf))))
 
 #-cl-stl-0x98
 (defmethod rbegin ((cont stl:array))
-  (let ((buf (array-data cont)))
+  (let ((buf (__inner-array cont)))
 	(make-instance 'array_reverse_iterator
 				   :buffer buf :index (1- (length buf)))))
 
 #-cl-stl-0x98
 (defmethod rend ((cont stl:array))
-  (let ((buf (array-data cont)))
+  (let ((buf (__inner-array cont)))
 	(make-instance 'array_reverse_iterator :buffer buf :index -1)))
 
 #-cl-stl-0x98
 (defmethod cbegin ((cont stl:array))
   (make-instance 'array_const_iterator
-				 :buffer (array-data cont) :index 0))
+				 :buffer (__inner-array cont) :index 0))
 
 #-cl-stl-0x98
 (defmethod cend ((cont stl:array))
-  (let ((buf (array-data cont)))
+  (let ((buf (__inner-array cont)))
 	(make-instance 'array_const_iterator
 				   :buffer buf :index (length buf))))
 
 #-cl-stl-0x98
 (defmethod crbegin ((cont stl:array))
-  (let ((buf (array-data cont)))
+  (let ((buf (__inner-array cont)))
 	(make-instance 'array_const_reverse_iterator
 				   :buffer buf :index (1- (length buf)))))
 
 #-cl-stl-0x98
 (defmethod crend ((cont stl:array))
-  (let ((buf (array-data cont)))
+  (let ((buf (__inner-array cont)))
 	(make-instance 'array_const_reverse_iterator
 				   :buffer buf :index -1)))
 
@@ -246,11 +246,11 @@
 ;-----------------------------------------------------
 #-cl-stl-0x98
 (defmethod empty ((cont stl:array))
-  (zerop (length (array-data cont))))
+  (zerop (length (__inner-array cont))))
 
 #-cl-stl-0x98
 (defmethod size ((cont stl:array))
-  (length (array-data cont)))
+  (length (__inner-array cont)))
 
 #-cl-stl-0x98
 (defmethod max_size ((cont stl:array))
@@ -261,51 +261,51 @@
 ;-----------------------------------------------------
 #-cl-stl-0x98
 (defmethod front ((cont stl:array))
-  (let ((buf (array-data cont)))
+  (let ((buf (__inner-array cont)))
 	(__array-error-when-empty buf "front")
 	(svref buf 0)))
 
 #-cl-stl-0x98
 (defmethod (setf front) (val (cont stl:array))
-  (let ((buf (array-data cont)))
+  (let ((buf (__inner-array cont)))
 	(__array-error-when-empty buf "front")
 	(_= (svref buf 0) val)))
 
 #-cl-stl-0x98
 (defmethod back ((cont stl:array))
-  (let ((buf (array-data cont)))
+  (let ((buf (__inner-array cont)))
 	(__array-error-when-empty buf "back")
 	(svref buf (1- (length buf)))))
 
 #-cl-stl-0x98
 (defmethod (setf back) (val (cont stl:array))
-  (let ((buf (array-data cont)))
+  (let ((buf (__inner-array cont)))
 	(__array-error-when-empty buf "back")
 	(_= (svref buf (1- (length buf))) val)))
 
 #-cl-stl-0x98
 (defmethod at ((cont stl:array) (idx integer))
-  (let ((buf (array-data cont)))
+  (let ((buf (__inner-array cont)))
 	(__array-check-index buf idx)
 	(svref buf idx)))
 
 #-cl-stl-0x98
 (defmethod (setf at) (val (cont stl:array) (idx integer))
-  (let ((buf (array-data cont)))
+  (let ((buf (__inner-array cont)))
 	(__array-check-index buf idx)
 	(_= (svref buf idx) val)))
 
 #-cl-stl-0x98
 (defmethod operator_[] ((cont stl:array) (idx integer))
-  (svref (array-data cont) idx))
+  (svref (__inner-array cont) idx))
 
 #-cl-stl-0x98
 (defmethod (setf operator_[]) (val (cont stl:array) (idx integer))
-  (_= (svref (array-data cont) idx) val))
+  (_= (svref (__inner-array cont) idx) val))
 
 #-cl-stl-0x98
 (defmethod operator_& ((cont stl:array) (idx integer))
-  (let* ((buf (array-data cont))
+  (let* ((buf (__inner-array cont))
 		 (cnt (length buf)))
 	(if (zerop cnt)
 		(error 'undefined-behavior :what "operator_& for empty array.")
@@ -315,7 +315,7 @@
   
 #-cl-stl-0x98
 (defmethod operator_const& ((cont stl:array) (idx integer))
-  (let* ((buf (array-data cont))
+  (let* ((buf (__inner-array cont))
 		 (cnt (length buf)))
 	(if (zerop cnt)
 		(error 'undefined-behavior :what "operator_& for empty array.")
@@ -325,19 +325,19 @@
 
 #-cl-stl-0x98
 (defmethod data ((container stl:array))
-  (array-data container))
+  (__inner-array container))
 
 ;-----------------------------------------------------
 ; modifiers
 ;-----------------------------------------------------
 #-cl-stl-0x98
 (defmethod-overload swap ((cont1 stl:array) (cont2 stl:array))
-  (let ((buf1 (array-data cont1))
-		(buf2 (array-data cont2)))
+  (let ((buf1 (__inner-array cont1))
+		(buf2 (__inner-array cont2)))
 	(unless (= (length buf1) (length buf2))
 	  (error 'type-mismatch :what "Type mismatch in swap of array."))
-	(setf (array-data cont1) buf2)
-	(setf (array-data cont2) buf1))
+	(setf (__inner-array cont1) buf2)
+	(setf (__inner-array cont2) buf1))
   (values cont1 cont2))
 
 ;-----------------------------------------------------
@@ -346,7 +346,7 @@
 #-cl-stl-0x98
 (locally (declare (optimize speed))
   (defmethod-overload fill ((container stl:array) value)
-	(let* ((buf (array-data container))
+	(let* ((buf (__inner-array container))
 		   (idx 0)
 		   (cnt (length buf)))
 	  (declare (type fixnum idx cnt))
@@ -364,8 +364,8 @@
   (labels ((__container-equal (cont1 cont2)
 			 (if (eq cont1 cont2)
 				 t
-				 (let* ((buf1 (array-data cont1))
-						(buf2 (array-data cont2))
+				 (let* ((buf1 (__inner-array cont1))
+						(buf2 (__inner-array cont2))
 						(cnt1 (if (null buf1) 0 (length buf1)))
 						(cnt2 (if (null buf2) 0 (length buf2))))
 				   (declare (type simple-vector buf1 buf2))
@@ -392,8 +392,8 @@
   (labels ((__container-compare (cont1 cont2)
 			 (if (eq cont1 cont2)
 				 0
-				 (let* ((buf1 (array-data cont1))
-						(buf2 (array-data cont2))
+				 (let* ((buf1 (__inner-array cont1))
+						(buf2 (__inner-array cont2))
 						(cnt1 (if (null buf1) 0 (length buf1)))
 						(cnt2 (if (null buf2) 0 (length buf2))))
 				   (declare (type simple-vector buf1 buf2))
@@ -429,7 +429,7 @@
   (defmethod-overload for ((cont stl:array) func)
 	;MEMO : func is always lambda function ( see stl:for ). 
 	(declare (type cl:function func))
-	(let ((buf (array-data cont)))
+	(let ((buf (__inner-array cont)))
 	  (when buf
 		(locally (declare (type simple-vector buf))
 		  (do ((idx 0 (incf idx))
@@ -438,24 +438,6 @@
 			(declare (type fixnum idx cnt))
 			(funcall func (svref buf idx))))))))
 
-
-;-----------------------------------------------------
-; tuple like support
-;-----------------------------------------------------
-#-cl-stl-0x98
-(defmethod-overload get ((idx integer) (obj stl:array))
-  (let ((buf (array-data obj)))
-	(unless (and (<= 0 idx) (< idx (length buf)))
-	  (error 'out_of_range :what "Index specified to get is out of range."))
-	(svref buf idx)))
-
-#-cl-stl-0x98
-(defmethod-overload (setf get) (new-val (idx integer) (obj stl:array))
-  (let ((buf (array-data obj)))
-	(unless (and (<= 0 idx) (< idx (length buf)))
-	  (error 'out_of_range :what "Index specified to get is out of range."))
-	(_= (svref buf idx) new-val)
-	new-val))
 
 ;;------------------------------------------------------------------------------
 ;;
@@ -641,7 +623,7 @@
   #-cl-stl-0x98
   (defmethod dump ((container stl:array) &optional (stream t) (print-item-fnc nil))
 	(format stream "begin dump ---------------------~%")
-	(let ((buf (array-data container)))
+	(let ((buf (__inner-array container)))
 	  (when buf
 		(setf print-item-fnc (if print-item-fnc
 								 (functor_function (clone print-item-fnc))

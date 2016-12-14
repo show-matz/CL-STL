@@ -405,6 +405,9 @@
 
 (in-package :cl-stl)
 
+(declaim (inline __get-imp
+				 (setf __get-imp)))
+
 ;;------------------------------------------------------------------------------
 ;;
 ;; CL-STL support version information
@@ -491,23 +494,33 @@
 ;;
 ;;------------------------------------------------------------------------------
 #-cl-stl-0x98
-(progn
-  (declare-method-overload get (2) :make-setf t :make-top nil)
-  (defmacro get (idx obj)
-	(if (or (integerp idx)
-			(and (symbolp idx)
-				 (constantp idx)
-				 (not (eq idx t))
-				 (not (eq idx nil))
-				 (not (keywordp idx))))
-		`(,(make-overload-name 'cl-stl:get 2) ,idx ,obj)
-		(error 'type-mismatch :what "First parameter of get must be constant number."))))
+(locally (declare (optimize speed))
 
-#-cl-stl-0x98    ; support for 'get in tie'
-(progn
-  (defgeneric __tie-get (idx obj))
-  #-cl-stl-noextra
-  (defgeneric (setf __tie-get) (new-val idx obj)))
+  (defun __get-imp (idx arr)
+	(declare (type integer idx))
+	(declare (type cl:simple-vector arr))
+	(unless (and (<= 0 idx) (< idx (length arr)))
+	  (error 'out_of_range :what "Index specified to get is out of range."))
+	(svref arr idx))
+
+  (defun (setf __get-imp) (new-val idx arr)
+	(declare (type integer idx))
+	(declare (type cl:simple-vector arr))
+	(unless (and (<= 0 idx) (< idx (length arr)))
+	  (error 'out_of_range :what "Index specified to get is out of range."))
+	(setf (svref arr idx) new-val)))
+
+#-cl-stl-0x98
+(defmacro get (idx obj)
+  ;; obj : array, tuple, pair
+  (if (or (integerp idx)
+		  (and (symbolp idx)
+			   (constantp idx)
+			   (not (eq idx t))
+			   (not (eq idx nil))
+			   (not (keywordp idx))))
+	  `(__get-imp ,idx (__inner-array ,obj))
+	  (error 'type-mismatch :what "First parameter of get must be constant number.")))
 
 
 ;;------------------------------------------------------------------------------

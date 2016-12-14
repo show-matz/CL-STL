@@ -45,7 +45,7 @@
 	((items :type     cl:vector
 			:initform nil
 			:initarg  :items
-			:accessor __tuple-items))))
+			:accessor __inner-array))))
 
 
 #-cl-stl-0x98
@@ -95,10 +95,10 @@
 		(stl:pair
 		 (__make_tuple-from-args ((first cont) (second cont)) :is-move t))
 		(stl:tuple
-		 (let ((arr (__tuple-items cont)))
+		 (let ((arr (__inner-array cont)))
 		   (declare (type simple-vector arr))
 		   (prog1 (make-instance 'tuple :items arr)
-			 (setf (__tuple-items cont)
+			 (setf (__inner-array cont)
 				   (make-array (length arr) :initial-element nil)))))
 		(t
 		 (error 'type-mismatch :what "Can't convert to tuple."))))))
@@ -116,7 +116,7 @@
 #-cl-stl-0x98
 (locally (declare (optimize speed))
   (defmethod operator_clone ((obj tuple))
-	(let* ((src (__tuple-items obj))
+	(let* ((src (__inner-array obj))
 		   (cnt (length src))
 		   (dst (make-array cnt :initial-element nil)))
 	  (declare (type fixnum cnt))
@@ -135,24 +135,24 @@
 #-cl-stl-0x98
 (locally (declare (optimize speed))
   (defmethod-overload swap ((tpl1 tuple) (tpl2 tuple))
-	(let ((arr1 (__tuple-items tpl1))
-		  (arr2 (__tuple-items tpl2)))
+	(let ((arr1 (__inner-array tpl1))
+		  (arr2 (__inner-array tpl2)))
 	  (declare (type simple-vector arr1 arr2))
 	  (let ((len1 (length arr1))
 			(len2 (length arr2)))
 		(declare (type fixnum len1 len2))
 		(unless (= len1 len2)
 		  (error 'type-mismatch :what "Type mismatch in swap of tuple."))
-		(setf (__tuple-items tpl1) arr2)
-		(setf (__tuple-items tpl2) arr1))
+		(setf (__inner-array tpl1) arr2)
+		(setf (__inner-array tpl2) arr1))
 	  (values tpl1 tpl2))))
 
 
 #-cl-stl-0x98
 (locally (declare (optimize speed))
   (defmethod operator_= ((tpl1 tuple) (tpl2 tuple))
-	(let ((arr1 (__tuple-items tpl1))
-		  (arr2 (__tuple-items tpl2)))
+	(let ((arr1 (__inner-array tpl1))
+		  (arr2 (__inner-array tpl2)))
 	  (declare (type simple-vector arr1 arr2))
 	  (let ((len1 (length arr1))
 			(len2 (length arr2)))
@@ -168,7 +168,7 @@
 #-cl-stl-0x98
 (locally (declare (optimize speed))
   (defmethod operator_= ((tpl tuple) (pr pair))
-	(let ((arr (__tuple-items tpl)))
+	(let ((arr (__inner-array tpl)))
 	  (declare (type simple-vector arr))
 	  (unless (= 2 (length arr))
 		(error 'type-mismatch :what "Type mismatch in assignment of tuple."))
@@ -182,16 +182,16 @@
   (defmethod operator_move ((tpl1 tuple) (tpl2 tuple))
 	(if (eq tpl1 tpl2)
 		(values tpl1 tpl2)
-		(let ((arr1 (__tuple-items tpl1))
-			  (arr2 (__tuple-items tpl2)))
+		(let ((arr1 (__inner-array tpl1))
+			  (arr2 (__inner-array tpl2)))
 		  (declare (type simple-vector arr1 arr2))
 		  (let ((len1 (length arr1))
 				(len2 (length arr2)))
 			(declare (type fixnum len1 len2))
 			(when (/= len1 len2)
 			  (error 'type-mismatch :what "Type mismatch in move of tuple."))
-			(setf (__tuple-items tpl1) arr2)
-			(setf (__tuple-items tpl2) arr1)
+			(setf (__inner-array tpl1) arr2)
+			(setf (__inner-array tpl2) arr1)
 			(let ((idx 0))
 			  (declare (type fixnum idx))
 			  (for (nil (< idx len1) (incf idx) :returns (values tpl1 tpl2))
@@ -201,7 +201,7 @@
 #-cl-stl-0x98
 (locally (declare (optimize speed))
   (defmethod operator_move ((tpl tuple) (pr pair))
-	(let ((arr (__tuple-items tpl)))
+	(let ((arr (__inner-array tpl)))
 	  (declare (type simple-vector arr))
 	  (unless (= 2 (length arr))
 		(error 'type-mismatch :what "Type mismatch in move pair to tuple."))
@@ -219,41 +219,10 @@
 #-cl-stl-0x98
 (locally (declare (optimize speed))
   (defmethod size ((tpl tuple))
-	(length (the simple-vector (__tuple-items tpl)))))
+	(length (the simple-vector (__inner-array tpl)))))
 
-#-cl-stl-0x98
-(locally (declare (optimize speed))
-  (labels ((__get-imp (idx obj)
-			 (declare (type fixnum idx))
-			 (declare (type tuple  obj))
-			 (let ((arr (__tuple-items obj)))
-			   (declare (type simple-vector arr))
-			   (unless (and (<= 0 idx) (< idx (length arr)))
-				 (error 'out_of_range :what "Index specified to get is out of range."))
-			   (aref arr idx))))
-	(declare (inline __get-imp))
-	(defmethod-overload get ((idx integer) (obj tuple))
-	  (__get-imp idx obj))
-	(defmethod __tie-get ((idx integer) (obj tuple))
-	  (__get-imp idx obj))))
+	  
 
-#-cl-stl-0x98
-(locally (declare (optimize speed))
-  (labels ((__setf-get-imp (new-val idx obj)
-			 (declare (type fixnum idx))
-			 (declare (type tuple  obj))
-			 (let ((arr (__tuple-items obj)))
-			   (declare (type simple-vector arr))
-			   (unless (and (<= 0 idx) (< idx (length arr)))
-				 (error 'out_of_range :what "Index specified to get is out of range."))
-			   (_= (aref arr idx) new-val)
-			   new-val)))
-	(declare (inline __setf-get-imp))
-	(defmethod-overload (setf get) (new-val (idx integer) (obj tuple))
-	  (__setf-get-imp new-val idx obj))
-	#-cl-stl-noextra
-	(defmethod (setf __tie-get) (new-val (idx integer) (obj tuple))
-	  (__setf-get-imp new-val idx obj))))
 
 ; concatenate tuples...
 #-cl-stl-0x98
@@ -282,7 +251,7 @@
 						(_= (aref arr idx) (car obj)) (incf idx)
 						(_= (aref arr idx) (cdr obj)) (incf idx))
 					   (tuple
-						(for (v (__tuple-items obj))
+						(for (v (__inner-array obj))
 						  (_= (aref arr idx) v)
 						  (incf idx)))
 					   (stl:array
@@ -296,37 +265,49 @@
 ; :ignore keyword can use.
 #-cl-stl-0x98
 (defmacro tie ((&rest vars) tpl)
-  (let ((g-tpl (gensym "TPL")))
+  (let ((g-arr (gensym "ARR")))
 	(labels ((imp (idx lst acc)
 			   (if (null lst)
-				   (nreverse acc)
+				   (values idx (nreverse acc))
 				   (progn
 					 (unless (eq (car lst) :ignore)
-					   (cl:push `(_= ,(car lst) (__tie-get ,idx ,g-tpl)) acc))
+					   (cl:push `(_= ,(car lst) (svref ,g-arr ,idx)) acc ))
 					 (imp (1+ idx) (cdr lst) acc)))))
-	  `(let ((,g-tpl ,tpl))
-		 (declare (ignorable ,g-tpl))
-		 ,@(imp 0 vars nil)
-		 nil))))
+	  (multiple-value-bind (max code) (imp 0 vars nil)
+		`(let ((,g-arr (__inner-array ,tpl)))
+		   (declare (type cl:simple-vector ,g-arr))
+		   (unless (<= ,max (length ,g-arr))
+			 (error 'out_of_range :what "Variable count to tie is out of range."))
+		   ,@code
+		   nil)))))
 
 ;; :ignore keyword can use.
 #-cl-stl-noextra
 (progn
   #-cl-stl-0x98
   (defmacro with_tie ((&rest vars) tpl &body body)
-	(let ((g-tpl (gensym "TPL")))
-	  (labels ((imp (lst idx acc)
+	(let ((g-arr (gensym "ARR")))
+	  (labels ((imp (idx lst acc)
 				 (if (null lst)
-					 (nreverse acc)
+					 (values idx (nreverse acc))
 					 (progn
 					   (unless (eq (car lst) :ignore)
-						 (cl:push `(,(car lst) (__tie-get ,idx ,g-tpl)) acc))
-					   (imp (cdr lst) (1+ idx) acc)))))
-		`(let ((,g-tpl ,tpl))
-		   (symbol-macrolet
-			   (,@(imp vars 0 nil))
-			 ,@body))))))
+						 (cl:push `(,(car lst) (svref ,g-arr ,idx)) acc))
+					   (imp (1+ idx) (cdr lst) acc)))))
+		(multiple-value-bind (max code) (imp 0 vars nil)
+		  `(let ((,g-arr (__inner-array ,tpl)))
+			 (declare (type cl:simple-vector ,g-arr))
+			 (unless (<= ,max (length ,g-arr))
+			   (error 'out_of_range :what "Variable count to with_tie is out of range."))
+			 (symbol-macrolet ,code
+			   ,@body)))))))
 
+
+;;------------------------------------------------------------------------------
+;;
+;; operators
+;;
+;;------------------------------------------------------------------------------
 
 #-cl-stl-0x98
 (locally (declare (optimize speed))
@@ -345,12 +326,12 @@
 	(defmethod operator_== ((tpl1 tuple) (tpl2 tuple))
 	  (if (eq tpl1 tpl2)
 		  t
-		  (tuple-equal (__tuple-items tpl1) (__tuple-items tpl2))))
+		  (tuple-equal (__inner-array tpl1) (__inner-array tpl2))))
 
 	(defmethod operator_/= ((tpl1 tuple) (tpl2 tuple))
 	  (if (eq tpl1 tpl2)
 		  nil
-		  (not (tuple-equal (__tuple-items tpl1) (__tuple-items tpl2)))))))
+		  (not (tuple-equal (__inner-array tpl1) (__inner-array tpl2)))))))
 
 
 
@@ -373,23 +354,39 @@
 	(defmethod operator_< ((tpl1 tuple) (tpl2 tuple))
 	  (if (eq tpl1 tpl2)
 		  nil
-		  (< (tuple-compare (__tuple-items tpl1) (__tuple-items tpl2)) 0)))
+		  (< (tuple-compare (__inner-array tpl1) (__inner-array tpl2)) 0)))
 
 	(defmethod operator_<= ((tpl1 tuple) (tpl2 tuple))
 	  (if (eq tpl1 tpl2)
 		  t
-		  (<= (tuple-compare (__tuple-items tpl1) (__tuple-items tpl2)) 0)))
+		  (<= (tuple-compare (__inner-array tpl1) (__inner-array tpl2)) 0)))
 
 	(defmethod operator_> ((tpl1 tuple) (tpl2 tuple))
 	  (if (eq tpl1 tpl2)
 		  nil
-		  (< 0 (tuple-compare (__tuple-items tpl1) (__tuple-items tpl2)))))
+		  (< 0 (tuple-compare (__inner-array tpl1) (__inner-array tpl2)))))
 
 	(defmethod operator_>= ((tpl1 tuple) (tpl2 tuple))
 	  (if (eq tpl1 tpl2)
 		  t
-		  (<= 0 (tuple-compare (__tuple-items tpl1) (__tuple-items tpl2)))))))
+		  (<= 0 (tuple-compare (__inner-array tpl1) (__inner-array tpl2)))))))
 
+
+
+;;------------------------------------------------------------------------------
+;;
+;; 
+;;
+;;------------------------------------------------------------------------------
+#-cl-stl-0x98
+(defmethod print-object ((tpl tuple) stream)
+  (print-unreadable-object (tpl stream :type t)
+	(let ((arr (__inner-array tpl)))
+	  (if (< (length arr) 5)
+		  (format stream "~A" arr)
+		  (format stream "#(~A ~A ~A ~A ...)"
+				  (aref arr 0) (aref arr 1) (aref arr 2) (aref arr 3))))))
+		  
 
 
 ;;------------------------------------------------------------------------------
@@ -406,7 +403,7 @@
 							 (functor_function (clone print-item-fnc))
 							 (lambda (s x) (format s "~A" x))))
 	(format stream "begin dump ---------------------~%")
-	(let ((arr (__tuple-items tpl)))
+	(let ((arr (__inner-array tpl)))
 	  (declare (type simple-vector arr))
 	  (do ((cnt (length arr))
 		   (idx 0 (1+ idx)))
