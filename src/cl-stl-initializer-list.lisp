@@ -52,17 +52,6 @@
 ;;--------------------------------------------------------------------------------
 #-cl-stl-0x98
 (onlisp/defdelim #\{ #\} (&rest items)
-  (labels ((__inits (sym lst idx acc)
-			 (if (null lst)
-				 (nreverse acc)
-				 (__inits sym (cdr lst) (1+ idx)
-						  (cl:push `(setf (aref ,sym ,idx) ,(car lst)) acc)))))
-	(let ((arr (gensym "ARR")))
-	  `(locally (declare (optimize speed))
-		 (let ((,arr (make-array ,(length items))))
-		   (declare (type cl:vector ,arr))
-		   ,@(__inits arr items 0 nil)
-		   (make-instance 'initializer_list :data ,arr))))))
-
-
-
+  `(make-instance 'initializer_list
+				  :data (make-array ,(length items)
+									:initial-contents (cl:list ,@items))))
