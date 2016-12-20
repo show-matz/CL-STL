@@ -102,12 +102,6 @@
 ;;
 ;;------------------------------------------------------------------------------
 (locally (declare (optimize speed))
-  (defmethod operator_= ((lhs (eql nil)) (rhs pair))
-	(let ((arr (__inner-array rhs)))
-	  (declare (type cl:simple-vector arr))
-	  (make_pair (svref arr 0) (svref arr 1)))))
-
-(locally (declare (optimize speed))
   (defmethod operator_= ((lhs pair) (rhs pair))
 	(let ((arr1 (__inner-array lhs))
 		  (arr2 (__inner-array rhs)))
