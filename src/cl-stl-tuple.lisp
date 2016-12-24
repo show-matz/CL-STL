@@ -110,7 +110,18 @@
 	(__make_tuple-from-args (arg)))
 
   (define-constructor tuple (&rest args)
-	(__make_tuple-from-list args)))
+	(__make_tuple-from-list args))
+
+  (define-constructor-macro tuple (&rest args)
+	(let ((g-arr (gensym "ARR")))
+	  `(locally (declare (optimize speed))
+		 (let ((,g-arr (make-array ,(length args) :initial-element nil)))
+		   (declare (type cl:vector ,g-arr))
+		   ,@(let ((idx 0))
+				(mapcar (lambda (arg)
+						  (prog1 `(_= (aref ,g-arr ,idx) ,arg)
+							(incf idx))) args))
+		   (make-instance 'tuple :items ,g-arr))))))
 
 
 #-cl-stl-0x98
