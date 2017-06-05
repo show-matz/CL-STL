@@ -694,13 +694,15 @@
 (defmethod-overload sort ((lst forward_list))
   (setf (cdr (__slst-top-node lst))
 		(cl:sort (cdr (__slst-top-node lst))
-				 (lambda (a b) (_< a b)))))
+				 (lambda (a b) (_< a b))))
+  nil)
 
 #-cl-stl-0x98
 (defmethod-overload sort ((lst forward_list) less-bf)
   (setf (cdr (__slst-top-node lst))
 		(cl:sort (cdr (__slst-top-node lst))
-				 (lambda (a b) (funcall less-bf a b)))))
+				 (lambda (a b) (funcall less-bf a b))))
+  nil)
 
 #-cl-stl-0x98
 (defmethod-overload reverse ((lst forward_list))
