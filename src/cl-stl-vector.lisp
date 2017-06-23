@@ -688,7 +688,7 @@
 		(__vector-move-buffer (vec-core-buffer core) new-buf size)
 		(setf (vec-core-buffer   core) new-buf)
 		(setf (vec-core-capacity core) size))))
-  cont)
+  nil)
 
 ;; insert ( single elemente ) - returns iterator
 (defmethod-overload insert ((cont stl:vector)
