@@ -1,11 +1,11 @@
 (in-package :cl-stl)
 
-(declaim (inline __deq-external-to-block-index
+(declaim (inline __deq-external-to-chunk-index
 				 __deq-external-to-item-index
-				 __deque-ensure-core-exist
-				 __deque-ensure-block-exist))
+				 __deq-ensure-core-exist
+				 __deq-ensure-chunk-exist))
 
-(defconstant +DEQUE-BLOCK-SIZE+      16)
+(defconstant +DEQUE-CHUNK-SIZE+      16)
 (defconstant +DEQUE-INDEX-MAGIC+     -4)
 (defconstant +DEQUE-INITIAL-MAP-LEN+  4)
 
@@ -14,11 +14,8 @@
 ;; class difinition
 ;;
 ;;--------------------------------------------------------------------
-(defstruct (deque-block (:conc-name __deq-block-))
-  (buffer (make-array +DEQUE-BLOCK-SIZE+ :initial-element nil) :type simple-vector))
-
 (defstruct (deque-core (:conc-name __deq-core-))
-  (pivot       0 :type fixnum)    ; block index
+  (pivot       0 :type fixnum)    ; chunk index
   (top-offset  0 :type fixnum)    ; from pivot
   (size-cache  0 :type fixnum)
   (map         (make-array +DEQUE-INITIAL-MAP-LEN+ :initial-element nil) :type simple-vector))
@@ -60,30 +57,26 @@
 ;;
 ;;--------------------------------------------------------------------
 (locally (declare (optimize speed))
-  (defun __deq-block-clone (src-blk)
-	(let* ((new-blk (make-deque-block :buffer (make-array +DEQUE-BLOCK-SIZE+
-														  :initial-element nil)))
-		   (dst     (__deq-block-buffer new-blk))
-		   (src     (__deq-block-buffer src-blk)))
+  (defun __deq-chunk-clone (src)
+	(let* ((dst (make-array +DEQUE-CHUNK-SIZE+ :initial-element nil)))
 	  (declare (type simple-vector dst src))
 	  (do ((idx 0 (1+ idx)))
-		  ((= idx +DEQUE-BLOCK-SIZE+) new-blk)
+		  ((= idx +DEQUE-CHUNK-SIZE+) dst)
 		(declare (type fixnum idx))
 		(_= (svref dst idx) (svref src idx))))))
 
 (locally (declare (optimize speed))
-  (defun __deq-block-fill (blk val start end)
+  (defun __deq-chunk-fill (chunk val start end)
+	(declare (type simple-vector chunk))
 	(declare (type fixnum start end))
-	(when blk
-	  (do ((idx start (1+ idx))
-		   (buf (__deq-block-buffer blk)))
+	(when chunk
+	  (do ((idx start (1+ idx)))
 		  ((= idx end) nil)
 		(declare (type fixnum idx))
-		(declare (type simple-vector buf))
-		(_= (svref buf idx) val)))))
+		(_= (svref chunk idx) val)))))
 
 (locally (declare (optimize speed))
-  (defun __deque-create-core ()
+  (defun __deq-create-core ()
 	(let ((core   (make-deque-core))
 		  (offset 0)
 		  (pivot  (ash +DEQUE-INITIAL-MAP-LEN+ -1)))
@@ -92,31 +85,30 @@
 	  (setf (__deq-core-top-offset core) offset)
 	  core)))
 
-;; get block index from external index.
+;; get chunk index from external index.
 (locally (declare (optimize speed))
-  (defun __deq-external-to-block-index (core external-index)
-	(declare (type fixnum external-index))
+  (defun __deq-external-to-chunk-index (core ex-index)
+	(declare (type fixnum ex-index))
 	(the fixnum
 		 (+ (the fixnum (__deq-core-pivot core))
-			(the fixnum (ash (the fixnum
-										 (+ external-index
+			(the fixnum (ash (the fixnum (+ ex-index
 											(the fixnum (__deq-core-top-offset core))))
 									+DEQUE-INDEX-MAGIC+))))))
 
 ;; get item index from external index.
 (locally (declare (optimize speed))
-  (defun __deq-external-to-item-index (core external-index)
-	(declare (type fixnum external-index))
-	(logand (+ external-index (__deq-core-top-offset core)) (1- +DEQUE-BLOCK-SIZE+))))
+  (defun __deq-external-to-item-index (core ex-index)
+	(declare (type fixnum ex-index))
+	(logand (+ ex-index (__deq-core-top-offset core)) (1- +DEQUE-CHUNK-SIZE+))))
 
-(defmacro __deque-error-when-empty (core op)
+(defmacro __deq-error-when-empty (core op)
   (let ((g-core (gensym "CORE")))
 	`(let ((,g-core ,core))
 	   (when (or (null ,g-core)
 				 (zerop (__deq-core-size-cache ,g-core)))
 		 (error 'undefined-behavior :what ,(format nil "~A for empty deque." op))))))
 
-(defmacro __deque-check-iterator-belong (itr cont)
+(defmacro __deq-check-iterator-belong (itr cont)
   (declare (ignorable itr cont))
   #-cl-stl-debug nil
   #+cl-stl-debug (check-type cont symbol)
@@ -125,7 +117,7 @@
   `(unless (eq (deque-core ,cont) (__deq-itr-core ,itr))
 	 (error 'undefined-behavior :what ,(format nil "~A is not iterator of ~A." itr cont))))
 
-(defmacro __deque-check-iterator-range (itr1 itr2)
+(defmacro __deq-check-iterator-range (itr1 itr2)
   (declare (ignorable itr1 itr2))
   #-cl-stl-debug nil
   #+cl-stl-debug (check-type itr1 symbol)
@@ -136,26 +128,26 @@
 	 (error 'undefined-behavior :what ,(format nil "[~A ~A) isn't legal sequence." itr1 itr2))))
   
 
-(defun __deque-ensure-core-exist (cont)
+(defun __deq-ensure-core-exist (cont)
   (unless (deque-core cont)
-	(setf (deque-core cont) (__deque-create-core)))
+	(setf (deque-core cont) (__deq-create-core)))
   (deque-core cont))
 
-(defun __deque-ensure-block-exist (core idx)
+(defun __deq-ensure-chunk-exist (core idx)
   (let ((map (__deq-core-map core)))
 	(unless (svref map idx)
 	  (setf (svref map idx)
-			(make-deque-block :buffer (make-array +DEQUE-BLOCK-SIZE+ :initial-element nil))))
+			(make-array +DEQUE-CHUNK-SIZE+ :initial-element nil)))
 	(svref map idx)))
 
-(defun __deque-extend-map (core &optional (new-block-count 0))
+(defun __deq-extend-map (core &optional (new-chunk-count 0))
   (let* ((old-map (__deq-core-map core))
 		 (old-map-size (length old-map))
 		 (new-map-size (max +DEQUE-INITIAL-MAP-LEN+
-							(* 2 (if (<= new-block-count 0)
-									 old-map-size new-block-count))))
+							(* 2 (if (<= new-chunk-count 0)
+									 old-map-size new-chunk-count))))
 		 (new-map (make-array new-map-size :initial-element nil))
-		 (src (__deq-external-to-block-index core 0))
+		 (src (__deq-external-to-chunk-index core 0))
 		 (dst (ash new-map-size -2))
 		 (new-pivot (+ dst (- (__deq-core-pivot core) src))))
 	(do ()
@@ -167,7 +159,7 @@
 	(setf (__deq-core-pivot core) new-pivot)
 	(setf (__deq-core-map core) new-map)))
 
-(defmacro __deque-get-at (core ex-idx)
+(defmacro __deq-get-at (core ex-idx)
   (let ((g-core   (gensym "CORE"))
 		(g-ex-idx (gensym "EX-IDX"))
 		(g-index1 (gensym "INDEX1"))
@@ -175,12 +167,12 @@
 	`(locally (declare (optimize speed))
 	   (let* ((,g-core   ,core)
 			  (,g-ex-idx ,ex-idx)
-			  (,g-index1 (__deq-external-to-block-index ,g-core ,g-ex-idx))
+			  (,g-index1 (__deq-external-to-chunk-index ,g-core ,g-ex-idx))
 			  (,g-index2 (__deq-external-to-item-index  ,g-core ,g-ex-idx)))
 		 (declare (type fixnum ,g-index1 ,g-index2))
-		 (svref (__deq-block-buffer (svref (__deq-core-map ,g-core) ,g-index1)) ,g-index2)))))
+		 (svref (svref (__deq-core-map ,g-core) ,g-index1) ,g-index2)))))
 
-(defmacro __deque-set-at (core ex-idx new-val need-copy)
+(defmacro __deq-set-at (core ex-idx new-val need-copy)
   (let ((g-core    (gensym "CORE"))
 		(g-ex-idx  (gensym "EX-IDX"))
 		(g-new-val (gensym "NEW-VAL"))
@@ -190,14 +182,14 @@
 	   (let* ((,g-core    ,core)
 			  (,g-ex-idx  ,ex-idx)
 			  (,g-new-val ,new-val)
-			  (,g-index1 (__deq-external-to-block-index ,g-core ,g-ex-idx))
+			  (,g-index1 (__deq-external-to-chunk-index ,g-core ,g-ex-idx))
 			  (,g-index2 (__deq-external-to-item-index  ,g-core ,g-ex-idx)))
 	   (declare (type fixnum ,g-index1 ,g-index2))
 	   (if ,need-copy
-		   (_=   (svref (__deq-block-buffer (svref (__deq-core-map ,g-core) ,g-index1)) ,g-index2) ,g-new-val)
-		   (setf (svref (__deq-block-buffer (svref (__deq-core-map ,g-core) ,g-index1)) ,g-index2) ,g-new-val))))))
+		   (_=   (svref (svref (__deq-core-map ,g-core) ,g-index1) ,g-index2) ,g-new-val)
+		   (setf (svref (svref (__deq-core-map ,g-core) ,g-index1) ,g-index2) ,g-new-val))))))
 
-(defmacro __deque-iterate-block (core begin end (blk-sym idx1-sym idx2-sym) &body body)
+(defmacro __deq-iterate-chunk (core begin end (blk-sym idx1-sym idx2-sym) &body body)
   (let ((g-core  (gensym "CORE"))
 		(g-begin (gensym "BEGIN"))
 		(g-end   (gensym "END"))
@@ -212,9 +204,9 @@
 			  (,g-begin ,begin)
 			  (,g-end   ,end)
 			  (,g-map  (__deq-core-map ,g-core))
-			  (,g-blk1 (__deq-external-to-block-index ,g-core ,g-begin))
+			  (,g-blk1 (__deq-external-to-chunk-index ,g-core ,g-begin))
 			  (,g-idx1 (__deq-external-to-item-index  ,g-core ,g-begin))
-			  (,g-blk2 (__deq-external-to-block-index ,g-core ,g-end))
+			  (,g-blk2 (__deq-external-to-chunk-index ,g-core ,g-end))
 			  (,g-idx2 (__deq-external-to-item-index  ,g-core ,g-end)))
 		 (declare (type simple-vector ,g-map))
 		 (declare (type fixnum ,g-blk1 ,g-blk2 ,g-idx1 ,g-idx2))
@@ -223,11 +215,11 @@
 		   (declare (type fixnum ,g-blk))
 		   (let* ((,blk-sym  (svref ,g-map ,g-blk))
 				  (,idx1-sym (if (= ,g-blk ,g-blk1) ,g-idx1 0))
-				  (,idx2-sym (if (= ,g-blk ,g-blk2) ,g-idx2 +DEQUE-BLOCK-SIZE+)))
+				  (,idx2-sym (if (= ,g-blk ,g-blk2) ,g-idx2 +DEQUE-CHUNK-SIZE+)))
 			 (declare (type fixnum ,idx1-sym ,idx2-sym))
 			 ,@body))))))
 
-(defmacro __deque-iterate-item (core begin end (arr-sym idx-sym) &body body)
+(defmacro __deq-iterate-item (core begin end (arr-sym idx-sym) &body body)
   (let ((g-core  (gensym "CORE"))
 		(g-begin (gensym "BEGIN"))
 		(g-end   (gensym "END"))
@@ -237,7 +229,7 @@
 		(g-blk2  (gensym "BLK2"))
 		(g-idx2  (gensym "IDX2"))
 		(g-blk   (gensym "BLK"))
-		(g-block (gensym "BLOCK"))
+		(g-chunk (gensym "CHUNK"))
 		(g-i1    (gensym "I1"))
 		(g-i2    (gensym "I2")))
 	`(locally (declare (optimize speed))
@@ -245,20 +237,20 @@
 			  (,g-begin ,begin)
 			  (,g-end   ,end)
 			  (,g-map  (__deq-core-map ,g-core))
-			  (,g-blk1 (__deq-external-to-block-index ,g-core ,g-begin))
+			  (,g-blk1 (__deq-external-to-chunk-index ,g-core ,g-begin))
 			  (,g-idx1 (__deq-external-to-item-index  ,g-core ,g-begin))
-			  (,g-blk2 (__deq-external-to-block-index ,g-core ,g-end))
+			  (,g-blk2 (__deq-external-to-chunk-index ,g-core ,g-end))
 			  (,g-idx2 (__deq-external-to-item-index  ,g-core ,g-end)))
 		 (declare (type simple-vector ,g-map))
 		 (declare (type fixnum ,g-blk1 ,g-blk2 ,g-idx1 ,g-idx2))
 		 (do ((,g-blk ,g-blk1 (1+ ,g-blk)))
 			 ((< ,g-blk2 ,g-blk) nil)
 		   (declare (type fixnum ,g-blk))
-		   (let ((,g-block (svref ,g-map ,g-blk)))
-			 (when ,g-block
-			   (let ((,arr-sym (__deq-block-buffer ,g-block))
+		   (let ((,g-chunk (svref ,g-map ,g-blk)))
+			 (when ,g-chunk
+			   (let ((,arr-sym ,g-chunk)
 					 (,g-i1    (if (= ,g-blk ,g-blk1) ,g-idx1 0))
-					 (,g-i2    (if (= ,g-blk ,g-blk2) ,g-idx2 +DEQUE-BLOCK-SIZE+)))
+					 (,g-i2    (if (= ,g-blk ,g-blk2) ,g-idx2 +DEQUE-CHUNK-SIZE+)))
 				 (declare (type simple-vector ,arr-sym))
 				 (declare (type fixnum ,g-i1 ,g-i2))
 				 (do ((,idx-sym ,g-i1 (1+ ,idx-sym)))
@@ -267,7 +259,7 @@
 				   ,@body)))))))))
 
 (locally (declare (optimize speed))
-  (defun __deque-move_backward (core begin end dest)
+  (defun __deq-move_backward (core begin end dest)
 	(declare (type fixnum begin end dest))
 	(let ((dst (+ dest (the fixnum (- end begin)))))
 	  (declare (type fixnum dst))
@@ -275,14 +267,14 @@
 		  ((<= end begin) nil)
 		(decf end)
 		(decf dst)
-		(__deque-set-at core dst (__deque-get-at core end) t)))))
+		(__deq-set-at core dst (__deq-get-at core end) t)))))
 
 (locally (declare (optimize speed))
-  (defun __deque-move-foreward (core begin end dest)
+  (defun __deq-move-foreward (core begin end dest)
 	(declare (type fixnum begin end dest))
 	(do ()
 		((= begin end) nil)
-	  (__deque-set-at core dest (__deque-get-at core begin) t)
+	  (__deq-set-at core dest (__deq-get-at core begin) t)
 	  (incf begin)
 	  (incf dest))))
 
@@ -293,106 +285,106 @@
 ;;
 ;;--------------------------------------------------------------------
 (locally (declare (optimize speed))
-  (defun __deque-push_back (core new-val need-copy)
+  (defun __deq-push_back (core new-val need-copy)
 	(let* ((cnt  (__deq-core-size-cache core))
-		   (idx1 (__deq-external-to-block-index core cnt))
+		   (idx1 (__deq-external-to-chunk-index core cnt))
 		   (idx2 (__deq-external-to-item-index  core cnt)))
 	  (declare (type fixnum cnt idx1 idx2))
 	  (when (<= (length (__deq-core-map core)) idx1)
-		(__deque-extend-map core)
-		(setf idx1 (__deq-external-to-block-index core cnt)))
-	  (let ((blk (__deque-ensure-block-exist core idx1)))
+		(__deq-extend-map core)
+		(setf idx1 (__deq-external-to-chunk-index core cnt)))
+	  (let ((chunk (__deq-ensure-chunk-exist core idx1)))
 		(if need-copy
-			(_= (svref (__deq-block-buffer blk) idx2) new-val)
-			(setf (svref (__deq-block-buffer blk) idx2) new-val))
+			(_=   (svref chunk idx2) new-val)
+			(setf (svref chunk idx2) new-val))
 		(incf (__deq-core-size-cache core))))))
 
 (locally (declare (optimize speed))
-  (defun __deque-push_front (core new-val need-copy)
-	(let ((idx1 (__deq-external-to-block-index core -1))
+  (defun __deq-push_front (core new-val need-copy)
+	(let ((idx1 (__deq-external-to-chunk-index core -1))
 		  (idx2 (__deq-external-to-item-index  core -1)))
 	  (declare (type fixnum idx1 idx2))
 	  (when (< idx1 0)
-		(__deque-extend-map core)
-		(setf idx1 (__deq-external-to-block-index core -1)))
-	  (let ((blk (__deque-ensure-block-exist core idx1)))
+		(__deq-extend-map core)
+		(setf idx1 (__deq-external-to-chunk-index core -1)))
+	  (let ((chunk (__deq-ensure-chunk-exist core idx1)))
 		(if need-copy
-			(_= (svref (__deq-block-buffer blk) idx2) new-val)
-			(setf (svref (__deq-block-buffer blk) idx2) new-val))
+			(_=   (svref chunk idx2) new-val)
+			(setf (svref chunk idx2) new-val))
 		(decf (__deq-core-top-offset core))
 		(incf (__deq-core-size-cache core))))))
 
-(defun __deque-pop_back (core)
-  (__deque-set-at core (decf (__deq-core-size-cache core)) nil t))
+(defun __deq-pop_back (core)
+  (__deq-set-at core (decf (__deq-core-size-cache core)) nil t))
 
-(defun __deque-pop_front (core)
-  (__deque-set-at core 0 nil t)
+(defun __deq-pop_front (core)
+  (__deq-set-at core 0 nil t)
   (incf (__deq-core-top-offset core))
   (decf (__deq-core-size-cache core)))
 
 (locally (declare (optimize speed))
-  (defun __deque-clear (core)
+  (defun __deq-clear (core)
 	(when core
-	  (__deque-iterate-block core 0 (__deq-core-size-cache core) (blk idx1 idx2)
-		(__deq-block-fill blk nil idx1 idx2))
+	  (__deq-iterate-chunk core 0 (__deq-core-size-cache core) (chunk idx1 idx2)
+		(__deq-chunk-fill chunk nil idx1 idx2))
 	  (setf (__deq-core-size-cache core) 0))
 	nil))
 
 (locally (declare (optimize speed))
-  (defun __deque-resize-downward (core old-size new-size)
+  (defun __deq-resize-downward (core old-size new-size)
 	(declare (type fixnum old-size new-size))
-	(__deque-iterate-block core new-size old-size (blk idx1 idx2)
-	  (__deq-block-fill blk nil idx1 idx2))
+	(__deq-iterate-chunk core new-size old-size (chunk idx1 idx2)
+	  (__deq-chunk-fill chunk nil idx1 idx2))
 	(setf (__deq-core-size-cache core) new-size)))
 
 (locally (declare (optimize speed))
-  (defun __deque-resize-rightward (core old-size new-size initial-element)
+  (defun __deq-resize-rightward (core old-size new-size initial-element)
 	(declare (type fixnum old-size new-size))
 	(let ((map  (__deq-core-map core))
-		  (blk1 (__deq-external-to-block-index core old-size))
+		  (blk1 (__deq-external-to-chunk-index core old-size))
 		  (idx1 (__deq-external-to-item-index  core old-size))
-		  (blk2 (__deq-external-to-block-index core new-size))
+		  (blk2 (__deq-external-to-chunk-index core new-size))
 		  (idx2 (__deq-external-to-item-index  core new-size)))
 	  (declare (type simple-vector map))
 	  (declare (type fixnum blk1 blk2 idx1 idx2))
 	  (when (<= (length map) blk2)
-		(__deque-extend-map core (the fixnum (- blk2 blk1)))
+		(__deq-extend-map core (the fixnum (- blk2 blk1)))
 		(setf map  (__deq-core-map core))
-		(setf blk1 (__deq-external-to-block-index core old-size))
-		(setf blk2 (__deq-external-to-block-index core new-size)))
+		(setf blk1 (__deq-external-to-chunk-index core old-size))
+		(setf blk2 (__deq-external-to-chunk-index core new-size)))
 	  (do ((blk blk1 (1+ blk)))
 		  ((< blk2 blk) nil)
 		(declare (type fixnum blk))
-		(__deq-block-fill (__deque-ensure-block-exist core blk)
+		(__deq-chunk-fill (__deq-ensure-chunk-exist core blk)
 						  initial-element
 						  (if (= blk blk1) idx1 0)
-						  (if (= blk blk2) idx2 +DEQUE-BLOCK-SIZE+))))
+						  (if (= blk blk2) idx2 +DEQUE-CHUNK-SIZE+))))
 	(setf (__deq-core-size-cache core) new-size)))
 
 (locally (declare (optimize speed))
-  ;; ToDo : __deque-resize-leftward : temporary implementation...
-  (defun __deque-resize-leftward (core old-size new-size initial-element)
+  ;; ToDo : __deq-resize-leftward : temporary implementation...
+  (defun __deq-resize-leftward (core old-size new-size initial-element)
 	(declare (type fixnum old-size new-size))
 	(do ((idx old-size (1+ idx)))
 		((= idx new-size) nil)
 	  (declare (type fixnum idx))
-	  (__deque-push_front core initial-element t))
+	  (__deq-push_front core initial-element t))
 	(setf (__deq-core-size-cache core) new-size)))
 
 (locally (declare (optimize speed))
-  (defun __deque-counted-assign (core count get-next-value)
+  (defun __deq-counted-assign (core count get-next-value)
 	(declare (type fixnum count))
 	(declare (type cl:function get-next-value))
 	(let ((size (__deq-core-size-cache core)))
 	  (cond
-		((< count size) (__deque-resize-downward  core size count))
-		((< size count) (__deque-resize-rightward core size count nil))))
-	(__deque-iterate-item core 0 count (arr idx)
+		((< count size) (__deq-resize-downward  core size count))
+		((< size count) (__deq-resize-rightward core size count nil))))
+	(__deq-iterate-item core 0 count (arr idx)
 		(_= (svref arr idx) (funcall get-next-value)))))
 
 
 (locally (declare (optimize speed))
-  (defun __deque-counted-insert (core itr count get-next-value need-copy)
+  (defun __deq-counted-insert (core itr count get-next-value need-copy)
 	(declare (type fixnum count))
 	(declare (type cl:function get-next-value))
 	(let* ((offset   (__deq-itr-offset itr))
@@ -403,40 +395,40 @@
 	  (declare (type fixnum offset index old-size new-size))
 	  (if (< (- old-size index) index)
 		  (progn
-			(__deque-resize-rightward core old-size new-size nil)
+			(__deq-resize-rightward core old-size new-size nil)
 			(let ((end (+ index count)))
 			  (declare (type fixnum end))
-			  (__deque-move_backward core index old-size end)
+			  (__deq-move_backward core index old-size end)
 			  (do ((idx index (1+ idx)))
 				  ((= idx end) offset)
-				(__deque-set-at core idx (funcall get-next-value) need-copy))))
+				(__deq-set-at core idx (funcall get-next-value) need-copy))))
 		  (progn
-			(__deque-resize-leftward core old-size new-size nil)
+			(__deq-resize-leftward core old-size new-size nil)
 			(let ((end (+ index count)))
 			  (declare (type fixnum end))
-			  (__deque-move-foreward core count end 0)
+			  (__deq-move-foreward core count end 0)
 			  (do ((idx index (1+ idx)))
 				  ((= idx end) (the fixnum (- offset count)))
-				(__deque-set-at core idx (funcall get-next-value) need-copy))))))))
+				(__deq-set-at core idx (funcall get-next-value) need-copy))))))))
 
-(defun __deque-insert (core itr value need-copy)
+(defun __deq-insert (core itr value need-copy)
   (let* ((size   (__deq-core-size-cache core))
 		 (offset (__deq-itr-offset itr))
 		 (ex     (- offset (__deq-core-top-offset core))))
 	(cond
 	  ((zerop ex)
-	   (__deque-push_front core value need-copy)
+	   (__deq-push_front core value need-copy)
 	   (let ((itr (clone itr)))
 		 (advance itr -1)
 		 itr))
 	  ((= ex size)
-	   (__deque-push_back core value need-copy)
+	   (__deq-push_back core value need-copy)
 	   (clone itr))
 	  (t
 	   (make-instance 'deque_iterator
 					  :core   core
-					  :offset (__deque-counted-insert core itr 1
-													  (lambda () value) need-copy))))))
+					  :offset (__deq-counted-insert core itr 1
+													(lambda () value) need-copy))))))
 
 (locally (declare (optimize speed))
   (defun __create-deque (size &optional (initial-element nil))
@@ -444,11 +436,11 @@
 	(__error-unless-non-negative-fixnum deque size)
 	(if (zerop size)
 		(make-instance 'deque)
-		(let ((core (__deque-create-core)))
+		(let ((core (__deq-create-core)))
 		  (do ((idx 0 (1+ idx)))
 			  ((<= size idx) nil)
 			(declare (type fixnum idx))
-			(__deque-push_back core initial-element t))
+			(__deq-push_back core initial-element t))
 		  (make-instance 'deque :core core)))))
 
 
@@ -477,12 +469,12 @@
 	  (declare (type fixnum cnt))
 	  (if (zerop cnt)
 		  (make-instance 'deque)
-		  (let ((core (__deque-create-core)))
+		  (let ((core (__deq-create-core)))
 			(do ((idx 0 (1+ idx)))
 				((= idx cnt)
 				 (make-instance 'deque :core core))
 			  (declare (type fixnum idx))
-			  (__deque-push_back core (svref arr idx) t)))))))
+			  (__deq-push_back core (svref arr idx) t)))))))
 
 ; move constructor
 #-cl-stl-0x98
@@ -510,10 +502,10 @@
   (define-constructor deque ((itr1 input_iterator) (itr2 input_iterator))
 	(if (_== itr1 itr2)
 		(make-instance 'deque)
-		(let ((core (__deque-create-core)))
+		(let ((core (__deq-create-core)))
 		  (with-operators
 			  (for (((itr @~itr1)) (_/= itr itr2) ++itr)
-				(__deque-push_back core *itr t)))
+				(__deq-push_back core *itr t)))
 		  (make-instance 'deque :core core))))
 
   (define-constructor deque ((itr1 const-vector-pointer) (itr2 const-vector-pointer))
@@ -525,9 +517,9 @@
 	  (declare (type cl:vector buf))
 	  (if (= idx1 idx2)
 		  (make-instance 'deque)
-		  (let ((core (__deque-create-core)))
+		  (let ((core (__deq-create-core)))
 			(for (nil (< idx1 idx2) (incf idx1))
-			  (__deque-push_back core (aref buf idx1) t))
+			  (__deq-push_back core (aref buf idx1) t))
 			(make-instance 'deque :core core))))))
 
 
@@ -542,8 +534,8 @@
 			(if (zerop cnt)
 				(make-instance 'deque)
 				(let* ((old-map   (__deq-core-map core))
-					   (src-blk1  (the fixnum (__deq-external-to-block-index core 0)))
-					   (src-blk2  (the fixnum (__deq-external-to-block-index core cnt)))
+					   (src-blk1  (the fixnum (__deq-external-to-chunk-index core 0)))
+					   (src-blk2  (the fixnum (__deq-external-to-chunk-index core cnt)))
 					   (blk-cnt   (the fixnum
 									   (cl:max +DEQUE-INITIAL-MAP-LEN+
 											   (the fixnum
@@ -559,7 +551,7 @@
 				  (declare (type fixnum src-blk1 src-blk2 blk-cnt dst-blk new-pivot))
 				  (do ((src-blk src-blk1 (1+ src-blk)))
 					  ((< src-blk2 src-blk) nil)
-					(setf (svref new-map dst-blk) (__deq-block-clone (svref old-map src-blk)))
+					(setf (svref new-map dst-blk) (__deq-chunk-clone (svref old-map src-blk)))
 					(incf dst-blk))
 				  (make-instance 'deque
 								 :core (make-deque-core :pivot      new-pivot
@@ -589,8 +581,8 @@
 			(let ((idx 0)
 				  (core (deque-core cont1)))
 			  (declare (type fixnum idx))
-			  (__deque-iterate-item (deque-core cont2) 0 new-size (arr arr-idx)
-				(__deque-set-at core idx (svref arr arr-idx) t)
+			  (__deq-iterate-item (deque-core cont2) 0 new-size (arr arr-idx)
+				(__deq-set-at core idx (svref arr arr-idx) t)
 				(incf idx))))))
 	cont1))
 
@@ -610,8 +602,8 @@
 ;MEMO : always returns nil.
 (defmethod-overload assign ((cont deque) (count integer) value)
   (__error-unless-non-negative-fixnum assign count)
-  (__deque-counted-assign (__deque-ensure-core-exist cont)
-						  count (lambda () value))
+  (__deq-counted-assign (__deq-ensure-core-exist cont)
+						count (lambda () value))
   nil)
 
 ;; range assign.
@@ -623,31 +615,31 @@
   (defmethod-overload assign ((cont deque)
 							  (itr1 input_iterator) (itr2 input_iterator))
 	(if (_== itr1 itr2)
-		(__deque-clear (deque-core cont))
+		(__deq-clear (deque-core cont))
 		(with-operators
 			(let ((idx  0)
 				  (cnt  (size cont))
 				  (itr  @~itr1)
-				  (core (__deque-ensure-core-exist cont)))
+				  (core (__deq-ensure-core-exist cont)))
 			  (declare (type fixnum idx cnt))
 			  (for (nil (and (< idx cnt)
 							 (_/= itr itr2)) (progn ++itr (incf idx)))
-				(__deque-set-at core idx *itr t))
+				(__deq-set-at core idx *itr t))
 			  (if (< idx cnt)
-				  (__deque-resize-downward core cnt idx)
+				  (__deq-resize-downward core cnt idx)
 				  (for (nil (_/= itr itr2) ++itr)
-					(__deque-push_back core *itr t))))))
+					(__deq-push_back core *itr t))))))
 	nil)
 
   (defmethod-overload assign ((cont deque)
 							  (itr1 forward_iterator) (itr2 forward_iterator))
 	(if (_== itr1 itr2)
-		(__deque-clear (deque-core cont))
+		(__deq-clear (deque-core cont))
 		(with-operators
 			(let ((itr   @~itr1)
 				  (count (distance itr1 itr2)))
-			  (__deque-counted-assign (__deque-ensure-core-exist cont)
-									  count (lambda () (prog1 *itr ++itr))))))
+			  (__deq-counted-assign (__deq-ensure-core-exist cont)
+									count (lambda () (prog1 *itr ++itr))))))
 	nil)
 
   (defmethod-overload assign ((cont deque)
@@ -659,11 +651,11 @@
 	  (declare (type fixnum idx1 idx2))
 	  (declare (type cl:vector buf))
 	  (if (= idx1 idx2)
-		  (__deque-clear (deque-core cont))
-		  (__deque-counted-assign (__deque-ensure-core-exist cont)
-								  (the fixnum (- idx2 idx1))
-								  (lambda ()
-									(prog1 (aref buf idx1) (incf idx1))))))
+		  (__deq-clear (deque-core cont))
+		  (__deq-counted-assign (__deq-ensure-core-exist cont)
+								(the fixnum (- idx2 idx1))
+								(lambda ()
+								  (prog1 (aref buf idx1) (incf idx1))))))
 	nil))
 
 ;;MEMO : always returns nil.
@@ -675,16 +667,16 @@
 	  (declare (type simple-vector arr))
 	  (declare (type fixnum cnt))
 	  (if (zerop cnt)
-		  (__deque-clear (deque-core cont))
-		  (let* ((core (__deque-ensure-core-exist cont))
+		  (__deq-clear (deque-core cont))
+		  (let* ((core (__deq-ensure-core-exist cont))
 				 (size (__deq-core-size-cache core)))
 			(declare (type fixnum size))
 			(cond
-			  ((< cnt size) (__deque-resize-downward  core size cnt))
-			  ((< size cnt) (__deque-resize-rightward core size cnt nil)))
+			  ((< cnt size) (__deq-resize-downward  core size cnt))
+			  ((< size cnt) (__deq-resize-rightward core size cnt nil)))
 			(let ((idx 0))
 			  (declare (type fixnum idx))
-			  (__deque-iterate-item core 0 cnt (dst dst-idx)
+			  (__deq-iterate-item core 0 cnt (dst dst-idx)
 				(_= (svref dst dst-idx) (svref arr idx))
 				(incf idx))))))
 	nil))
@@ -694,41 +686,41 @@
 ; iterators
 ;-----------------------------------------------------
 (defmethod begin ((cont deque))
-  (let ((core (__deque-ensure-core-exist cont)))
+  (let ((core (__deq-ensure-core-exist cont)))
 	(make-instance 'deque_iterator
 				   :core   core
 				   :offset (__deq-core-top-offset core))))
 
 (defmethod end ((cont deque))
-  (let ((core (__deque-ensure-core-exist cont)))
+  (let ((core (__deq-ensure-core-exist cont)))
 	(make-instance 'deque_iterator
 				   :core   core
 				   :offset (+ (__deq-core-top-offset core)
 							  (__deq-core-size-cache core)))))
 
 (defmethod rbegin ((cont deque))
-  (let ((core (__deque-ensure-core-exist cont)))
+  (let ((core (__deq-ensure-core-exist cont)))
 	(make-instance 'deque_reverse_iterator
 				   :core   core
 				   :offset (1- (+ (__deq-core-top-offset core)
 								  (__deq-core-size-cache core))))))
 
 (defmethod rend ((cont deque))
-  (let ((core (__deque-ensure-core-exist cont)))
+  (let ((core (__deq-ensure-core-exist cont)))
 	(make-instance 'deque_reverse_iterator
 				   :core   core
 				   :offset (1- (__deq-core-top-offset core)))))
 
 #-cl-stl-0x98
 (defmethod cbegin ((cont deque))
-  (let ((core (__deque-ensure-core-exist cont)))
+  (let ((core (__deq-ensure-core-exist cont)))
 	(make-instance 'deque_const_iterator
 				   :core   core
 				   :offset (__deq-core-top-offset core))))
 
 #-cl-stl-0x98
 (defmethod cend ((cont deque))
-  (let ((core (__deque-ensure-core-exist cont)))
+  (let ((core (__deq-ensure-core-exist cont)))
 	(make-instance 'deque_const_iterator
 				   :core   core
 				   :offset (+ (__deq-core-top-offset core)
@@ -736,7 +728,7 @@
 
 #-cl-stl-0x98
 (defmethod crbegin ((cont deque))
-  (let ((core (__deque-ensure-core-exist cont)))
+  (let ((core (__deq-ensure-core-exist cont)))
 	(make-instance 'deque_const_reverse_iterator
 				   :core   core
 				   :offset (1- (+ (__deq-core-top-offset core)
@@ -744,7 +736,7 @@
 
 #-cl-stl-0x98
 (defmethod crend ((cont deque))
-  (let ((core (__deque-ensure-core-exist cont)))
+  (let ((core (__deq-ensure-core-exist cont)))
 	(make-instance 'deque_const_reverse_iterator
 				   :core   core
 				   :offset (1- (__deq-core-top-offset core)))))
@@ -768,11 +760,11 @@
 
 (labels ((imp (cont new-size initial-element)
 		   (__error-unless-non-negative-fixnum resize new-size)
-		   (let* ((core (__deque-ensure-core-exist cont))
+		   (let* ((core (__deq-ensure-core-exist cont))
 				  (cnt  (__deq-core-size-cache core)))
 			 (cond
-			   ((< new-size cnt) (__deque-resize-downward  core cnt new-size))
-			   ((< cnt new-size) (__deque-resize-rightward core cnt new-size initial-element))))
+			   ((< new-size cnt) (__deq-resize-downward  core cnt new-size))
+			   ((< cnt new-size) (__deq-resize-rightward core cnt new-size initial-element))))
 		   nil))
 
   (defmethod-overload resize ((cont deque) (new-size integer))
@@ -787,24 +779,24 @@
 ;-----------------------------------------------------
 (defmethod front ((cont deque))
   (let ((core (deque-core cont)))
-	(__deque-error-when-empty core "front")
-	(__deque-get-at core 0)))
+	(__deq-error-when-empty core "front")
+	(__deq-get-at core 0)))
 
 (defmethod (setf front) (val (cont deque))
   (let ((core (deque-core cont)))
-	(__deque-error-when-empty core "front")
-	(__deque-set-at core 0 val t)
+	(__deq-error-when-empty core "front")
+	(__deq-set-at core 0 val t)
 	val))
 
 (defmethod back ((cont deque))
   (let ((core (deque-core cont)))
-	(__deque-error-when-empty core "back")
-	(__deque-get-at core (1- (__deq-core-size-cache core)))))
+	(__deq-error-when-empty core "back")
+	(__deq-get-at core (1- (__deq-core-size-cache core)))))
 
 (defmethod (setf back) (val (cont deque))
   (let ((core (deque-core cont)))
-	(__deque-error-when-empty core "back")
-	(__deque-set-at core (1- (__deq-core-size-cache core)) val t)
+	(__deq-error-when-empty core "back")
+	(__deq-set-at core (1- (__deq-core-size-cache core)) val t)
 	val))
 
 (defmethod at ((cont deque) (idx integer))
@@ -812,21 +804,21 @@
 		 (size (__deq-core-size-cache core)))
 	(when (or (< idx 0) (<= size idx))
 	  (error 'out_of_range :what (format nil "index ~A is out of range." idx)))
-	(__deque-get-at core idx)))
+	(__deq-get-at core idx)))
 
 (defmethod (setf at) (val (cont deque) (idx integer))
   (let* ((core (deque-core cont))
 		 (size (__deq-core-size-cache core)))
 	(when (or (< idx 0) (<= size idx))
 	  (error 'out_of_range :what (format nil "index ~A is out of range." idx)))
-	(__deque-set-at core idx val t)
+	(__deq-set-at core idx val t)
 	val))
 
 (defmethod operator_[] ((cont deque) (idx integer))
-  (__deque-get-at (deque-core cont) idx))
+  (__deq-get-at (deque-core cont) idx))
 
 (defmethod (setf operator_[]) (val (cont deque) (idx integer))
-  (__deque-set-at (deque-core cont) idx val t)
+  (__deq-set-at (deque-core cont) idx val t)
   val)
 
 (defmethod operator_& ((cont deque) (idx integer))
@@ -840,33 +832,33 @@
 ; modifiers
 ;-----------------------------------------------------
 (defmethod push_back ((container deque) new-val)
-  (__deque-push_back (__deque-ensure-core-exist container) new-val t)
+  (__deq-push_back (__deq-ensure-core-exist container) new-val t)
   nil)
 
 (defmethod push_front ((container deque) new-val)
-  (__deque-push_front (__deque-ensure-core-exist container) new-val t)
+  (__deq-push_front (__deq-ensure-core-exist container) new-val t)
   nil)
 
 (defmethod pop_back ((cont deque))
   (let ((core (deque-core cont)))
-	(__deque-error-when-empty core "pop_back")
-	(__deque-pop_back core))
+	(__deq-error-when-empty core "pop_back")
+	(__deq-pop_back core))
   nil)
 
 (defmethod pop_front ((cont deque))
   (let ((core (deque-core cont)))
-	(__deque-error-when-empty core "pop_front")
-	(__deque-pop_front core))
+	(__deq-error-when-empty core "pop_front")
+	(__deq-pop_front core))
   nil)
 
 #-cl-stl-0x98    ; emplace_back
 (defmethod-overload emplace_back ((container deque) new-val)
-  (__deque-push_back (__deque-ensure-core-exist container) new-val nil)
+  (__deq-push_back (__deq-ensure-core-exist container) new-val nil)
   nil)
 
 #-cl-stl-0x98    ; emplace_front
 (defmethod-overload emplace_front ((container deque) new-val)
-  (__deque-push_front (__deque-ensure-core-exist container) new-val nil)
+  (__deq-push_front (__deq-ensure-core-exist container) new-val nil)
   nil)
 
 #-cl-stl-0x98    ; shrink_to_fit
@@ -876,8 +868,8 @@
 	(declare (type fixnum cnt))
 	(unless (zerop cnt)
 	  (let* ((old-map   (__deq-core-map core))
-			 (src-blk1  (__deq-external-to-block-index core 0))
-			 (src-blk2  (__deq-external-to-block-index core cnt))
+			 (src-blk1  (__deq-external-to-chunk-index core 0))
+			 (src-blk2  (__deq-external-to-chunk-index core cnt))
 			 (blk-cnt   (max +DEQUE-INITIAL-MAP-LEN+
 							 (1+ (- src-blk2 src-blk1))))
 			 (new-map   (make-array blk-cnt :initial-element nil))
@@ -896,8 +888,8 @@
 (defmethod-overload insert ((cont deque)
 							(itr  #+cl-stl-0x98 deque_iterator
 								  #-cl-stl-0x98 deque_const_iterator) value)
-  (__deque-check-iterator-belong itr cont)
-  (__deque-insert (deque-core cont) itr value t))
+  (__deq-check-iterator-belong itr cont)
+  (__deq-insert (deque-core cont) itr value t))
 
 ;; insert ( fill )
 (locally (declare (optimize speed))
@@ -906,7 +898,7 @@
 									#-cl-stl-0x98 deque_const_iterator) (count integer) value)
 	;; MEMO : in C++98, always returns nil. but C++11, returns iterator.
 	(declare (type fixnum count))
-	(__deque-check-iterator-belong itr cont)
+	(__deq-check-iterator-belong itr cont)
 	(__error-unless-non-negative-fixnum insert count)
 	(let* ((core (deque-core cont))
 		   (size (__deq-core-size-cache core))
@@ -919,7 +911,7 @@
 			 ((= idx count) #+cl-stl-0x98 nil
 							#-cl-stl-0x98 (begin cont))
 		   (declare (type fixnum idx))
-		   (__deque-push_front core value t)))
+		   (__deq-push_front core value t)))
 		((= ex size)
 		 (do ((idx 0 (1+ idx)))
 			 ((= idx count) #+cl-stl-0x98 nil
@@ -927,10 +919,10 @@
 											(advance itr (* -1 count))
 											itr))
 		   (declare (type fixnum idx))
-		   (__deque-push_back core value t)))
+		   (__deq-push_back core value t)))
 		(t
-		 (let ((offset (__deque-counted-insert core itr count
-											   (lambda () value) t)))
+		 (let ((offset (__deq-counted-insert core itr count
+											 (lambda () value) t)))
 		   (declare (ignorable offset))
 		   #+cl-stl-0x98 nil
 		   #-cl-stl-0x98 (make-instance 'deque_iterator
@@ -944,7 +936,7 @@
 							  (itr  #+cl-stl-0x98 deque_iterator
 									#-cl-stl-0x98 deque_const_iterator)
 							  (itr1 input_iterator) (itr2 input_iterator))
-	(__deque-check-iterator-belong itr cont)
+	(__deq-check-iterator-belong itr cont)
 	(let ((core (deque-core cont)))
 	  (if (_== itr1 itr2)
 		  (clone itr)
@@ -963,14 +955,14 @@
 													 #-cl-stl-0x98 (let ((itr (end cont)))
 																	 (advance itr (the fixnum (- cnt)))
 																	 itr))
-						(__deque-push_back core *itr1 t)))))))))
+						(__deq-push_back core *itr1 t)))))))))
 
   (defmethod-overload insert ((cont deque)
 							  (itr  #+cl-stl-0x98 deque_iterator
 									#-cl-stl-0x98 deque_const_iterator)
 							  (itr1 forward_iterator) (itr2 forward_iterator))
 	;; MEMO : in C++98, always returns nil. but C++11, returns iterator.
-	(__deque-check-iterator-belong itr cont)
+	(__deq-check-iterator-belong itr cont)
 	(let ((core (deque-core cont)))
 	  (if (_== itr1 itr2)
 		  (clone itr)
@@ -993,14 +985,14 @@
 													 #-cl-stl-0x98 (let ((itr (end cont)))
 																	 (advance itr (the fixnum (- cnt)))
 																	 itr))
-					   (__deque-push_back core *itr1 t)))))
+					   (__deq-push_back core *itr1 t)))))
 			  ;; otherwise
 			  (t
 			   (with-operators
 				   (let ((itr1  @~itr1)
 						 (count (distance itr1 itr2)))
-					 (let ((offset (__deque-counted-insert core itr count
-														   (lambda () (prog1 *itr1 ++itr1)) t)))
+					 (let ((offset (__deq-counted-insert core itr count
+														 (lambda () (prog1 *itr1 ++itr1)) t)))
 					   (declare (ignorable offset))
 					   #+cl-stl-0x98 nil
 					   #-cl-stl-0x98 (make-instance 'deque_iterator
@@ -1010,7 +1002,7 @@
 							  (itr  #+cl-stl-0x98 deque_iterator
 									#-cl-stl-0x98 deque_const_iterator)
 							  (itr1 bidirectional_iterator) (itr2 bidirectional_iterator))
-	(__deque-check-iterator-belong itr cont)
+	(__deq-check-iterator-belong itr cont)
 	(let ((core (deque-core cont)))
 	  (if (_== itr1 itr2)
 		  (clone itr)
@@ -1025,7 +1017,7 @@
 				   (for (((itr2 @~itr2)) (_/= itr1 itr2) nil :returns #+cl-stl-0x98 nil
 																	  #-cl-stl-0x98 (begin cont))
 					 --itr2
-					 (__deque-push_front core *itr2 t))))
+					 (__deq-push_front core *itr2 t))))
 			  ;; when tail insertion
 			  ((= ex size)
 			   (with-operators
@@ -1036,14 +1028,14 @@
 													#-cl-stl-0x98 (let ((itr (end cont)))
 																	(advance itr (the fixnum (- cnt)))
 																	itr))
-					   (__deque-push_back core *itr1 t)))))
+					   (__deq-push_back core *itr1 t)))))
 			  ;; otherwise
 			  (t
 			   (with-operators
 				   (let ((itr1  @~itr1)
 						 (count (distance itr1 itr2)))
-					 (let ((offset (__deque-counted-insert core itr count
-														   (lambda () (prog1 *itr1 ++itr1)) t)))
+					 (let ((offset (__deq-counted-insert core itr count
+														 (lambda () (prog1 *itr1 ++itr1)) t)))
 					   (declare (ignorable offset))
 					   #+cl-stl-0x98 nil
 					   #-cl-stl-0x98 (make-instance 'deque_iterator
@@ -1053,7 +1045,7 @@
 							  (itr  #+cl-stl-0x98 deque_iterator
 									#-cl-stl-0x98 deque_const_iterator)
 							  (itr1 const-vector-pointer) (itr2 const-vector-pointer))
-	(__deque-check-iterator-belong itr cont)
+	(__deq-check-iterator-belong itr cont)
 	(__pointer-check-iterator-range itr1 itr2)
 	(let ((core (deque-core cont))
 		  (idx1 (opr::vec-ptr-index  itr1))
@@ -1074,7 +1066,7 @@
 			   (for (nil (< idx1 idx2) nil :returns #+cl-stl-0x98 nil
 													#-cl-stl-0x98 (begin cont))
 				 (decf idx2)
-				 (__deque-push_front core (aref buf idx2) t)))
+				 (__deq-push_front core (aref buf idx2) t)))
 			  ;; when tail insertion
 			  ((= ex size)
 			   (for (nil (< idx1 idx2) (incf idx1)
@@ -1082,12 +1074,12 @@
 												#-cl-stl-0x98 (let ((itr (end cont)))
 																(advance itr (the fixnum (- cnt)))
 																itr))
-				 (__deque-push_back core (aref buf idx1) t)))
+				 (__deq-push_back core (aref buf idx1) t)))
 			  ;; otherwise
 			  (t
-			   (let ((offset (__deque-counted-insert core itr cnt
-													 (lambda ()
-													   (prog1 (aref buf idx1) (incf idx1))) t)))
+			   (let ((offset (__deq-counted-insert core itr cnt
+												   (lambda ()
+													 (prog1 (aref buf idx1) (incf idx1))) t)))
 				 (declare (ignorable offset))
 				 #+cl-stl-0x98 nil
 				 #-cl-stl-0x98 (make-instance 'deque_iterator
@@ -1098,11 +1090,11 @@
 #-cl-stl-0x98
 (defmethod-overload insert ((cont deque)
 							(itr  deque_const_iterator) (rm& remove-reference))
-  (__deque-check-iterator-belong itr cont)
+  (__deq-check-iterator-belong itr cont)
   (let ((core (deque-core cont)))
 	(with-reference (rm)
 	  (prog1
-		  (__deque-insert core itr rm nil)
+		  (__deq-insert core itr rm nil)
 		(setf rm nil)))))
 
 
@@ -1111,7 +1103,7 @@
 (locally (declare (optimize speed))
   (defmethod-overload insert ((cont deque)
 							  (itr  deque_const_iterator) (il initializer_list))
-	(__deque-check-iterator-belong itr cont)
+	(__deq-check-iterator-belong itr cont)
 	(let* ((core (deque-core cont))
 		   (arr  (__initlist-data il))
 		   (cnt  (length arr)))
@@ -1129,36 +1121,36 @@
 				   ((zerop idx) (begin cont))
 				 (declare (type fixnum idx))
 				 (decf idx)
-				 (__deque-push_front core (svref arr idx) t)))
+				 (__deq-push_front core (svref arr idx) t)))
 			  ((= ex size)
 			   (do ((idx 0 (1+ idx)))
 				   ((= idx cnt) (let ((itr (end cont)))
 								  (advance itr (* -1 cnt))
 								  itr))
 				 (declare (type fixnum idx))
-				 (__deque-push_back core (svref arr idx) t)))
+				 (__deq-push_back core (svref arr idx) t)))
 			  (t
 			   (let ((idx 0))
 				 (declare (type fixnum idx))
 				 (make-instance 'deque_iterator
 								:core core
-								:offset (__deque-counted-insert core itr cnt
-																(lambda ()
-																  (prog1
-																	  (svref arr idx)
-																	(incf idx))) t))))))))))
+								:offset (__deq-counted-insert core itr cnt
+															  (lambda ()
+																(prog1
+																	(svref arr idx)
+																  (incf idx))) t))))))))))
 				   
 
 #-cl-stl-0x98    ; emplace
 (defmethod-overload emplace ((cont deque)
 							 (itr  deque_const_iterator) new-val)
-  (__deque-check-iterator-belong itr cont)
-  (__deque-insert (deque-core cont) itr new-val nil))
+  (__deq-check-iterator-belong itr cont)
+  (__deq-insert (deque-core cont) itr new-val nil))
 
 (defmethod-overload erase ((cont deque)
 						   (itr  #+cl-stl-0x98 deque_iterator
 								 #-cl-stl-0x98 deque_const_iterator))
-  (__deque-check-iterator-belong itr cont)
+  (__deq-check-iterator-belong itr cont)
   (let ((core (deque-core cont)))
 	(let* ((size   (__deq-core-size-cache core))
 		   (offset (__deq-itr-offset itr))
@@ -1166,18 +1158,18 @@
 	  (declare (type fixnum size offset ex))
 	  (cond
 		((zerop ex)
-		 (__deque-pop_front core)
+		 (__deq-pop_front core)
 		 (begin cont))
 		((= ex (1- size))
-		 (__deque-pop_back core)
+		 (__deq-pop_back core)
 		 (end cont))
 		((< ex (- size ex))
-		 (__deque-move_backward core 0 ex 1)
-		 (__deque-pop_front core)
+		 (__deq-move_backward core 0 ex 1)
+		 (__deq-pop_front core)
 		 (make-instance 'deque_iterator :core core :offset (1+ offset)))
 		(t
-		 (__deque-move-foreward core (1+ ex) size ex)
-		 (__deque-pop_back core)
+		 (__deq-move-foreward core (1+ ex) size ex)
+		 (__deq-pop_back core)
 		 (make-instance 'deque_iterator :core core :offset offset))))))
 			
 
@@ -1186,8 +1178,8 @@
 								  #-cl-stl-0x98 deque_const_iterator)
 						   (last  #+cl-stl-0x98 deque_iterator
 								  #-cl-stl-0x98 deque_const_iterator))
-  (__deque-check-iterator-belong first cont)
-  (__deque-check-iterator-range  first last)
+  (__deq-check-iterator-belong first cont)
+  (__deq-check-iterator-range  first last)
   (let ((core (deque-core cont)))
 	(let* ((size (__deq-core-size-cache core))
 		   (ex1  (- (__deq-itr-offset first) (__deq-core-top-offset core)))
@@ -1196,27 +1188,27 @@
 	  (declare (type fixnum size ex1 ex2 cnt))
 	  (cond
 		((and (zerop ex1) (= ex2 size))
-		 (__deque-clear core)
+		 (__deq-clear core)
 		 (end cont))
 		((zerop ex1)
-		 (__deque-iterate-item core 0 ex2 (arr idx)
+		 (__deq-iterate-item core 0 ex2 (arr idx)
 		   (setf (svref arr idx) nil))
 		 (incf (__deq-core-top-offset core) cnt)
 		 (decf (__deq-core-size-cache core) cnt)
 		 (begin cont))
 		((= ex2 size)
-		 (__deque-resize-downward core size ex1)
+		 (__deq-resize-downward core size ex1)
 		 (end cont))
 		((< ex1 (- size ex2))
-		 (__deque-move_backward core 0 ex1 cnt)
-		 (__deque-iterate-item core 0 cnt (arr idx)
+		 (__deq-move_backward core 0 ex1 cnt)
+		 (__deq-iterate-item core 0 cnt (arr idx)
 		   (setf (svref arr idx) nil))
 		 (incf (__deq-core-top-offset core) cnt)
 		 (decf (__deq-core-size-cache core) cnt)
 		 (make-instance 'deque_iterator :core core :offset (__deq-itr-offset last)))
 		(t
-		 (__deque-move-foreward core ex2 size ex1)
-		 (__deque-iterate-item core (- size cnt) size (arr idx)
+		 (__deq-move-foreward core ex2 size ex1)
+		 (__deq-iterate-item core (- size cnt) size (arr idx)
 		   (setf (svref arr idx) nil))
 		 (decf (__deq-core-size-cache core) cnt)
 		 (make-instance 'deque_iterator :core core :offset (__deq-itr-offset first)))))))
@@ -1229,7 +1221,7 @@
   (values cont1 cont2))
 
 (defmethod clear ((cont deque))
-  (__deque-clear (deque-core cont)))
+  (__deq-clear (deque-core cont)))
 
 
 ;-----------------------------------------------------
@@ -1248,8 +1240,8 @@
 					  (do ((idx 0 (1+ idx)))
 						  ((= idx cnt) t)
 						(declare (type fixnum idx))
-						(unless (_== (__deque-get-at core1 idx)
-									   (__deque-get-at core2 idx))
+						(unless (_== (__deq-get-at core1 idx)
+									 (__deq-get-at core2 idx))
 						  (return-from __container-equal nil)))))))))
 
 	(defmethod operator_== ((cont1 deque) (cont2 deque))
@@ -1275,8 +1267,8 @@
 							  (cnt (min cnt1 cnt2)))
 							 ((= idx cnt) nil)
 						   (declare (type fixnum idx cnt))
-						   (let ((val1 (__deque-get-at core1 idx))
-								 (val2 (__deque-get-at core2 idx)))
+						   (let ((val1 (__deq-get-at core1 idx))
+								 (val2 (__deq-get-at core2 idx)))
 							 (when (_< val1 val2)
 							   (return-from __container-compare -1))
 							 (when (_< val2 val1)
@@ -1309,7 +1301,7 @@
 	;;MEMO : func is always lambda function ( see stl:for ).
 	(let ((core (deque-core cont)))
 	  (when core
-		(__deque-iterate-item core 0 (size cont) (arr idx)
+		(__deq-iterate-item core 0 (size cont) (arr idx)
 			(funcall func (svref arr idx)))))))
 
 
@@ -1332,8 +1324,8 @@
 
 (defmethod operator_* ((itr deque_const_iterator))
   (let ((core (__deq-itr-core itr)))
-	(__deque-get-at core (- (the fixnum (__deq-itr-offset itr))
-							(the fixnum (__deq-core-top-offset core))))))
+	(__deq-get-at core (- (the fixnum (__deq-itr-offset itr))
+						  (the fixnum (__deq-core-top-offset core))))))
 
 (defmethod (setf operator_*) (new-val (itr deque_const_iterator))
   (error 'setf-to-const :what "setf to (_* deque_const_iterator)."))
@@ -1399,7 +1391,7 @@
 		 (pt   (- (the fixnum (__deq-itr-offset itr))
 				  (the fixnum (__deq-core-top-offset core)))))
 	(declare (type fixnum pt))
-	(__deque-get-at core (the fixnum (+ idx pt)))))
+	(__deq-get-at core (the fixnum (+ idx pt)))))
 
 (defmethod (setf operator_[]) (new-val (itr deque_const_iterator) (idx integer))
   (error 'setf-to-const :what "setf to (_[] deque_const_iterator)."))
@@ -1440,8 +1432,8 @@
 
 (defmethod (setf operator_*) (new-val (itr deque_iterator))
   (let ((core (__deq-itr-core itr)))
-	(__deque-set-at core (- (the fixnum (__deq-itr-offset itr))
-							(the fixnum (__deq-core-top-offset core))) new-val t)))
+	(__deq-set-at core (- (the fixnum (__deq-itr-offset itr))
+						  (the fixnum (__deq-core-top-offset core))) new-val t)))
 
 (defmethod operator_+ ((itr deque_iterator) (n integer))
   (make-instance 'deque_iterator
@@ -1459,7 +1451,7 @@
 		 (pt   (- (the fixnum (__deq-itr-offset itr))
 				  (the fixnum (__deq-core-top-offset core)))))
 	(declare (type fixnum pt))
-	(__deque-set-at core (the fixnum (+ idx pt)) new-val t)))
+	(__deq-set-at core (the fixnum (+ idx pt)) new-val t)))
 
 ;; creating reverse iterator.
 (define-constructor reverse_iterator ((itr deque_iterator))
@@ -1490,8 +1482,8 @@
 
 (defmethod operator_* ((itr deque_const_reverse_iterator))
   (let ((core (__deq-rev-itr-core itr)))
-	(__deque-get-at core (the fixnum (- (the fixnum (__deq-rev-itr-offset itr))
-										(the fixnum (__deq-core-top-offset core)))))))
+	(__deq-get-at core (the fixnum (- (the fixnum (__deq-rev-itr-offset itr))
+									  (the fixnum (__deq-core-top-offset core)))))))
 
 (defmethod (setf operator_*) (new-val (itr deque_const_reverse_iterator))
   (error 'setf-to-const :what "setf to (_* deque_const_reverse_iterator)."))
@@ -1560,7 +1552,7 @@
 		 (pt   (- (the fixnum (__deq-rev-itr-offset itr))
 				  (the fixnum (__deq-core-top-offset core)))))
 	(declare (type fixnum pt))
-	(__deque-get-at core (the fixnum (- (the fixnum (- pt idx)))))))
+	(__deq-get-at core (the fixnum (- (the fixnum (- pt idx)))))))
 
 (defmethod (setf operator_[]) (new-val (itr deque_const_reverse_iterator) (idx integer))
   (error 'setf-to-const :what "setf to (_[] deque_const_reverse_iterator)."))
@@ -1607,8 +1599,8 @@
 
 (defmethod (setf operator_*) (new-val (itr deque_reverse_iterator))
   (let ((core (__deq-rev-itr-core itr)))
-	(__deque-set-at core (- (the fixnum (__deq-rev-itr-offset itr))
-							(the fixnum (__deq-core-top-offset core))) new-val t)))
+	(__deq-set-at core (- (the fixnum (__deq-rev-itr-offset itr))
+						  (the fixnum (__deq-core-top-offset core))) new-val t)))
 
 (defmethod operator_+ ((itr deque_reverse_iterator) (n integer))
   (make-instance 'deque_reverse_iterator
@@ -1623,9 +1615,9 @@
 (defmethod (setf operator_[]) (new-val (itr deque_reverse_iterator) (idx integer))
   (declare (type fixnum idx))
   (let ((core (__deq-rev-itr-core itr)))
-	(__deque-set-at core (- (the fixnum
-								 (- (the fixnum (__deq-rev-itr-offset itr))
-									(the fixnum (__deq-core-top-offset core)))) idx) new-val t)))
+	(__deq-set-at core (- (the fixnum
+							   (- (the fixnum (__deq-rev-itr-offset itr))
+								  (the fixnum (__deq-core-top-offset core)))) idx) new-val t)))
 
 (defmethod base ((rev-itr deque_reverse_iterator))
   (make-instance 'deque_iterator
@@ -1652,13 +1644,12 @@
 						   (functor_function (clone print-item-fnc))
 						   (lambda (s x) (format s "~A" x))))
   (format stream "begin dump ---------------------~%")
-  (labels ((dump-block (blk-index blk)
+  (labels ((dump-chunk (index chunk)
 			 (format stream "-----------------------~%")
-			 (do ((buf (__deq-block-buffer blk))
-				  (idx 0 (incf idx)))
-				 ((= idx +DEQUE-BLOCK-SIZE+) nil)
-			   (format stream "~A    ~A " blk-index idx)
-			   (funcall print-item-fnc stream (svref buf idx))
+			 (do ((idx 0 (incf idx)))
+				 ((= idx +DEQUE-CHUNK-SIZE+) nil)
+			   (format stream "~A    ~A " index idx)
+			   (funcall print-item-fnc stream (svref chunk idx))
 			   (format stream "~%"))
 			 (format stream "-----------------------~%")))
 	(let ((core (deque-core container)))
@@ -1667,10 +1658,10 @@
 			   (len (length map)))
 		  (do ((idx 0 (incf idx)))
 			  ((= idx len) nil)
-			(let ((blk (svref map idx)))
-			  (if (null blk)
-				  (format stream "~A nil~%" idx)
-				  (dump-block idx blk))))))))
+			(let ((chunk (svref map idx)))
+			  (if chunk
+				  (dump-chunk idx chunk)
+				  (format stream "~A nil~%" idx))))))))
   (format stream "end dump -----------------------~%")
   nil)
 
