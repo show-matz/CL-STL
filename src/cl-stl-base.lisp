@@ -212,6 +212,10 @@
 				:unary_function    ; deprecated in 0x11 or later
 				:binary_function   ; deprecated in 0x11 or later
 				:define-functor
+#-(or
+   cl-stl-0x98
+   cl-stl-0x11
+   cl-stl-0x14) :apply
 				;classes
 				:plus
 				:minus
@@ -386,6 +390,10 @@
 				:second
 				;functional
   #-cl-stl-0x98 :function
+#-(or
+   cl-stl-0x98
+   cl-stl-0x11
+   cl-stl-0x14) :apply
 				;algorithm
 				:count
 				:equal
@@ -415,16 +423,19 @@
 ;;------------------------------------------------------------------------------
 (when (< 1 (+ #+CL-STL-0x98 1
               #+CL-STL-0x11 1
-              #+CL-STL-0x14 1))
+              #+CL-STL-0x14 1
+              #+CL-STL-0x17 1))
   (error "version features duplicated."))
 
 (defun stl_version ()
   #+cl-stl-0x98			:cl-stl-0x98
   #+cl-stl-0x11			:cl-stl-0x11
   #+cl-stl-0x14			:cl-stl-0x14
+  #+cl-stl-0x17			:cl-stl-0x17
   #-(or cl-stl-0x98
 		cl-stl-0x11
-		cl-stl-0x14)	:cl-stl-0x14)
+		cl-stl-0x14
+		cl-stl-0x17)	:cl-stl-0x17)
 
 
 ;;------------------------------------------------------------------------------
@@ -439,8 +450,8 @@
     (set-dispatch-macro-character #\# left
        #'(lambda (stream char1 char2)
 		   (declare (ignore char1 char2))
-           (apply fn
-                  (read-delimited-list right stream t))))))
+           (cl:apply fn
+					 (read-delimited-list right stream t))))))
 
 #-cl-stl-0x98
 (defmacro onlisp/defdelim (left right parms &body body)
@@ -1786,7 +1797,6 @@
 #-cl-stl-0x98 (defgeneric shuffle (first last gen)
   (:documentation "
 <<signature>>
-  (cl-stl:shuffle first last)
   (cl-stl:shuffle first last gen)
 
 <<parameters>>

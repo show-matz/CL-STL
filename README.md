@@ -1,7 +1,7 @@
 # CL-STL
 Common Lisp library like C++ STL ( Standard Template Library ).
 
-#### This library depend on...
+#### This library depends on...
 
 * closer-mop
 * CL-OVERLOAD
@@ -25,7 +25,7 @@ Common Lisp library like C++ STL ( Standard Template Library ).
 
 #### Copyright
 
-Copyright (c) 2015 Show MATSUOKA.
+Copyright (c) 2015-2018 Show MATSUOKA.
 
 
 #### License

@@ -209,6 +209,10 @@
 				:unary_function    ; deprecated in 0x11 or later
 				:binary_function   ; deprecated in 0x11 or later
 				:define-functor
+;#-(or
+;   cl-stl-0x98
+;   cl-stl-0x11
+;   cl-stl-0x14) :apply                          ; shadowed
 				;classes
 				:plus
 				:minus
