@@ -30,7 +30,7 @@
 #-cl-stl-0x98
 (defmacro __array-error-when-empty (buf-sym op)
   (check-type buf-sym symbol)
-  `(when (null ,buf-sym)
+  `(when (zerop (length ,buf-sym))
 	 (error 'undefined-behavior :what ,(format nil "~A for empty array." op))))
 
 #-cl-stl-0x98
