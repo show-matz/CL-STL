@@ -289,7 +289,8 @@
 		   (declare (type cl:simple-vector ,g-arr))
 		   (unless (<= ,max (length ,g-arr))
 			 (error 'out_of_range :what "Variable count to tie is out of range."))
-		   ,@code
+		   (locally (declare (type (cl:simple-vector ,max) ,g-arr))
+			 ,@code)
 		   nil)))))
 
 ;; :ignore keyword can use.
@@ -310,8 +311,9 @@
 			 (declare (type cl:simple-vector ,g-arr))
 			 (unless (<= ,max (length ,g-arr))
 			   (error 'out_of_range :what "Variable count to with_tie is out of range."))
-			 (symbol-macrolet ,code
-			   ,@body)))))))
+			 (locally (declare (type (cl:simple-vector ,max) ,g-arr))
+			   (symbol-macrolet ,code
+				 ,@body))))))))
 
 
 ;;------------------------------------------------------------------------------
