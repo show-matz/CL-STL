@@ -515,14 +515,16 @@
   (__list-insert-node (list-last-sentinel container)
 					  (__list-new-node new-val nil))
   (incf (list-size-cache container))
-  nil)
+  #+(or cl-stl-0x11 cl-stl-0x14) nil
+  #-(or cl-stl-0x11 cl-stl-0x14) new-val)
 
 #-cl-stl-0x98    ; emplace_front
 (defmethod-overload emplace_front ((container stl:list) new-val)
   (__list-insert-node (list-node-next (list-top-sentinel container))
 					  (__list-new-node new-val nil))
   (incf (list-size-cache container))
-  nil)
+  #+(or cl-stl-0x11 cl-stl-0x14) nil
+  #-(or cl-stl-0x11 cl-stl-0x14) new-val)
 
 ;; insert ( single element ) - returns iterator
 (defmethod-overload insert ((cont stl:list)

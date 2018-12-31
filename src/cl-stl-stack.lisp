@@ -110,7 +110,8 @@
 #-cl-stl-0x98    ; emplace
 (defmethod-overload emplace ((container stack) new-val)
   (__emplace_back-2 (__stck-container container) new-val)
-  nil)
+  #+(or cl-stl-0x11 cl-stl-0x14) nil
+  #-(or cl-stl-0x11 cl-stl-0x14) new-val)
 
 #-cl-stl-0x98
 (defmethod-overload swap ((cont1 stack) (cont2 stack))

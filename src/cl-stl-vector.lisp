@@ -677,7 +677,8 @@
 (defmethod-overload emplace_back ((container stl:vector) new-val)
   (__vector-ensure-core-exist container)
   (__vector-push_back (vector-core container) new-val nil)
-  nil)
+  #+(or cl-stl-0x11 cl-stl-0x14) nil
+  #-(or cl-stl-0x11 cl-stl-0x14) new-val)
 
 #-cl-stl-0x98    ; shrink_to_fit
 (defmethod shrink_to_fit ((cont stl:vector))

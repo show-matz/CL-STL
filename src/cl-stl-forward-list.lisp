@@ -384,7 +384,8 @@
 		(new-node (__slst-newnode new-val nil nil)))
 	(setf (cdr new-node) (cdr top-sentinel))
 	(setf (cdr top-sentinel) new-node))
-  nil)
+  #+(or cl-stl-0x11 cl-stl-0x14) nil
+  #-(or cl-stl-0x11 cl-stl-0x14) new-val)
 
 #-cl-stl-0x98
 (let ((eos (gensym "EOS")))

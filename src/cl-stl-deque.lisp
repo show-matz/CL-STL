@@ -854,12 +854,14 @@
 #-cl-stl-0x98    ; emplace_back
 (defmethod-overload emplace_back ((container deque) new-val)
   (__deq-push_back (__deq-ensure-core-exist container) new-val nil)
-  nil)
+  #+(or cl-stl-0x11 cl-stl-0x14) nil
+  #-(or cl-stl-0x11 cl-stl-0x14) new-val)
 
 #-cl-stl-0x98    ; emplace_front
 (defmethod-overload emplace_front ((container deque) new-val)
   (__deq-push_front (__deq-ensure-core-exist container) new-val nil)
-  nil)
+  #+(or cl-stl-0x11 cl-stl-0x14) nil
+  #-(or cl-stl-0x11 cl-stl-0x14) new-val)
 
 #-cl-stl-0x98    ; shrink_to_fit
 (defmethod shrink_to_fit ((cont deque))
