@@ -12232,6 +12232,7 @@
 ; last      : randomaccess_iterator
 ; rand      : unary_function ( default : #'random )
 ; returns   : nil.
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14)
 (locally (declare (optimize speed))
 
   ;;PTN; random_shuffle : 0 -   r
@@ -12250,9 +12251,15 @@
 						   (_= *itr tmp))))))))
 
   (defmethod-overload random_shuffle ((first randomaccess_iterator) (last randomaccess_iterator))
+	#+cl-stl-warn-deprecated
+	(progn
+	  #+cl-stl-0x14 (warn "random_shuffle is deprecated."))
 	(__random_shuffle-imp-0 first last #'random))
 
   (defmethod-overload random_shuffle ((first randomaccess_iterator) (last randomaccess_iterator) rand)
+	#+cl-stl-warn-deprecated
+	(progn
+	  #+cl-stl-0x14 (warn "random_shuffle is deprecated."))
 	(__random_shuffle-imp-0 first last (functor_function (clone rand)))))
 
 
@@ -12270,6 +12277,9 @@
 				   (swap (aref buffer (the fixnum (+ idx1 n))) (aref buffer idx)))))))
 
 	(defmethod-overload random_shuffle ((first vector-pointer) (last vector-pointer))
+	  #+cl-stl-warn-deprecated
+	  (progn
+		#+cl-stl-0x14 (warn "random_shuffle is deprecated."))
 	  ;;(format t "specialized random_shuffle for vector-pointer is invoked.~%")
 	  (__pointer-check-iterator-range first last)
 	  (__random_shuffle-imp-1 (opr::vec-ptr-index  first)
@@ -12277,6 +12287,9 @@
 							  (opr::vec-ptr-buffer first) #'random))
 
 	(defmethod-overload random_shuffle ((first vector-pointer) (last vector-pointer) rand)
+	  #+cl-stl-warn-deprecated
+	  (progn
+		#+cl-stl-0x14 (warn "random_shuffle is deprecated."))
 	  ;;(format t "specialized random_shuffle for vector-pointer is invoked.~%")
 	  (__pointer-check-iterator-range first last)
 	  (__random_shuffle-imp-1 (opr::vec-ptr-index  first)

@@ -318,7 +318,7 @@
 				:reverse_copy
 				:rotate
 				:rotate_copy
-				:random_shuffle
+  #+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) :random_shuffle
   #-cl-stl-0x98 :shuffle
 				; 25.2.12, partitions:
   #-cl-stl-0x98 :is_partitioned
