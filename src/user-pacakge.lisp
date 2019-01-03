@@ -269,6 +269,10 @@
 				;+-----------------------------------------+
 				;| algorithm                               |
 				;+-----------------------------------------+
+#-(or
+   cl-stl-0x98
+   cl-stl-0x11
+   cl-stl-0x14) :clamp
 				; 25.1, non-modifying sequence operations:
   #-cl-stl-0x98 :all_of
   #-cl-stl-0x98 :any_of

@@ -5337,6 +5337,48 @@
 ;;
 ;;------------------------------------------------------------------------------
 
+#-(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14)
+(locally (declare (optimize speed))
+  (defun-overload clamp (val lo hi)
+	#+cl-stl-debug
+	(when (_< hi lo)
+	  (error "clamp : (not (null (_< hi lo)))"))
+	(if (_< val lo)
+		lo
+		(if (_< hi val)
+			hi
+			val))))
+
+#-(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14)
+(locally (declare (optimize speed))
+  (defun-overload clamp (val lo hi comp)
+	#+cl-stl-debug
+	(when (funcall comp hi lo)
+	  (error "clamp : (not (null (funcall comp hi lo)))"))
+	(if (funcall comp val lo)
+		lo
+		(if (funcall comp hi val)
+			hi
+			val))))
+
+#-(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14)
+(declare-function-overload clamp (3 4)
+ :documentation "
+<<signature>>
+  1) (cl-stl:clamp val lo hi)      [0x17]
+  2) (cl-stl:clamp val lo hi comp) [0x17]
+
+<<parameters>>
+  val   : a value of arbitrary type.
+  lo    : a lower limit of arbitrary type.
+  hi    : an upper limit of arbitrary type.
+  comp  : functor for comparison.
+
+<<return value>>
+  1) lo if (_< val lo), hi if (_< hi val), val otherwise.
+  2) lo if (funcall comp val lo), hi if (funcall comp hi val), val otherwise.
+")
+
 ;;------------------------------------------------------------------------------
 ;; 25.1, non-modifying sequence operations:
 ;;------------------------------------------------------------------------------
