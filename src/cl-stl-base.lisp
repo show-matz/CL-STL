@@ -783,7 +783,7 @@
 
 ; capacity
 (defgeneric empty (container))                                     ; t / nil             ; A V D L S MS M MM FL
-(defgeneric size (container))                                      ; fixnum              ; A V D L S MS M MM -- ( FL is ok in extra )
+(defgeneric size (container))                                      ; fixnum              ; A V D L S MS M MM --
 (defgeneric max_size (container))                                  ; fixnum              ; A V D L S MS M MM FL
 (declare-method-overload resize (2 3))                          ; nil                 ; - V D L - -- - -- FL
 (defgeneric capacity (container))                                  ; fixnum              ; - V - - - -- - -- --

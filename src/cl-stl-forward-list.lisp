@@ -316,12 +316,6 @@
 (defmethod empty ((cont forward_list))
   (null (cdr (__slst-top-node cont))))
 
-#-cl-stl-noextra  ; forward_list::size
-(progn
-  #-cl-stl-0x98 
-  (defmethod size ((cont forward_list))
-	(__conslist-count-nodes (cdr (__slst-top-node cont)) nil)))
-
 #-cl-stl-0x98
 (defmethod max_size ((cont forward_list))
   most-positive-fixnum)
