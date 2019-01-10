@@ -4,4 +4,4 @@
   :author "show-matz <show@architect-matsuoka.jpn.org>"
   :licence "LLGPL"
   :depends-on ("cl-stl")
-  :components ((:file "user-pacakge")))
+  :components ((:file "user-package")))
