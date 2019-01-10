@@ -1094,3 +1094,43 @@
 							   (svref arr 4) (svref arr 5)
 							   (svref arr 6) (svref arr 7) (svref arr 8))))
 		  (t (cl:apply     fnc (coerce arr 'cl:list))))))))
+
+
+;;------------------------------------------------------------
+;; function not_fn
+;;------------------------------------------------------------
+#-(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14)
+(define-functor __not_fn (functor)
+  ((op	:initform nil
+		:initarg  :operator
+		:accessor __not_fn-operator)))
+
+;;#-(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14)
+;;(declare-constructor __not_fn (2))
+;;
+;;#-(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14)
+;;(define-constructor __not_fn (op)
+;;  (let* ((op  (clone op))
+;;		 (fnc (functor_function op)))
+;;	(make-instance '__not_fn
+;;				   :operator op
+;;				   :closure (lambda (&rest params)
+;;							  (_! (cl:apply fnc params))))))
+
+#-(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14)
+(defun not_fn (functor)
+  (let* ((op  (clone functor))
+		 (fnc (functor_function op)))
+	(make-instance '__not_fn
+				   :operator op
+				   :closure (lambda (&rest params)
+							  (_! (cl:apply fnc params))))))
+
+#-(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14)
+(defmethod operator_clone ((func __not_fn))
+  (let* ((op   (clone (__not_fn-operator func)))
+		 (fnc  (functor_function op)))
+	(make-instance '__not_fn
+				   :operator op
+				   :closure (lambda (&rest params)
+							  (_! (cl:apply fnc params))))))
