@@ -195,6 +195,10 @@
   #-cl-stl-0x98 :tuple_cat
   #-cl-stl-0x98 :tie
   #-(or cl-stl-noextra cl-stl-0x98)	:with_tie
+#-(or
+   cl-stl-0x98
+   cl-stl-0x11
+   cl-stl-0x14) :make_from_tuple
 				;----------------------------------
 				;utility
 				:pair
