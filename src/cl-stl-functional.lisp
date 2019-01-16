@@ -387,6 +387,10 @@
 (declare-constructor unary_negate (1))
 
 (define-constructor unary_negate (op)
+  #+cl-stl-warn-deprecated
+  (progn
+	#-(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14)
+	(warn "unary_negate is deprecated."))
   (let* ((op  (clone op))
 		 (fnc (functor_function op)))
 	(make-instance 'unary_negate
@@ -395,6 +399,10 @@
 							  (not (funcall fnc arg))))))
 
 (defun not1 (op)
+  #+cl-stl-warn-deprecated
+  (progn
+	#-(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14)
+	(warn "not1 is deprecated."))
   (let* ((op  (clone op))
 		 (fnc (functor_function op)))
 	(make-instance 'unary_negate
@@ -424,6 +432,10 @@
 (declare-constructor binary_negate (1))
 
 (define-constructor binary_negate (op)
+  #+cl-stl-warn-deprecated
+  (progn
+	#-(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14)
+	(warn "binary_negate is deprecated."))
   (let* ((op  (clone op))
 		 (fnc (functor_function op)))
 	(make-instance 'binary_negate
@@ -432,6 +444,10 @@
 							  (not (funcall fnc arg1 arg2))))))
 
 (defun not2 (op)
+  #+cl-stl-warn-deprecated
+  (progn
+	#-(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14)
+	(warn "not2 is deprecated."))
   (let* ((op  (clone op))
 		 (fnc (functor_function op)))
 	(make-instance 'binary_negate

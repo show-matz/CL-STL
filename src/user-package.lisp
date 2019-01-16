@@ -233,8 +233,8 @@
 				:logical_and
 				:logical_or
 				:logical_not
-				:unary_negate
-				:binary_negate
+				:unary_negate	;; deprecated in c++17
+				:binary_negate	;; deprecated in c++17
 				:binder1st
 				:binder2nd
   #-cl-stl-0x98 :bit_and
@@ -247,8 +247,8 @@
 ; #-cl-stl-0x98 :function                        ; shadowed
   #-cl-stl-0x98 :target
 				;utility functions
-				:not1
-				:not2
+				:not1			;; deprecated in c++17
+				:not2			;; deprecated in c++17
   #-cl-stl-0x98 :is_placeholder
   #-cl-stl-0x98 :is_bind_expression
   #-cl-stl-0x98 :bind
