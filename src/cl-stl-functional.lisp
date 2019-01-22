@@ -3,8 +3,8 @@
 
 (declaim (inline not1
 				 not2
-				 bind1st
-				 bind2nd
+  #+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) bind1st
+  #+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) bind2nd
 				 ptr_fun1
 				 ptr_fun2
 				 mem_fun
@@ -475,6 +475,7 @@
 ;------------------------------------------------------------
 ; class binder1st & function bind1st
 ;------------------------------------------------------------
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (define-functor binder1st (#-cl-stl-0x98 functor
 						   #+cl-stl-0x98 unary_function)
   ((op	:initform nil
@@ -484,8 +485,10 @@
 		:initarg  :arg
 		:accessor binder1st-arg)))
 
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (declare-constructor binder1st (2))
 
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (define-constructor binder1st (op arg1)
   #+cl-stl-warn-deprecated
   (progn
@@ -498,6 +501,7 @@
 				   :closure (lambda (arg2)
 							  (funcall fnc arg1 arg2)))))
 
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (defun bind1st (functor arg)
   #+cl-stl-warn-deprecated
   (progn
@@ -510,6 +514,7 @@
 				   :closure (lambda (arg2)
 							  (funcall fnc arg arg2)))))
 
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (defmethod operator_clone ((func binder1st))
   (let* ((op   (clone (binder1st-operator func)))
 		 (arg1 (binder1st-arg func))
@@ -525,6 +530,7 @@
 ;------------------------------------------------------------
 ; class binder2nd & function bind2nd
 ;------------------------------------------------------------
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (define-functor binder2nd (#-cl-stl-0x98 functor
 						   #+cl-stl-0x98 unary_function)
   ((op	:initform nil
@@ -534,8 +540,10 @@
 		:initarg  :arg
 		:accessor binder2nd-arg)))
 
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (declare-constructor binder2nd (2))
 
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (define-constructor binder2nd (op arg2)
   #+cl-stl-warn-deprecated
   (progn
@@ -548,6 +556,7 @@
 				   :closure (lambda (arg1)
 							  (funcall fnc arg1 arg2)))))
 
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (defun bind2nd (functor arg)
   #+cl-stl-warn-deprecated
   (progn
@@ -560,6 +569,7 @@
 				   :closure (lambda (arg1)
 							  (funcall fnc arg1 arg)))))
 
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (defmethod operator_clone ((func binder2nd))
   (let* ((op   (clone (binder2nd-operator func)))
 		 (arg2 (binder2nd-arg func))

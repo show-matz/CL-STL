@@ -235,8 +235,8 @@
 				:logical_not
 				:unary_negate	;; deprecated in c++17
 				:binary_negate	;; deprecated in c++17
-				:binder1st
-				:binder2nd
+  #+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) :binder1st
+  #+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) :binder2nd
   #-cl-stl-0x98 :bit_and
   #-cl-stl-0x98 :bit_or
   #-cl-stl-0x98 :bit_xor
@@ -252,8 +252,8 @@
   #-cl-stl-0x98 :is_placeholder
   #-cl-stl-0x98 :is_bind_expression
   #-cl-stl-0x98 :bind
-				:bind1st
-				:bind2nd
+  #+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) :bind1st
+  #+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) :bind2nd
 				:ptr_fun1
 				:ptr_fun2
 				:mem_fun
