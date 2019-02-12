@@ -5,12 +5,12 @@
 				 not2
   #+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) bind1st
   #+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) bind2nd
-				 ptr_fun1
-				 ptr_fun2
-				 mem_fun
-				 mem_fun_ref
-				 mem_fun1
-				 mem_fun1_ref
+  #+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) ptr_fun1
+  #+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) ptr_fun2
+  #+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) mem_fun
+  #+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) mem_fun_ref
+  #+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) mem_fun1
+  #+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) mem_fun1_ref
    #-cl-stl-0x98 is_placeholder
    #-cl-stl-0x98 is_bind_expression
    #-cl-stl-0x98 target))
@@ -592,6 +592,7 @@
 ; class pointer_to_unary_function & function ptr_fun1
 ;                                     ( NONSENSE in CL-STL )
 ;------------------------------------------------------------
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (define-functor pointer_to_unary_function (#-cl-stl-0x98 functor
 										   #+cl-stl-0x98 unary_function)
   ((op	:type     cl:function
@@ -599,8 +600,10 @@
 		:initarg  :operator
 		:accessor pointer_to_unary_function-operator)))
 
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (declare-constructor pointer_to_unary_function (1))
 
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (define-constructor pointer_to_unary_function (func)
   #+cl-stl-warn-deprecated
   (progn
@@ -610,6 +613,7 @@
 				 :closure (lambda (arg)
 							(funcall func arg))))
 
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (defun ptr_fun1 (func)
   #+cl-stl-warn-deprecated
   (progn
@@ -619,6 +623,7 @@
 				 :closure (lambda (arg)
 							(funcall func arg))))
 
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (defmethod operator_clone ((func pointer_to_unary_function))
   (let ((func (pointer_to_unary_function-operator func)))
 	(make-instance 'pointer_to_unary_function
@@ -632,6 +637,7 @@
 ; class pointer_to_binary_function & function ptr_fun2
 ;                                     ( NONSENSE in CL-STL )
 ;------------------------------------------------------------
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (define-functor pointer_to_binary_function (#-cl-stl-0x98 functor
 											#+cl-stl-0x98 binary_function)
   ((op	:type     cl:function
@@ -639,8 +645,10 @@
 		:initarg  :operator
 		:accessor pointer_to_binary_function-operator)))
 
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (declare-constructor pointer_to_binary_function (1))
 
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (define-constructor pointer_to_binary_function (func)
   #+cl-stl-warn-deprecated
   (progn
@@ -650,6 +658,7 @@
 				 :closure (lambda (arg1 arg2)
 							(funcall func arg1 arg2))))
 
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (defun ptr_fun2 (func)
   #+cl-stl-warn-deprecated
   (progn
@@ -659,6 +668,7 @@
 				 :closure (lambda (arg1 arg2)
 							(funcall func arg1 arg2))))
 
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (defmethod operator_clone ((func pointer_to_binary_function))
   (let ((func (pointer_to_binary_function-operator func)))
 	(make-instance 'pointer_to_binary_function
@@ -679,6 +689,7 @@
 ; class mem_fun_t & function mem_fun etc.
 ;                                      ( NONSENSE in CL-STL )
 ;------------------------------------------------------------
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (define-functor mem_fun_t (#-cl-stl-0x98 functor
 						   #+cl-stl-0x98 unary_function)
   ((op	:type     cl:function
@@ -686,8 +697,10 @@
 		:initarg  :operator
 		:accessor mem_fun_t-operator)))
 
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (declare-constructor mem_fun_t (1))
 
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (define-constructor mem_fun_t (func)
   #+cl-stl-warn-deprecated
   (progn
@@ -697,6 +710,7 @@
 				 :closure (lambda (obj)
 							(funcall func obj))))
 
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (defun mem_fun (func)
   #+cl-stl-warn-deprecated
   (progn
@@ -706,6 +720,7 @@
 				 :closure (lambda (obj)
 							(funcall func obj))))
 
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (defun mem_fun_ref (func)
   #+cl-stl-warn-deprecated
   (progn
@@ -715,6 +730,7 @@
 				 :closure (lambda (obj)
 							(funcall func obj))))
 
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (defmethod operator_clone ((func mem_fun_t))
   (let ((func (mem_fun_t-operator func)))
 	(make-instance 'mem_fun_t
@@ -729,6 +745,7 @@
 ; class mem_fun1_t & function mem_fun1 etc.
 ;                                      ( NONSENSE in CL-STL )
 ;------------------------------------------------------------
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (define-functor mem_fun1_t (#-cl-stl-0x98 functor
 							#+cl-stl-0x98 unary_function)
   ((op	:type     cl:function
@@ -736,8 +753,10 @@
 		:initarg  :operator
 		:accessor mem_fun1_t-operator)))
 
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (declare-constructor mem_fun1_t (1))
 
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (define-constructor mem_fun1_t (func)
   #+cl-stl-warn-deprecated
   (progn
@@ -747,6 +766,7 @@
 				 :closure (lambda (obj arg)
 							(funcall func obj arg))))
 
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (defun mem_fun1 (func)
   #+cl-stl-warn-deprecated
   (progn
@@ -756,6 +776,7 @@
 				 :closure (lambda (obj arg)
 							(funcall func obj arg))))
 
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (defun mem_fun1_ref (func)
   #+cl-stl-warn-deprecated
   (progn
@@ -765,6 +786,7 @@
 				 :closure (lambda (obj arg)
 							(funcall func obj arg))))
 
+#+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) 
 (defmethod operator_clone ((func mem_fun1_t))
   (let ((func (mem_fun1_t-operator func)))
 	(make-instance 'mem_fun1_t

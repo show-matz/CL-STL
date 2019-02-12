@@ -240,10 +240,10 @@
   #-cl-stl-0x98 :bit_and
   #-cl-stl-0x98 :bit_or
   #-cl-stl-0x98 :bit_xor
-				:pointer_to_unary_function
-				:pointer_to_binary_function
-				:mem_fun_t
-				:mem_fun1_t
+  #+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) :pointer_to_unary_function
+  #+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) :pointer_to_binary_function
+  #+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) :mem_fun_t
+  #+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) :mem_fun1_t
 ; #-cl-stl-0x98 :function                        ; shadowed
   #-cl-stl-0x98 :target
 				;utility functions
@@ -254,12 +254,12 @@
   #-cl-stl-0x98 :bind
   #+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) :bind1st
   #+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) :bind2nd
-				:ptr_fun1
-				:ptr_fun2
-				:mem_fun
-				:mem_fun1
-				:mem_fun_ref
-				:mem_fun1_ref
+  #+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) :ptr_fun1
+  #+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) :ptr_fun2
+  #+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) :mem_fun
+  #+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) :mem_fun1
+  #+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) :mem_fun_ref
+  #+(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14) :mem_fun1_ref
   #-cl-stl-0x98 :mem_fn
 #-(or
    cl-stl-0x98
