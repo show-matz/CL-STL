@@ -286,6 +286,10 @@
   #-cl-stl-0x98 :any_of
   #-cl-stl-0x98 :none_of
 				:for_each
+#-(or
+   cl-stl-0x98
+   cl-stl-0x11
+   cl-stl-0x14) :for_each_n
 ;				:find                            ; shadowed
 				:find_if
   #-cl-stl-0x98 :find_if_not

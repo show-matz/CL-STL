@@ -5585,6 +5585,63 @@
 
 
 ; first   : input_iterator
+; n       : integer
+; func    : unary_function
+; returns : input_iterator ( first + n )
+#-(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14)
+(locally (declare (optimize speed))
+
+  ;;PTN; for_each_n : 0 -  i
+  (defmethod for_each_n ((first input_iterator) (n integer) func)
+	(let ((itr (clone first)))
+	  (if (<= n 0)
+		  itr
+		  (let* ((fnc (clone func))
+				 (uf (functor_function fnc)))
+			(declare (type cl:function uf))
+			(dotimes (i n)
+			  (funcall uf (_* itr))
+			  (_++ itr))
+			itr))))
+
+  ;;PTN; for_each_n : 1 - cci
+  (defmethod for_each_n ((first cons_const_iterator) (n integer) func)
+	;;(format t "specialized for_each_n for cons_const_iterator is invoked.~%")
+	(let ((itr (clone first)))
+	  (if (<= n 0)
+		  itr
+		  (let* ((cns (__cons-itr-cons itr))
+				 (fnc (clone func))
+				 (uf  (functor_function  fnc)))
+			(declare (type cl:function uf))
+			(dotimes (i n)
+			  (funcall uf (car cns))
+			  (setf cns (cdr cns)))
+			(setf (__cons-itr-cons itr) cns)
+			itr))))
+
+  ;;PTN; for_each_n : 2 - cvp
+  (defmethod for_each_n ((first const-vector-pointer) (n integer) func)
+	;;(format t "specialized for_each_n for const-vector-pointer is invoked.~%")
+	(with-operators
+	  (let ((itr @~first))
+		(if (<= n 0)
+			itr
+			(let* ((buf  (opr::vec-ptr-buffer itr))
+				   (idx1 (opr::vec-ptr-index  itr))
+				   (idx2 (+ idx1 n))
+				   (fnc  @~func)
+				   (uf   (functor_function fnc)))
+			  (declare (type cl:vector buf))
+			  (declare (type fixnum idx1 idx2))
+			  (declare (type cl:function uf))
+			  (for (nil (< idx1 idx2) (incf idx1))
+				(funcall uf (aref buf idx1)))
+			  (setf (opr::vec-ptr-index itr) idx2)
+			  itr))))))
+
+
+; first   : input_iterator
 ; last    : input_iterator
 ; returns : iterator point to found element.
 (locally (declare (optimize speed))
