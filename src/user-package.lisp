@@ -274,6 +274,10 @@
 				:inner_product
   #-cl-stl-0x98 :iota
 				:partial_sum
+;#-(or
+;   cl-stl-0x98
+;   cl-stl-0x11
+;   cl-stl-0x14) :reduce                         ; shadowed
 				;+-----------------------------------------+
 				;| algorithm                               |
 				;+-----------------------------------------+

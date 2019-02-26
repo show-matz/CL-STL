@@ -1062,3 +1062,89 @@
 					(opr::vec-ptr-index   last)
 					(opr::vec-ptr-buffer first) init (functor_function (clone unary-op))))))
 
+
+;;--------------------------------------------------------------------
+;; ??.?.? reduce
+;; first     : input_iterator
+;; last      : input_iterator
+;; init      : initial value ( 0 by default )
+;; binary-op : binary function ( #'+ by default )
+;; returns   : reduced value.
+#-(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14)
+(locally (declare (optimize speed))
+
+  ;;PTN; reduce : 0 -   i
+  (labels ((__reduce-imp-0 (first last init plus-bf)
+			 (declare (type cl:function plus-bf))
+			 (with-operators
+				 (let ((acc nil))
+				   (_= acc init)
+				   (if (_== first last)
+					   acc
+					   (for (((itr @~first)) (_/= itr last) ++itr :returns acc)
+							(_= acc (funcall plus-bf acc *itr))))))))
+
+	(defmethod-overload reduce ((first input_iterator) (last input_iterator))
+	  (__reduce-imp-0 first last 0 #'+))
+
+	(defmethod-overload reduce ((first input_iterator) (last input_iterator) init)
+	  (__reduce-imp-0 first last init #'+))
+
+	(defmethod-overload reduce ((first input_iterator) (last input_iterator) init binary-op)
+	  (__reduce-imp-0 first last init (functor_function (clone binary-op)))))
+
+  ;;PTN; reduce : 1 -  cci
+  (labels ((__reduce-imp-1 (cons1 cons2 init plus-bf)
+			 (declare (type cl:function plus-bf))
+			 (let ((acc nil))
+			   (_= acc init)
+			   (for (nil (not (eq cons1 cons2)) (setf cons1 (cdr cons1)) :returns acc)
+				 (_= acc (funcall plus-bf acc (car cons1)))))))
+
+	(defmethod-overload reduce ((first cons_const_iterator) (last cons_const_iterator))
+	  ;;(format t "specialized reduce for cons_const_iterator is invoked.~%")
+	  (__reduce-imp-1 (__cons-itr-cons first)
+					  (__cons-itr-cons  last) 0 #'+))
+
+	(defmethod-overload reduce ((first cons_const_iterator) (last cons_const_iterator) init)
+	  ;;(format t "specialized reduce for cons_const_iterator is invoked.~%")
+	  (__reduce-imp-1 (__cons-itr-cons first)
+					  (__cons-itr-cons  last) init #'+))
+
+	(defmethod-overload reduce ((first cons_const_iterator) (last cons_const_iterator) init binary-op)
+	  ;;(format t "specialized reduce for cons_const_iterator is invoked.~%")
+	  (__reduce-imp-1 (__cons-itr-cons first)
+					  (__cons-itr-cons  last) init (functor_function (clone binary-op)))))
+
+  ;;PTN; reduce : 2 -  cvp
+  (labels ((__reduce-imp-2 (idx1 idx2 buffer init plus-bf)
+			 (declare (type fixnum idx1 idx2))
+			 (declare (type cl:vector buffer))
+			 (declare (type cl:function plus-bf))
+			 (let ((acc nil))
+			   (_= acc init)
+			   (for (nil (< idx1 idx2) (incf idx1) :returns acc)
+				 (_= acc (funcall plus-bf acc (aref buffer idx1)))))))
+
+	(defmethod-overload reduce ((first const-vector-pointer) (last  const-vector-pointer))
+	  ;;(format t "specialized reduce for const-vector-pointer is invoked.~%")
+	  (__pointer-check-iterator-range first last)
+	  (__reduce-imp-2 (opr::vec-ptr-index  first)
+					  (opr::vec-ptr-index   last)
+					  (opr::vec-ptr-buffer first) 0 #'+))
+
+	(defmethod-overload reduce ((first const-vector-pointer) (last  const-vector-pointer) init)
+	  ;;(format t "specialized reduce for const-vector-pointer is invoked.~%")
+	  (__pointer-check-iterator-range first last)
+	  (__reduce-imp-2 (opr::vec-ptr-index  first)
+					  (opr::vec-ptr-index   last)
+					  (opr::vec-ptr-buffer first) init #'+))
+
+	(defmethod-overload reduce ((first const-vector-pointer) (last  const-vector-pointer) init binary-op)
+	  ;;(format t "specialized reduce for const-vector-pointer is invoked.~%")
+	  (__pointer-check-iterator-range first last)
+	  (__reduce-imp-2 (opr::vec-ptr-index  first)
+					  (opr::vec-ptr-index  last)
+					  (opr::vec-ptr-buffer first)
+					  init (functor_function (clone binary-op))))))
+

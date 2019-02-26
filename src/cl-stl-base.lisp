@@ -277,6 +277,10 @@
 				:inner_product
   #-cl-stl-0x98 :iota
 				:partial_sum
+#-(or
+   cl-stl-0x98
+   cl-stl-0x11
+   cl-stl-0x14) :reduce
 				;+-----------------------------------------+
 				;| algorithm                               |
 				;+-----------------------------------------+
@@ -410,6 +414,11 @@
    cl-stl-0x98
    cl-stl-0x11
    cl-stl-0x14) :apply
+				;numeric
+#-(or
+   cl-stl-0x98
+   cl-stl-0x11
+   cl-stl-0x14) :reduce
 				;algorithm
 				:count
 				:equal
@@ -1058,10 +1067,28 @@
   first    : forward_iterator.
   last     : forward_iterator.
   init     : initial value.
-  unary-op : binary functor ( use #'1+ default ).
+  unary-op : unary functor ( use #'1+ default ).
 
 <<return value>>
   nil.
+")
+
+#-(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14)
+(declare-method-overload reduce (2 3 4)
+  :documentation "
+<<signature>>
+  (cl-stl:reduce first last)                 [0x17]
+  (cl-stl:reduce first last init)            [0x17]
+  (cl-stl:reduce first last init binary-op)  [0x17]
+
+<<parameters>>
+  first     : input_iterator.
+  last      : input_iterator.
+  init      : initial value  ( use 0 default ).
+  binary-op : binary functor ( use #'+ default ).
+
+<<return value>>
+  reduced value.
 ")
 
 
