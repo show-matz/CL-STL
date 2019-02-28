@@ -278,6 +278,10 @@
 ;   cl-stl-0x98
 ;   cl-stl-0x11
 ;   cl-stl-0x14) :reduce                         ; shadowed
+#-(or
+   cl-stl-0x98
+   cl-stl-0x11
+   cl-stl-0x14) :transform_reduce
 				;+-----------------------------------------+
 				;| algorithm                               |
 				;+-----------------------------------------+

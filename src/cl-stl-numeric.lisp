@@ -1148,3 +1148,326 @@
 					  (opr::vec-ptr-buffer first)
 					  init (functor_function (clone binary-op))))))
 
+#|
+  T transform_reduce( InputIterator first,
+                      InputIterator last, T init, BinaryOp bf, UnaryOp uf ) {
+      for( ; first != last; ++first )
+          init = bf( init, uf(*first) );
+      return init;
+  }
+
+  T transform_reduce( InputIterator1 first1,
+                      InputIterator1 last1, InputIterator2 first2,
+                      T init, BinaryOp1 bf1, BinaryOp2 bf2 ) {
+      for (; first1 != last1; ++first1, (void) ++first2)
+          init = bf1(init, bf2(*first1, *first2));
+      return init;
+  }
+
+  T transform_reduce(InputIterator1 first1,
+                     InputIterator1 last1, InputIterator2 first2, T init ) {
+      return _VSTD::transform_reduce( first1, last1, first2,
+                                      _VSTD::move(init),
+                                      _VSTD::plus<>(), _VSTD::multiplies<>());
+  }
+|#
+;;--------------------------------------------------------------------
+;; ??.?.? transform_reduce
+;; first     : input_iterator
+;; last      : input_iterator
+;; init      : initial value ( 0 by default )
+;; binary-op : binary function ( #'+ by default )
+;; returns   : reduced value.
+#-(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14)
+(locally (declare (optimize speed))
+
+  ;;PTN; transform_reduce (1) : 0 -   i
+  (defmethod-overload transform_reduce ((first input_iterator)
+										(last  input_iterator) init bf uf)
+	(let ((acc nil))
+	  (_= acc init)
+	  (if (_== first last)
+		  acc
+		  (let ((bf (functor_function (clone bf)))
+				(uf (functor_function (clone uf))))
+			(declare (type cl:function bf uf))
+			(for (((itr (clone first))) (_/= itr last) (_++ itr) :returns acc)
+			  (_= acc (funcall bf acc (funcall uf (_* itr)))))))))
+
+  ;;PTN; transform_reduce (1) : 1 -  cci
+  (defmethod-overload transform_reduce ((first cons_const_iterator)
+										(last  cons_const_iterator) init bf uf)
+	(let ((acc nil))
+	  (_= acc init)
+	  (if (_== first last)
+		  acc
+		  (let ((cons1 (__cons-itr-cons first))
+				(cons2 (__cons-itr-cons  last))
+				(bf (functor_function (clone bf)))
+				(uf (functor_function (clone uf))))
+			(declare (type cl:function bf uf))
+			(for (nil (not (eq cons1 cons2)) (setf cons1 (cdr cons1)) :returns acc)
+			  (_= acc (funcall bf acc (funcall uf (car cons1)))))))))
+
+  ;;PTN; transform_reduce (1) : 2 -  cvp
+  (defmethod-overload transform_reduce ((first const-vector-pointer)
+										(last  const-vector-pointer) init bf uf)
+	(let ((acc nil))
+	  (_= acc init)
+	  (if (_== first last)
+		  acc
+		  (let ((idx1 (opr::vec-ptr-index  first))
+				(idx2 (opr::vec-ptr-index   last))
+				(buf  (opr::vec-ptr-buffer first))
+				(bf (functor_function (clone bf)))
+				(uf (functor_function (clone uf))))
+			(declare (type fixnum idx1 idx2))
+			(declare (type cl:vector buf))
+			(declare (type cl:function bf uf))
+			(for (nil (< idx1 idx2) (incf idx1) :returns acc)
+			  (_= acc (funcall bf acc (funcall uf (aref buf idx1)))))))))
+
+  ;;PTN; transform_reduce (2) : 0 -  i  x  i
+  (labels ((__transform_reduce-imp-0 (first1 last1 first2 init plus-bf mult-bf)
+			 (let ((acc nil))
+			   (_= acc init)
+			   (if (_== first1 last1)
+				   acc
+				   (let ((plus (functor_function (clone plus-bf)))
+						 (mult (functor_function (clone mult-bf))))
+					 (declare (type cl:function plus mult))
+					 (for (((itr1 (clone first1))
+							(itr2 (clone first2))) (_/= itr1 last1) (progn (_++ itr1) (_++ itr2)) :returns acc)
+						  (_= acc (funcall plus acc (funcall mult (_* itr1) (_* itr2))))))))))
+
+	(defmethod-overload transform_reduce ((first1 input_iterator)
+										  (last1  input_iterator) (first2 input_iterator) init)
+	  (__transform_reduce-imp-0 first1 last1 first2 init #'+ #'*))
+
+	(defmethod-overload transform_reduce ((first1 input_iterator) (last1 input_iterator)
+										  (first2 input_iterator) init binary-op1 binary-op2)
+	  (__transform_reduce-imp-0 first1 last1 first2 init binary-op1 binary-op2)))
+
+  ;;PTN; transform_reduce (2) : 1 -  i  x cci
+  (labels ((__transform_reduce-imp-1 (first1 last1 cons2 init plus-bf mult-bf)
+			 (let ((acc nil))
+			   (_= acc init)
+			   (if (_== first1 last1)
+				   acc
+				   (let ((plus (functor_function (clone plus-bf)))
+						 (mult (functor_function (clone mult-bf))))
+					 (declare (type cl:function plus mult))
+					 (for (((itr1 (clone first1))) (_/= itr1 last1) (progn (_++ itr1)
+																		   (setf cons2 (cdr cons2))) :returns acc)
+						  (_= acc (funcall plus acc (funcall mult (_* itr1) (car cons2))))))))))
+
+	(defmethod-overload transform_reduce ((first1 input_iterator)
+										  (last1  input_iterator) (first2 cons_const_iterator) init)
+	  (__transform_reduce-imp-1 first1 last1 (__cons-itr-cons first2) init #'+ #'*))
+
+	(defmethod-overload transform_reduce ((first1 input_iterator) (last1 input_iterator)
+										  (first2 cons_const_iterator) init binary-op1 binary-op2)
+	  (__transform_reduce-imp-1 first1 last1 (__cons-itr-cons first2) init binary-op1 binary-op2)))
+
+  ;;PTN; transform_reduce (2) : 2 -  i  x cvp
+  (labels ((__transform_reduce-imp-2 (first1 last1 idx2 buf2 init plus-bf mult-bf)
+			 (let ((acc nil))
+			   (_= acc init)
+			   (if (_== first1 last1)
+				   acc
+				   (let ((plus (functor_function (clone plus-bf)))
+						 (mult (functor_function (clone mult-bf))))
+					 (declare (type cl:function plus mult))
+					 (declare (type fixnum    idx2))
+					 (declare (type cl:vector buf2))
+					 (for (((itr1 (clone first1))) (_/= itr1 last1) (progn (_++ itr1)
+																		   (incf idx2)) :returns acc)
+						  (_= acc (funcall plus acc (funcall mult (_* itr1) (aref buf2 idx2))))))))))
+
+	(defmethod-overload transform_reduce ((first1 input_iterator)
+										  (last1  input_iterator) (first2 const-vector-pointer) init)
+	  (__transform_reduce-imp-2 first1 last1
+								(opr::vec-ptr-index  first2)
+								(opr::vec-ptr-buffer first2) init #'+ #'*))
+
+	(defmethod-overload transform_reduce ((first1 input_iterator)
+										  (last1  input_iterator)
+										  (first2 const-vector-pointer) init binary-op1 binary-op2)
+	  (__transform_reduce-imp-2 first1 last1
+								(opr::vec-ptr-index  first2)
+								(opr::vec-ptr-buffer first2) init binary-op1 binary-op2)))
+
+  ;;PTN; transform_reduce (2) : 3 - cci x  i
+  (labels ((__transform_reduce-imp-3 (first1 last1 first2 init plus-bf mult-bf)
+			 (let ((acc nil))
+			   (_= acc init)
+			   (if (eq first1 last1)
+				   acc
+				   (let ((plus (functor_function (clone plus-bf)))
+						 (mult (functor_function (clone mult-bf))))
+					 (declare (type cl:function plus mult))
+					 (for (((itr2 (clone first2))) (not (eq first1 last1)) (progn
+																			 (_++ itr2)
+																			 (setf first1 (cdr first1))) :returns acc)
+					   (_= acc (funcall plus acc (funcall mult (car first1) (_* itr2))))))))))
+
+	(defmethod-overload transform_reduce ((first1 cons_const_iterator)
+										  (last1  cons_const_iterator) (first2 input_iterator) init)
+	  (__transform_reduce-imp-3 (__cons-itr-cons first1)
+								(__cons-itr-cons  last1) first2 init #'+ #'*))
+
+	(defmethod-overload transform_reduce ((first1 cons_const_iterator)
+										  (last1  cons_const_iterator)
+										  (first2 input_iterator) init binary-op1 binary-op2)
+	  (__transform_reduce-imp-3 (__cons-itr-cons first1)
+								(__cons-itr-cons  last1) first2 init binary-op1 binary-op2)))
+
+  ;;PTN; transform_reduce (2) : 4 - cci x cci
+  (labels ((__transform_reduce-imp-4 (first1 last1 first2 init plus-bf mult-bf)
+			 (let ((acc nil))
+			   (_= acc init)
+			   (if (eq first1 last1)
+				   acc
+				   (let ((plus (functor_function (clone plus-bf)))
+						 (mult (functor_function (clone mult-bf))))
+					 (declare (type cl:function plus mult))
+					 (for (nil (not (eq first1 last1)) (progn
+														 (setf first1 (cdr first1))
+														 (setf first2 (cdr first2))) :returns acc)
+						  (_= acc (funcall plus acc (funcall mult (car first1) (car first2))))))))))
+
+	(defmethod-overload transform_reduce ((first1 cons_const_iterator)
+										  (last1  cons_const_iterator) (first2 cons_const_iterator) init)
+	  (__transform_reduce-imp-4 (__cons-itr-cons first1)
+								(__cons-itr-cons  last1) (__cons-itr-cons first2) init #'+ #'*))
+
+	(defmethod-overload transform_reduce ((first1 cons_const_iterator)
+										  (last1  cons_const_iterator)
+										  (first2 cons_const_iterator) init binary-op1 binary-op2)
+	  (__transform_reduce-imp-4 (__cons-itr-cons first1)
+								(__cons-itr-cons  last1)
+								(__cons-itr-cons first2) init binary-op1 binary-op2)))
+
+  ;;PTN; transform_reduce (2) : 5 - cci x cvp
+  (labels ((__transform_reduce-imp-5 (first1 last1 idx2 buf2 init plus-bf mult-bf)
+			 (let ((acc nil))
+			   (_= acc init)
+			   (if (eq first1 last1)
+				   acc
+				   (let ((plus (functor_function (clone plus-bf)))
+						 (mult (functor_function (clone mult-bf))))
+					 (declare (type cl:function plus mult))
+					 (declare (type fixnum    idx2))
+					 (declare (type cl:vector buf2))
+					 (for (nil (not (eq first1 last1)) (progn (incf idx2)
+														  (setf first1 (cdr first1))) :returns acc)
+						  (_= acc (funcall plus acc (funcall mult (car first1) (aref buf2 idx2))))))))))
+
+	(defmethod-overload transform_reduce ((first1 cons_const_iterator)
+										  (last1  cons_const_iterator) (first2 const-vector-pointer) init)
+	  (__transform_reduce-imp-5 (__cons-itr-cons first1)
+								(__cons-itr-cons  last1)
+								(opr::vec-ptr-index  first2)
+								(opr::vec-ptr-buffer first2) init #'+ #'*))
+
+	(defmethod-overload transform_reduce ((first1 cons_const_iterator)
+										  (last1  cons_const_iterator)
+										  (first2 const-vector-pointer) init binary-op1 binary-op2)
+	  (__transform_reduce-imp-5 (__cons-itr-cons first1)
+								(__cons-itr-cons  last1)
+								(opr::vec-ptr-index  first2)
+								(opr::vec-ptr-buffer first2) init binary-op1 binary-op2)))
+
+  ;;PTN; transform_reduce (2) : 6 - cvp x  i
+  (labels ((__transform_reduce-imp-6 (first1 last1 buf1 first2 init plus-bf mult-bf)
+			 (let ((acc nil))
+			   (_= acc init)
+			   (if (= first1 last1)
+				   acc
+				   (let ((plus (functor_function (clone plus-bf)))
+						 (mult (functor_function (clone mult-bf))))
+					 (declare (type cl:function plus mult))
+					 (declare (type fixnum    first1 last1))
+					 (declare (type cl:vector buf1))
+					 (for (((itr2 (clone first2))) (/= first1 last1) (progn
+																	   (incf first1)
+																	   (_++ itr2)) :returns acc)
+						  (_= acc (funcall plus acc (funcall mult (aref buf1 first1) (_* itr2))))))))))
+
+	(defmethod-overload transform_reduce ((first1 const-vector-pointer)
+										  (last1  const-vector-pointer) (first2 input_iterator) init)
+	  (__transform_reduce-imp-6 (opr::vec-ptr-index  first1)
+								(opr::vec-ptr-index   last1)
+								(opr::vec-ptr-buffer first1) first2 init #'+ #'*))
+
+	(defmethod-overload transform_reduce ((first1 const-vector-pointer)
+										  (last1  const-vector-pointer)
+										  (first2 input_iterator) init binary-op1 binary-op2)
+	  (__transform_reduce-imp-6 (opr::vec-ptr-index  first1)
+								(opr::vec-ptr-index   last1)
+								(opr::vec-ptr-buffer first1) first2 init binary-op1 binary-op2)))
+
+  ;;PTN; transform_reduce (2) : 7 - cvp x cci
+  (labels ((__transform_reduce-imp-7 (first1 last1 buf1 cons2 init plus-bf mult-bf)
+			 (let ((acc nil))
+			   (_= acc init)
+			   (if (= first1 last1)
+				   acc
+				   (let ((plus (functor_function (clone plus-bf)))
+						 (mult (functor_function (clone mult-bf))))
+					 (declare (type cl:function plus mult))
+					 (declare (type fixnum    first1 last1))
+					 (declare (type cl:vector buf1))
+					 (for (nil (/= first1 last1) (progn
+												   (incf first1)
+												   (setf cons2 (cdr cons2))) :returns acc)
+						  (_= acc (funcall plus acc (funcall mult (aref buf1 first1) (car cons2))))))))))
+
+	(defmethod-overload transform_reduce ((first1 const-vector-pointer)
+										  (last1  const-vector-pointer) (first2 cons_const_iterator) init)
+	  (__transform_reduce-imp-7 (opr::vec-ptr-index  first1)
+								(opr::vec-ptr-index   last1)
+								(opr::vec-ptr-buffer first1) (__cons-itr-cons first2) init #'+ #'*))
+
+	(defmethod-overload transform_reduce ((first1 const-vector-pointer)
+										  (last1  const-vector-pointer)
+										  (first2 cons_const_iterator) init binary-op1 binary-op2)
+	  (__transform_reduce-imp-7 (opr::vec-ptr-index  first1)
+								(opr::vec-ptr-index   last1)
+								(opr::vec-ptr-buffer first1)
+								(__cons-itr-cons first2) init binary-op1 binary-op2)))
+
+  ;;PTN; transform_reduce (2) : 8 - cvp x cvp
+  (labels ((__transform_reduce-imp-8 (first1 last1 buf1 first2 buf2 init plus-bf mult-bf)
+			 (let ((acc nil))
+			   (_= acc init)
+			   (if (= first1 last1)
+				   acc
+				   (let ((plus (functor_function (clone plus-bf)))
+						 (mult (functor_function (clone mult-bf))))
+					 (declare (type cl:function plus mult))
+					 (declare (type fixnum    first1 last1 first2))
+					 (declare (type cl:vector buf1 buf2))
+					 (for (nil (/= first1 last1) (progn
+												   (incf first1)
+												   (incf first2)) :returns acc)
+					   (_= acc (funcall plus acc (funcall mult (aref buf1 first1)
+															   (aref buf2 first2))))))))))
+
+	(defmethod-overload transform_reduce ((first1 const-vector-pointer)
+										  (last1  const-vector-pointer) (first2 const-vector-pointer) init)
+	  (__transform_reduce-imp-8 (opr::vec-ptr-index  first1)
+								(opr::vec-ptr-index   last1)
+								(opr::vec-ptr-buffer first1)
+								(opr::vec-ptr-index  first2)
+								(opr::vec-ptr-buffer first2) init #'+ #'*))
+
+	(defmethod-overload transform_reduce ((first1 const-vector-pointer)
+										  (last1  const-vector-pointer)
+										  (first2 const-vector-pointer) init binary-op1 binary-op2)
+	  (__transform_reduce-imp-8 (opr::vec-ptr-index  first1)
+								(opr::vec-ptr-index   last1)
+								(opr::vec-ptr-buffer first1)
+								(opr::vec-ptr-index  first2)
+								(opr::vec-ptr-buffer first2) init binary-op1 binary-op2))))
+

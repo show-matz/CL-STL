@@ -281,6 +281,10 @@
    cl-stl-0x98
    cl-stl-0x11
    cl-stl-0x14) :reduce
+#-(or
+   cl-stl-0x98
+   cl-stl-0x11
+   cl-stl-0x14) :transform_reduce
 				;+-----------------------------------------+
 				;| algorithm                               |
 				;+-----------------------------------------+
@@ -1091,6 +1095,29 @@
   reduced value.
 ")
 
+#-(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14)
+(declare-method-overload transform_reduce (4 5 6)
+  :documentation "
+<<signature>>
+  (cl-stl:transform_reduce first  last  init binary-op unary-op)           [0x17]
+  (cl-stl:transform_reduce first1 last1 first2 init binary-op1 binary-op2) [0x17]
+  (cl-stl:transform_reduce first1 last1 first2 init)                       [0x17]
+
+<<parameters>>
+  first      : input_iterator.
+  last       : input_iterator.
+  first1     : input_iterator.
+  last1      : input_iterator.
+  first2     : input_iterator.
+  init       : initial value
+  binary-op  : binary functor
+  unary-op   : unary functor
+  binary-op1 : binary functor ( use #'+ default ).
+  binary-op2 : binary functor ( use #'* default ).
+
+<<return value>>
+  reduced value.
+")
 
 
 ;;------------------------------------------------------------------------------
