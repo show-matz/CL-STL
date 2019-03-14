@@ -285,6 +285,10 @@
    cl-stl-0x98
    cl-stl-0x11
    cl-stl-0x14) :transform_reduce
+#-(or
+   cl-stl-0x98
+   cl-stl-0x11
+   cl-stl-0x14) :inclusive_scan
 				;+-----------------------------------------+
 				;| algorithm                               |
 				;+-----------------------------------------+
@@ -1119,6 +1123,24 @@
   reduced value.
 ")
 
+#-(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14)
+(declare-method-overload inclusive_scan (3 4 5)
+  :documentation "
+<<signature>>
+  (cl-stl:inclusive_scan first last result)                 [0x17]
+  (cl-stl:inclusive_scan first last result binary-op)       [0x17]
+  (cl-stl:inclusive_scan first last result binary-op init)  [0x17]
+
+<<parameters>>
+  first      : input_iterator.
+  last       : input_iterator.
+  result     : output_iterator.
+  binary-op  : binary functor ( use #'+ as defualt )
+  init       : initial value
+
+<<return value>>
+  scanned value.
+")
 
 ;;------------------------------------------------------------------------------
 ;;

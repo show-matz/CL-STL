@@ -282,6 +282,10 @@
    cl-stl-0x98
    cl-stl-0x11
    cl-stl-0x14) :transform_reduce
+#-(or
+   cl-stl-0x98
+   cl-stl-0x11
+   cl-stl-0x14) :inclusive_scan
 				;+-----------------------------------------+
 				;| algorithm                               |
 				;+-----------------------------------------+
