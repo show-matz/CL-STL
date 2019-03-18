@@ -1978,3 +1978,299 @@
 															   (opr::vec-ptr-index  result)
 															   (opr::vec-ptr-buffer result) #'+)))))))
 
+;;--------------------------------------------------------------------
+;; ??.?.? exclusive_scan
+;; first   : input_iterator
+;; last    : input_iterator
+;; result  : output_iterator
+;; init    : initial value
+;; plus-bf : binary function ( #'+ by default )
+;; returns : (copy of) result.
+#-(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14)
+(locally (declare (optimize speed))
+
+  ;;PTN; exclusive_scan : 0 -   i  x  o 
+  (labels ((__exclusive_scan-imp-0 (first last result init plus-bf)
+			 (let ((result (clone result)))
+			   (if (_== first last)
+				   result
+				   (let* ((first   (clone first))
+						  (plus-bf (clone plus-bf))
+						  (bf (functor_function plus-bf)))
+					 (declare (type cl:function bf))
+					 (for (nil (_/= first last) (_++ first) :returns result)
+					   (_= (_* result) init)
+					   (_++ result)
+					   (_= init (funcall bf init (_* first)))))))))
+
+	(defmethod-overload exclusive_scan ((first  input_iterator)
+										(last   input_iterator)
+										(result output_iterator) init)
+	  ;;(format t "exclusive_scan - i x o.~%")
+	  (__exclusive_scan-imp-0 first last result init #'+))
+
+	(defmethod-overload exclusive_scan ((first  input_iterator)
+										(last   input_iterator)
+										(result output_iterator) init plus-bf)
+	  ;;(format t "exclusive_scan - i x o.~%")
+	  (__exclusive_scan-imp-0 first last result init plus-bf)))
+
+  ;;PTN; exclusive_scan : 1 -  cci x  o 
+  (labels ((__exclusive_scan-imp-1 (cons1 cons2 result init plus-bf)
+			 (let ((result (clone result)))
+			   (if (eq cons1 cons2)
+				   result
+				   (let* ((plus-bf (clone plus-bf))
+						  (bf (functor_function plus-bf)))
+					 (declare (type cl:function bf))
+					 (for (nil (not (eq cons1 cons2)) (setf cons1 (cdr cons1)) :returns result)
+					   (_= (_* result) init)
+					   (_++ result)
+					   (_= init (funcall bf init (car cons1)))))))))
+
+	(defmethod-overload exclusive_scan ((first  cons_const_iterator)
+										(last   cons_const_iterator)
+										(result output_iterator) init)
+	  ;;(format t "exclusive_scan - cci x o.~%")
+	  (__exclusive_scan-imp-1 (__cons-itr-cons first)
+							  (__cons-itr-cons  last) result init #'+))
+
+	(defmethod-overload exclusive_scan ((first  cons_const_iterator)
+										(last   cons_const_iterator)
+										(result output_iterator) init plus-bf)
+	  ;;(format t "exclusive_scan - cci x o.~%")
+	  (__exclusive_scan-imp-1 (__cons-itr-cons first)
+							  (__cons-itr-cons  last) result init plus-bf)))
+
+  ;;PTN; exclusive_scan : 2 -  cvp x  o 
+  (labels ((__exclusive_scan-imp-2 (idx1 idx2 buffer result init plus-bf)
+			 (declare (type fixnum idx1 idx2))
+			 (declare (type cl:vector buffer))
+			 (let ((result (clone result)))
+			   (if (= idx1 idx2)
+				   result
+				   (let* ((plus-bf (clone plus-bf))
+						  (bf (functor_function plus-bf)))
+					 (declare (type cl:function bf))
+					 (for (nil (< idx1 idx2) (incf idx1) :returns result)
+					   (_= (_* result) init)
+					   (_++ result)
+					   (_= init (funcall bf init (aref buffer idx1)))))))))
+
+	(defmethod-overload exclusive_scan ((first  const-vector-pointer)
+										(last   const-vector-pointer)
+										(result output_iterator) init)
+	  ;;(format t "exclusive_scan - cvp x o.~%")
+	  (__pointer-check-iterator-range first last)
+	  (__exclusive_scan-imp-2 (opr::vec-ptr-index  first)
+							  (opr::vec-ptr-index   last)
+							  (opr::vec-ptr-buffer first) result init #'+))
+
+	(defmethod-overload exclusive_scan ((first  const-vector-pointer)
+										(last   const-vector-pointer)
+										(result output_iterator) init plus-bf)
+	  ;;(format t "exclusive_scan - cvp x o.~%")
+	  (__pointer-check-iterator-range first last)
+	  (__exclusive_scan-imp-2 (opr::vec-ptr-index  first)
+							  (opr::vec-ptr-index   last)
+							  (opr::vec-ptr-buffer first) result init plus-bf)))
+
+  ;;PTN; exclusive_scan : 3 -   i  x  ci
+  (labels ((__exclusive_scan-imp-3 (first last out-cons init plus-bf)
+			 (if (_== first last)
+				 out-cons
+				 (let* ((first   (clone first))
+						(plus-bf (clone plus-bf))
+						(bf (functor_function plus-bf)))
+				   (declare (type cl:function bf))
+				   (for (nil (_/= first last) (_++ first) :returns out-cons)
+					 (_= (car out-cons) init)
+					 (setf out-cons (cdr out-cons))
+					 (_= init (funcall bf init (_* first))))))))
+
+	(defmethod-overload exclusive_scan ((first input_iterator)
+										(last  input_iterator)
+										(result cons_iterator) init)
+	  ;;(format t "exclusive_scan - i x ci.~%")
+	  (__algo-make-cns-iterator result
+								(__exclusive_scan-imp-3 first last
+														(__cons-itr-cons result) init #'+)))
+
+	(defmethod-overload exclusive_scan ((first input_iterator)
+										(last  input_iterator)
+										(result cons_iterator) init plus-bf)
+	  ;;(format t "exclusive_scan - i x ci.~%")
+	  (__algo-make-cns-iterator result
+								(__exclusive_scan-imp-3 first last
+														(__cons-itr-cons result) init plus-bf))))
+
+  ;;PTN; exclusive_scan : 4 -  cci x  ci
+  (labels ((__exclusive_scan-imp-4 (cons1 cons2 out-cons init plus-bf)
+			 (if (eq cons1 cons2)
+				 out-cons
+				 (let* ((plus-bf (clone plus-bf))
+						(bf (functor_function plus-bf)))
+				   (declare (type cl:function bf))
+				   (for (nil (not (eq cons1 cons2)) (setf cons1 (cdr cons1)) :returns out-cons)
+					 (_= (car out-cons) init)
+					 (setf out-cons (cdr out-cons))
+					 (_= init (funcall bf init (car cons1))))))))
+
+	(defmethod-overload exclusive_scan ((first  cons_const_iterator)
+										(last   cons_const_iterator)
+										(result cons_iterator) init)
+	  ;;(format t "exclusive_scan - cci x ci.~%")
+	  (__algo-make-cns-iterator result
+								(__exclusive_scan-imp-4 (__cons-itr-cons  first)
+														(__cons-itr-cons   last)
+														(__cons-itr-cons result) init #'+)))
+
+	(defmethod-overload exclusive_scan ((first  cons_const_iterator)
+										(last   cons_const_iterator)
+										(result cons_iterator) init plus-bf)
+	  ;;(format t "exclusive_scan - cci x ci.~%")
+	  (__algo-make-cns-iterator result
+								(__exclusive_scan-imp-4 (__cons-itr-cons  first)
+														(__cons-itr-cons   last)
+														(__cons-itr-cons result) init plus-bf))))
+
+  ;;PTN; exclusive_scan : 5 -  cvp x  ci 
+  (labels ((__exclusive_scan-imp-5 (idx1 idx2 buffer out-cons init plus-bf)
+			 (declare (type fixnum idx1 idx2))
+			 (declare (type cl:vector buffer))
+			 (if (= idx1 idx2)
+				 out-cons
+				 (let* ((plus-bf (clone plus-bf))
+						(bf (functor_function plus-bf)))
+				   (declare (type cl:function bf))
+				   (for (nil (< idx1 idx2) (incf idx1) :returns out-cons)
+					 (_= (car out-cons) init)
+					 (setf out-cons (cdr out-cons))
+					 (_= init (funcall bf init (aref buffer idx1))))))))
+
+	(defmethod-overload exclusive_scan ((first  const-vector-pointer)
+										(last   const-vector-pointer)
+										(result cons_iterator) init)
+	  ;;(format t "exclusive_scan - cvp x ci.~%")
+	  (__pointer-check-iterator-range first last)
+	  (__algo-make-cns-iterator result
+								(__exclusive_scan-imp-5 (opr::vec-ptr-index  first)
+														(opr::vec-ptr-index   last)
+														(opr::vec-ptr-buffer first)
+														(__cons-itr-cons result) init #'+)))
+
+	(defmethod-overload exclusive_scan ((first  const-vector-pointer)
+										(last   const-vector-pointer)
+										(result cons_iterator) init plus-bf)
+	  ;;(format t "exclusive_scan - cvp x ci.~%")
+	  (__pointer-check-iterator-range first last)
+	  (__algo-make-cns-iterator result
+								(__exclusive_scan-imp-5 (opr::vec-ptr-index  first)
+														(opr::vec-ptr-index   last)
+														(opr::vec-ptr-buffer first)
+														(__cons-itr-cons result) init plus-bf))))
+
+  ;;PTN; exclusive_scan : 6 -   i  x  vp
+  (labels ((__exclusive_scan-imp-6 (first last out-idx out-buf init plus-bf)
+			 (declare (type fixnum out-idx))
+			 (declare (type cl:vector out-buf))
+			 (if (_== first last)
+				 out-idx
+				 (let* ((first   (clone first))
+						(plus-bf (clone plus-bf))
+						(bf (functor_function plus-bf)))
+				   (declare (type cl:function bf))
+				   (for (nil (_/= first last) (_++ first) :returns out-idx)
+					 (_= (aref out-buf out-idx) init)
+					 (incf out-idx)
+					 (_= init (funcall bf init (_* first))))))))
+
+	(defmethod-overload exclusive_scan ((first  input_iterator)
+										(last   input_iterator)
+										(result vector-pointer) init)
+	  ;;(format t "exclusive_scan - i x vp.~%")
+	  (__algo-make-vct-iterator result
+								(__exclusive_scan-imp-6 first last
+														(opr::vec-ptr-index  result)
+														(opr::vec-ptr-buffer result) init #'+)))
+	
+	(defmethod-overload exclusive_scan ((first  input_iterator)
+										(last   input_iterator)
+										(result vector-pointer) init plus-bf)
+	  ;;(format t "exclusive_scan - i x vp.~%")
+	  (__algo-make-vct-iterator result
+								(__exclusive_scan-imp-6 first last
+														(opr::vec-ptr-index  result)
+														(opr::vec-ptr-buffer result) init plus-bf))))
+
+  ;;PTN; exclusive_scan : 7 -  cci x  vp
+  (labels ((__exclusive_scan-imp-7 (cons1 cons2 out-idx out-buf init plus-bf)
+			 (declare (type fixnum out-idx))
+			 (declare (type cl:vector out-buf))
+			 (if (eq cons1 cons2)
+				 out-idx
+				 (let* ((plus-bf (clone plus-bf))
+						(bf (functor_function plus-bf)))
+				   (declare (type cl:function bf))
+				   (for (nil (not (eq cons1 cons2)) (setf cons1 (cdr cons1)) :returns out-idx)
+					 (_= (aref out-buf out-idx) init)
+					 (incf out-idx)
+					 (_= init (funcall bf init (car cons1))))))))
+
+	(defmethod-overload exclusive_scan ((first  cons_const_iterator)
+										(last   cons_const_iterator)
+										(result vector-pointer) init)
+	  ;;(format t "exclusive_scan - cci x vp.~%")
+	  (__algo-make-vct-iterator result
+								(__exclusive_scan-imp-7 (__cons-itr-cons      first)
+														(__cons-itr-cons       last)
+														(opr::vec-ptr-index  result)
+														(opr::vec-ptr-buffer result) init #'+)))
+
+	(defmethod-overload exclusive_scan ((first  cons_const_iterator)
+										(last   cons_const_iterator)
+										(result vector-pointer) init plus-bf)
+	  ;;(format t "exclusive_scan - cci x vp.~%")
+	  (__algo-make-vct-iterator result
+								(__exclusive_scan-imp-7 (__cons-itr-cons      first)
+														(__cons-itr-cons       last)
+														(opr::vec-ptr-index  result)
+														(opr::vec-ptr-buffer result) init plus-bf))))
+
+  ;;PTN; exclusive_scan : 8 -  cvp x  vp 
+  (labels ((__exclusive_scan-imp-8 (idx1 idx2 buffer out-idx out-buf init plus-bf)
+			 (declare (type fixnum idx1 idx2 out-idx))
+			 (declare (type cl:vector buffer out-buf))
+			 (if (= idx1 idx2)
+				 out-idx
+				 (let* ((plus-bf (clone plus-bf))
+						(bf (functor_function plus-bf)))
+				   (declare (type cl:function bf))
+				   (for (nil (< idx1 idx2) (incf idx1) :returns out-idx)
+					 (_= (aref out-buf out-idx) init)
+					 (incf out-idx)
+					 (_= init (funcall bf init (aref buffer idx1))))))))
+
+	(defmethod-overload exclusive_scan ((first  const-vector-pointer)
+										(last   const-vector-pointer)
+										(result vector-pointer) init)
+	  ;;(format t "exclusive_scan - cvp x vp.~%")
+	  (__pointer-check-iterator-range first last)
+	  (__algo-make-vct-iterator result
+								(__exclusive_scan-imp-8 (opr::vec-ptr-index   first)
+														(opr::vec-ptr-index    last)
+														(opr::vec-ptr-buffer  first)
+														(opr::vec-ptr-index  result)
+														(opr::vec-ptr-buffer result) init #'+)))
+
+	(defmethod-overload exclusive_scan ((first  const-vector-pointer)
+										(last   const-vector-pointer)
+										(result vector-pointer) init plus-bf)
+	  ;;(format t "exclusive_scan - cvp x vp.~%")
+	  (__pointer-check-iterator-range first last)
+	  (__algo-make-vct-iterator result
+								(__exclusive_scan-imp-8 (opr::vec-ptr-index   first)
+														(opr::vec-ptr-index    last)
+														(opr::vec-ptr-buffer  first)
+														(opr::vec-ptr-index  result)
+														(opr::vec-ptr-buffer result) init plus-bf)))))
