@@ -2274,3 +2274,461 @@
 														(opr::vec-ptr-buffer  first)
 														(opr::vec-ptr-index  result)
 														(opr::vec-ptr-buffer result) init plus-bf)))))
+
+;;--------------------------------------------------------------------
+;; ??.?.? transform_inclusive_scan
+;; first   : input_iterator
+;; last    : input_iterator
+;; result  : output_iterator
+;; plus-bf : binary function ( #'+ by default )
+;; init    : initial value
+;; returns : (copy of) result.
+#-(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14)
+(locally (declare (optimize speed))
+
+  ;;PTN; transform_inclusive_scan : 0 -   i  x  o 
+  (labels ((__transform_inclusive_scan-imp-0a (first last result plus-bf uf init)
+			 (let* ((plus-bf (clone plus-bf))
+					(bf (functor_function plus-bf))
+					(uf (functor_function (clone uf))))
+			   (declare (type cl:function bf uf))
+			   (for (nil (_/= first last) (progn
+											(_++ first)
+											(_++ result)) :returns result)
+					(_= init (funcall bf init (funcall uf (_* first))))
+					(_= (_* result) init))))
+
+		   (__transform_inclusive_scan-imp-0b (first last result plus-bf uf)
+			 (let ((init  nil)
+				   (uf (functor_function (clone uf))))
+			   (declare (type cl:function uf))
+			   (_= init (funcall uf (_* first)))
+			   (_= (_* result) init)
+			   (_++ result)
+			   (_++ first)
+			   (if (_== first last)
+				   result
+				   (__transform_inclusive_scan-imp-0a first last result plus-bf uf init)))))
+
+	(defmethod-overload transform_inclusive_scan ((first  input_iterator)
+												  (last   input_iterator)
+												  (result output_iterator) plus-bf uf init)
+	  ;;(format t "transform_inclusive_scan - i x o.~%")
+	  (let ((result (clone result)))
+		(if (_== first last)
+			result
+			(__transform_inclusive_scan-imp-0a (clone first) last result plus-bf uf init))))
+
+	(defmethod-overload transform_inclusive_scan ((first  input_iterator)
+												  (last   input_iterator)
+												  (result output_iterator) plus-bf uf)
+	  ;;(format t "transform_inclusive_scan - i x o.~%")
+	  (let ((result (clone result)))
+		(if (_== first last)
+			result
+			(__transform_inclusive_scan-imp-0b (clone first) last result plus-bf uf)))))
+
+  ;;PTN; transform_inclusive_scan : 1 -  cci x  o 
+  (labels ((__transform_inclusive_scan-imp-1a (cons1 cons2 result plus-bf uf init)
+			 (let* ((plus-bf (clone plus-bf))
+					(bf (functor_function plus-bf))
+					(uf (functor_function (clone uf))))
+			   (declare (type cl:function bf uf))
+			   (for (nil (not (eq cons1 cons2)) (progn
+												  (_++ result)
+												  (setf cons1 (cdr cons1))) :returns result)
+					(_= init (funcall bf init (funcall uf (car cons1))))
+					(_= (_* result) init))))
+
+		   (__transform_inclusive_scan-imp-1b (cons1 cons2 result plus-bf uf)
+			 (let ((init nil)
+				   (uf (functor_function (clone uf))))
+			   (declare (type cl:function uf))
+			   (_= init (funcall uf (car cons1)))
+			   (_= (_* result) init)
+			   (_++ result)
+			   (setf cons1 (cdr cons1))
+			   (if (eq cons1 cons2)
+				   result
+				   (__transform_inclusive_scan-imp-1a cons1 cons2 result plus-bf uf init)))))
+
+	(defmethod-overload transform_inclusive_scan ((first  cons_const_iterator)
+												  (last   cons_const_iterator)
+												  (result     output_iterator) plus-bf uf init)
+	  ;;(format t "transform_inclusive_scan - cci x o.~%")
+	  (let ((result  (clone result))
+			(cons1 (__cons-itr-cons first))
+			(cons2 (__cons-itr-cons  last)))
+		(if (eq cons1 cons2)
+			result
+			(__transform_inclusive_scan-imp-1a cons1 cons2 result plus-bf uf init))))
+
+	(defmethod-overload transform_inclusive_scan ((first  cons_const_iterator)
+												  (last   cons_const_iterator)
+												  (result     output_iterator) plus-bf uf)
+	  ;;(format t "transform_inclusive_scan - cci x o.~%")
+	  (let ((result  (clone result))
+			(cons1 (__cons-itr-cons first))
+			(cons2 (__cons-itr-cons  last)))
+		(if (eq cons1 cons2)
+			result
+			(__transform_inclusive_scan-imp-1b cons1 cons2 result plus-bf uf)))))
+
+  ;;PTN; transform_inclusive_scan : 2 -  cvp x  o 
+  (labels ((__transform_inclusive_scan-imp-2a (idx1 idx2 buffer result plus-bf uf init)
+			 (declare (type fixnum idx1 idx2))
+			 (declare (type cl:vector buffer))
+			 (let* ((plus-bf (clone plus-bf))
+					(bf (functor_function plus-bf))
+					(uf (functor_function (clone uf))))
+			   (declare (type cl:function bf uf))
+			   (for (nil (< idx1 idx2) (progn (_++ result)
+											  (incf idx1)) :returns result)
+					(_= init (funcall bf init (funcall uf (aref buffer idx1))))
+					(_= (_* result) init))))
+
+		   (__transform_inclusive_scan-imp-2b (idx1 idx2 buffer result plus-bf uf)
+			 (declare (type fixnum idx1 idx2))
+			 (declare (type cl:vector buffer))
+			 (let ((init nil)
+				   (uf (functor_function (clone uf))))
+			   (declare (type cl:function uf))
+			   (_= init (funcall uf (aref buffer idx1)))
+			   (_= (_* result) init)
+			   (_++ result)
+			   (incf idx1)
+			   (if (= idx1 idx2)
+				   result
+				   (__transform_inclusive_scan-imp-2a idx1 idx2 buffer result plus-bf uf init)))))
+
+	(defmethod-overload transform_inclusive_scan ((first  const-vector-pointer)
+												  (last   const-vector-pointer)
+												  (result      output_iterator) plus-bf uf init)
+	  ;;(format t "transform_inclusive_scan - cvp x o.~%")
+	  (__pointer-check-iterator-range first last)
+	  (let ((result (clone result))
+			(idx1 (opr::vec-ptr-index first))
+			(idx2 (opr::vec-ptr-index  last)))
+		(if (= idx1 idx2)
+			result
+			(__transform_inclusive_scan-imp-2a idx1 idx2
+											   (opr::vec-ptr-buffer first) result plus-bf uf init))))
+
+	(defmethod-overload transform_inclusive_scan ((first  const-vector-pointer)
+												  (last   const-vector-pointer)
+												  (result      output_iterator) plus-bf uf)
+	  ;;(format t "transform_inclusive_scan - cvp x o.~%")
+	  (__pointer-check-iterator-range first last)
+	  (let ((result (clone result))
+			(idx1 (opr::vec-ptr-index first))
+			(idx2 (opr::vec-ptr-index  last)))
+		(if (= idx1 idx2)
+			result
+			(__transform_inclusive_scan-imp-2b idx1 idx2
+											   (opr::vec-ptr-buffer first) result plus-bf uf)))))
+
+  ;;PTN; transform_inclusive_scan : 3 -   i  x  ci
+  (labels ((__transform_inclusive_scan-imp-3a (first last out-cons plus-bf uf init)
+			 (let* ((plus-bf (clone plus-bf))
+					(bf (functor_function plus-bf))
+					(uf (functor_function (clone uf))))
+			   (declare (type cl:function bf uf))
+			   (for (nil (_/= first last) (progn
+											(_++ first)
+											(setf out-cons (cdr out-cons))) :returns out-cons)
+					(_= init (funcall bf init (funcall uf (_* first))))
+					(_= (car out-cons) init))))
+
+		   (__transform_inclusive_scan-imp-3b (first last out-cons plus-bf uf)
+			 (let ((init  nil)
+				   (uf (functor_function (clone uf))))
+			   (declare (type cl:function uf))
+			   (_= init (funcall uf (_* first)))
+			   (_= (car out-cons) init)
+			   (setf out-cons (cdr out-cons))
+			   (_++ first)
+			   (if (_== first last)
+				   out-cons
+				   (__transform_inclusive_scan-imp-3a first last out-cons plus-bf uf init)))))
+
+	(defmethod-overload transform_inclusive_scan ((first  input_iterator)
+												  (last   input_iterator)
+												  (result  cons_iterator) plus-bf uf init)
+	  ;;(format t "transform_inclusive_scan - i x ci.~%")
+	  (if (_== first last)
+		  (clone result)
+		  (__algo-make-cns-iterator result
+									(__transform_inclusive_scan-imp-3a (clone first) last
+																	   (__cons-itr-cons result) plus-bf uf init))))
+
+	(defmethod-overload transform_inclusive_scan ((first  input_iterator)
+												  (last   input_iterator)
+												  (result  cons_iterator) plus-bf uf)
+	  ;;(format t "transform_inclusive_scan - i x ci.~%")
+	  (if (_== first last)
+		  (clone result)
+		  (__algo-make-cns-iterator result
+									(__transform_inclusive_scan-imp-3b (clone first) last
+																	   (__cons-itr-cons result) plus-bf uf)))))
+
+  ;;PTN; transform_inclusive_scan : 4 -  cci x  ci
+  (labels ((__transform_inclusive_scan-imp-4a (cons1 cons2 out-cons plus-bf uf init)
+			 (let* ((plus-bf (clone plus-bf))
+					(bf (functor_function plus-bf))
+					(uf (functor_function (clone uf))))
+			   (declare (type cl:function bf uf))
+			   (for (nil (not (eq cons1 cons2)) (progn (setf cons1    (cdr cons1))
+													   (setf out-cons (cdr out-cons))) :returns out-cons)
+					(_= init (funcall bf init (funcall uf (car cons1))))
+					(_= (car out-cons) init))))
+
+		   (__transform_inclusive_scan-imp-4b (cons1 cons2 out-cons plus-bf uf)
+			 (let ((init nil)
+				   (uf (functor_function (clone uf))))
+			   (declare (type cl:function uf))
+			   (_= init (funcall uf (car cons1)))
+			   (_= (car out-cons) init)
+			   (setf out-cons (cdr out-cons))
+			   (setf cons1 (cdr cons1))
+			   (if (eq cons1 cons2)
+				   out-cons
+				   (__transform_inclusive_scan-imp-4a cons1 cons2 out-cons plus-bf uf init)))))
+
+	(defmethod-overload transform_inclusive_scan ((first  cons_const_iterator)
+												  (last   cons_const_iterator)
+												  (result       cons_iterator) plus-bf uf init)
+	  ;;(format t "transform_inclusive_scan - cci x ci.~%")
+	  (let ((cons1 (__cons-itr-cons first))
+			(cons2 (__cons-itr-cons  last)))
+		(if (eq cons1 cons2)
+			(clone result)
+			(__algo-make-cns-iterator result
+									  (__transform_inclusive_scan-imp-4a cons1 cons2
+																		 (__cons-itr-cons result) plus-bf uf init)))))
+
+	(defmethod-overload transform_inclusive_scan ((first  cons_const_iterator)
+												  (last   cons_const_iterator)
+												  (result       cons_iterator) plus-bf uf)
+	  ;;(format t "transform_inclusive_scan - cci x ci.~%")
+	  (let ((cons1 (__cons-itr-cons first))
+			(cons2 (__cons-itr-cons  last)))
+		(if (eq cons1 cons2)
+			(clone result)
+			(__algo-make-cns-iterator result
+									  (__transform_inclusive_scan-imp-4b cons1 cons2
+																		 (__cons-itr-cons result) plus-bf uf))))))
+
+  ;;PTN; transform_inclusive_scan : 5 -  cvp x  ci
+  (labels ((__transform_inclusive_scan-imp-5a (idx1 idx2 buffer out-cons plus-bf uf init)
+			 (declare (type fixnum idx1 idx2))
+			 (declare (type cl:vector buffer))
+			 (let* ((plus-bf (clone plus-bf))
+					(bf (functor_function plus-bf))
+					(uf (functor_function (clone uf))))
+			   (declare (type cl:function bf uf))
+			   (for (nil (< idx1 idx2) (progn (incf idx1)
+											  (setf out-cons (cdr out-cons))) :returns out-cons)
+					(_= init (funcall bf init (funcall uf (aref buffer idx1))))
+					(_= (car out-cons) init))))
+
+		   (__transform_inclusive_scan-imp-5b (idx1 idx2 buffer out-cons plus-bf uf)
+			 (declare (type fixnum idx1 idx2))
+			 (declare (type cl:vector buffer))
+			 (let ((init nil)
+				   (uf (functor_function (clone uf))))
+			   (declare (type cl:function uf))
+			   (_= init (funcall uf (aref buffer idx1)))
+			   (_= (car out-cons) init)
+			   (setf out-cons (cdr out-cons))
+			   (incf idx1)
+			   (if (= idx1 idx2)
+				   out-cons
+				   (__transform_inclusive_scan-imp-5a idx1 idx2 buffer out-cons plus-bf uf init)))))
+
+	(defmethod-overload transform_inclusive_scan ((first  const-vector-pointer)
+												  (last   const-vector-pointer)
+												  (result        cons_iterator) plus-bf uf init)
+	  ;;(format t "transform_inclusive_scan - cvp x ci.~%")
+	  (__pointer-check-iterator-range first last)
+	  (let ((idx1 (opr::vec-ptr-index first))
+			(idx2 (opr::vec-ptr-index  last)))
+		(if (= idx1 idx2)
+			(clone result)
+			(__algo-make-cns-iterator result
+									  (__transform_inclusive_scan-imp-5a idx1 idx2
+																		 (opr::vec-ptr-buffer first)
+																		 (__cons-itr-cons result) plus-bf uf init)))))
+
+	(defmethod-overload transform_inclusive_scan ((first  const-vector-pointer)
+												  (last   const-vector-pointer)
+												  (result        cons_iterator) plus-bf uf)
+	  ;;(format t "transform_inclusive_scan - cvp x ci.~%")
+	  (__pointer-check-iterator-range first last)
+	  (let ((idx1 (opr::vec-ptr-index first))
+			(idx2 (opr::vec-ptr-index  last)))
+		(if (= idx1 idx2)
+			(clone result)
+			(__algo-make-cns-iterator result
+									  (__transform_inclusive_scan-imp-5b idx1 idx2
+																		 (opr::vec-ptr-buffer first)
+																		 (__cons-itr-cons result) plus-bf uf))))))
+
+  ;;PTN; transform_inclusive_scan : 6 -   i  x  vp
+  (labels ((__transform_inclusive_scan-imp-6a (first last out-idx out-buf plus-bf uf init)
+			 (declare (type fixnum out-idx))
+			 (declare (type cl:vector out-buf))
+			 (let* ((plus-bf (clone plus-bf))
+					(bf (functor_function plus-bf))
+					(uf (functor_function (clone uf))))
+			   (declare (type cl:function bf uf))
+			   (for (nil (_/= first last) (progn
+											(_++ first)
+											(incf out-idx)) :returns out-idx)
+					(_= init (funcall bf init (funcall uf (_* first))))
+					(_= (aref out-buf out-idx) init))))
+
+		   (__transform_inclusive_scan-imp-6b (first last out-idx out-buf plus-bf uf)
+			 (declare (type fixnum out-idx))
+			 (declare (type cl:vector out-buf))
+			 (let ((init  nil)
+				   (uf (functor_function (clone uf))))
+			   (declare (type cl:function uf))
+			   (_= init (funcall uf (_* first)))
+			   (_= (aref out-buf out-idx) init)
+			   (incf out-idx)
+			   (_++ first)
+			   (if (_== first last)
+				   out-idx
+				   (__transform_inclusive_scan-imp-6a first last out-idx out-buf plus-bf uf init)))))
+
+	(defmethod-overload transform_inclusive_scan ((first  input_iterator)
+												  (last   input_iterator)
+												  (result vector-pointer) plus-bf uf init)
+	  ;;(format t "transform_inclusive_scan - i x vp.~%")
+	  (if (_== first last)
+		  (clone result)
+		  (__algo-make-vct-iterator result
+									(__transform_inclusive_scan-imp-6a (clone first) last
+																	   (opr::vec-ptr-index  result)
+																	   (opr::vec-ptr-buffer result) plus-bf uf init))))
+	
+	(defmethod-overload transform_inclusive_scan ((first  input_iterator)
+												  (last   input_iterator)
+												  (result vector-pointer) plus-bf uf)
+	  ;;(format t "transform_inclusive_scan - i x vp.~%")
+	  (if (_== first last)
+		  (clone result)
+		  (__algo-make-vct-iterator result
+									(__transform_inclusive_scan-imp-6b (clone first) last
+																	   (opr::vec-ptr-index  result)
+																	   (opr::vec-ptr-buffer result) plus-bf uf)))))
+
+  ;;PTN; transform_inclusive_scan : 7 -  cci x  vp
+  (labels ((__transform_inclusive_scan-imp-7a (cons1 cons2 out-idx out-buf plus-bf uf init)
+			 (declare (type fixnum out-idx))
+			 (declare (type cl:vector out-buf))
+			 (let* ((plus-bf (clone plus-bf))
+					(bf (functor_function plus-bf))
+					(uf (functor_function (clone uf))))
+			   (declare (type cl:function bf uf))
+			   (for (nil (not (eq cons1 cons2)) (progn (setf cons1 (cdr cons1))
+													   (incf out-idx)) :returns out-idx)
+					(_= init (funcall bf init (funcall uf (car cons1))))
+					(_= (aref out-buf out-idx) init))))
+
+		   (__transform_inclusive_scan-imp-7b (cons1 cons2 out-idx out-buf plus-bf uf)
+			 (declare (type fixnum out-idx))
+			 (declare (type cl:vector out-buf))
+			 (let ((init nil)
+				   (uf (functor_function (clone uf))))
+			   (declare (type cl:function uf))
+			   (_= init (funcall uf (car cons1)))
+			   (_= (aref out-buf out-idx) init)
+			   (incf out-idx)
+			   (setf cons1 (cdr cons1))
+			   (if (eq cons1 cons2)
+				   out-idx
+				   (__transform_inclusive_scan-imp-7a cons1 cons2 out-idx out-buf plus-bf uf init)))))
+
+	(defmethod-overload transform_inclusive_scan ((first  cons_const_iterator)
+												  (last   cons_const_iterator)
+												  (result      vector-pointer) plus-bf uf init)
+	  ;;(format t "transform_inclusive_scan - cci x vp.~%")
+	  (let ((cons1 (__cons-itr-cons first))
+			(cons2 (__cons-itr-cons  last)))
+		(if (eq cons1 cons2)
+			(clone result)
+			(__algo-make-vct-iterator result
+									  (__transform_inclusive_scan-imp-7a cons1 cons2
+																		 (opr::vec-ptr-index  result)
+																		 (opr::vec-ptr-buffer result) plus-bf uf init)))))
+
+	(defmethod-overload transform_inclusive_scan ((first  cons_const_iterator)
+												  (last   cons_const_iterator)
+												  (result      vector-pointer) plus-bf uf)
+	  ;;(format t "transform_inclusive_scan - cci x vp.~%")
+	  (let ((cons1 (__cons-itr-cons first))
+			(cons2 (__cons-itr-cons  last)))
+		(if (eq cons1 cons2)
+			(clone result)
+			(__algo-make-vct-iterator result
+									  (__transform_inclusive_scan-imp-7b cons1 cons2
+																		 (opr::vec-ptr-index  result)
+																		 (opr::vec-ptr-buffer result) plus-bf uf))))))
+
+  ;;PTN; transform_inclusive_scan : 8 -  cvp x  vp
+  (labels ((__transform_inclusive_scan-imp-8a (idx1 idx2 buffer out-idx out-buf plus-bf uf init)
+			 (declare (type fixnum idx1 idx2 out-idx))
+			 (declare (type cl:vector buffer out-buf))
+			 (let* ((plus-bf (clone plus-bf))
+					(bf (functor_function plus-bf))
+					(uf (functor_function (clone uf))))
+			   (declare (type cl:function bf uf))
+			   (for (nil (< idx1 idx2) (progn (incf idx1)
+											  (incf out-idx)) :returns out-idx)
+					(_= init (funcall bf init (funcall uf (aref buffer idx1))))
+					(_= (aref out-buf out-idx) init))))
+
+		   (__transform_inclusive_scan-imp-8b (idx1 idx2 buffer out-idx out-buf plus-bf uf)
+			 (declare (type fixnum idx1 idx2 out-idx))
+			 (declare (type cl:vector buffer out-buf))
+			 (let ((init nil)
+				   (uf (functor_function (clone uf))))
+			   (declare (type cl:function uf))
+			   (_= init (funcall uf (aref buffer idx1)))
+			   (_= (aref out-buf out-idx) init)
+			   (incf out-idx)
+			   (incf idx1)
+			   (if (= idx1 idx2)
+				   out-idx
+				   (__transform_inclusive_scan-imp-8a idx1 idx2 buffer out-idx out-buf plus-bf uf init)))))
+
+	(defmethod-overload transform_inclusive_scan ((first  const-vector-pointer)
+												  (last   const-vector-pointer)
+												  (result       vector-pointer) plus-bf uf init)
+	  ;;(format t "transform_inclusive_scan - cvp x vp.~%")
+	  (__pointer-check-iterator-range first last)
+	  (let ((idx1 (opr::vec-ptr-index first))
+			(idx2 (opr::vec-ptr-index  last)))
+		(if (= idx1 idx2)
+			(clone result)
+			(__algo-make-vct-iterator result
+									  (__transform_inclusive_scan-imp-8a idx1 idx2
+																		 (opr::vec-ptr-buffer  first)
+																		 (opr::vec-ptr-index  result)
+																		 (opr::vec-ptr-buffer result) plus-bf uf init)))))
+
+	(defmethod-overload transform_inclusive_scan ((first  const-vector-pointer)
+												  (last   const-vector-pointer)
+												  (result       vector-pointer) plus-bf uf)
+	  ;;(format t "transform_inclusive_scan - cvp x vp.~%")
+	  (__pointer-check-iterator-range first last)
+	  (let ((idx1 (opr::vec-ptr-index first))
+			(idx2 (opr::vec-ptr-index  last)))
+		(if (= idx1 idx2)
+			(clone result)
+			(__algo-make-vct-iterator result
+									  (__transform_inclusive_scan-imp-8b idx1 idx2
+																		 (opr::vec-ptr-buffer  first)
+																		 (opr::vec-ptr-index  result)
+																		 (opr::vec-ptr-buffer result) plus-bf uf)))))))

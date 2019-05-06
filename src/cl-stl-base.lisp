@@ -293,6 +293,10 @@
    cl-stl-0x98
    cl-stl-0x11
    cl-stl-0x14) :exclusive_scan
+#-(or
+   cl-stl-0x98
+   cl-stl-0x11
+   cl-stl-0x14) :transform_inclusive_scan
 				;+-----------------------------------------+
 				;| algorithm                               |
 				;+-----------------------------------------+
@@ -1159,6 +1163,25 @@
   result     : output_iterator.
   init       : initial value
   binary-op  : binary functor ( use #'+ as defualt )
+
+<<return value>>
+  copy of result ( point to end of sequence ).
+")
+
+#-(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14)
+(declare-method-overload transform_inclusive_scan (5 6)
+  :documentation "
+<<signature>>
+  (cl-stl:inclusive_scan first last result binary-op unary-op)       [0x17]
+  (cl-stl:inclusive_scan first last result binary-op unary-op init)  [0x17]
+
+<<parameters>>
+  first      : input_iterator.
+  last       : input_iterator.
+  result     : output_iterator.
+  binary-op  : binary functor.
+  unary-op   : unary functor.
+  init       : initial value
 
 <<return value>>
   copy of result ( point to end of sequence ).
