@@ -2280,7 +2280,8 @@
 ;; first   : input_iterator
 ;; last    : input_iterator
 ;; result  : output_iterator
-;; plus-bf : binary function ( #'+ by default )
+;; plus-bf : binary functor
+;; uf      : unary functor
 ;; init    : initial value
 ;; returns : (copy of) result.
 #-(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14)
@@ -2732,3 +2733,205 @@
 																		 (opr::vec-ptr-buffer  first)
 																		 (opr::vec-ptr-index  result)
 																		 (opr::vec-ptr-buffer result) plus-bf uf)))))))
+
+
+;;--------------------------------------------------------------------
+;; ??.?.? transform_exclusive_scan
+;; first   : input_iterator
+;; last    : input_iterator
+;; result  : output_iterator
+;; init    : initial value
+;; bf      : binary functor
+;; uf      : unary functor
+;; returns : (copy of) result.
+#-(or cl-stl-0x98 cl-stl-0x11 cl-stl-0x14)
+(locally (declare (optimize speed))
+
+  ;;PTN; transform_exclusive_scan : 0 -   i  x  o 
+  (defmethod transform_exclusive_scan ((first  input_iterator)
+									   (last   input_iterator)
+									   (result output_iterator) init bf uf)
+	;;(format t "transform_exclusive_scan - i x o.~%")
+	(let ((result (clone result)))
+	  (if (_== first last)
+		  result
+		  (let ((first (clone first))
+				(bf (functor_function (clone bf)))
+				(uf (functor_function (clone uf))))
+			(declare (type cl:function bf uf))
+			(for (nil (_/= first last) (_++ first) :returns result)
+			  (_= (_* result) init)
+			  (_++ result)
+			  (_= init (funcall bf init (funcall uf (_* first)))))))))
+
+  ;;PTN; transform_exclusive_scan : 1 -  cci x  o 
+  (defmethod transform_exclusive_scan ((first  cons_const_iterator)
+									   (last   cons_const_iterator)
+									   (result output_iterator) init bf uf)
+	;;(format t "transform_exclusive_scan - cci x o.~%")
+	(let ((cons1  (__cons-itr-cons first))
+		  (cons2  (__cons-itr-cons  last))
+		  (result (clone result)))
+	  (if (eq cons1 cons2)
+		  result
+		  (let ((bf (functor_function (clone bf)))
+				(uf (functor_function (clone uf))))
+			(declare (type cl:function bf uf))
+			(for (nil (not (eq cons1 cons2)) (setf cons1 (cdr cons1)) :returns result)
+			  (_= (_* result) init)
+			  (_++ result)
+			  (_= init (funcall bf init (funcall uf (car cons1)))))))))
+
+  ;;PTN; transform_exclusive_scan : 2 -  cvp x  o 
+  (defmethod transform_exclusive_scan ((first  const-vector-pointer)
+									   (last   const-vector-pointer)
+									   (result output_iterator) init bf uf)
+	;;(format t "transform_exclusive_scan - cvp x o.~%")
+	(__pointer-check-iterator-range first last)
+	(let ((idx1   (opr::vec-ptr-index  first))
+		  (idx2   (opr::vec-ptr-index   last))
+		  (buffer (opr::vec-ptr-buffer first)))
+	  (declare (type fixnum idx1 idx2))
+	  (declare (type cl:vector buffer))
+	  (let ((result (clone result)))
+		(if (= idx1 idx2)
+			result
+			(let ((bf (functor_function (clone bf)))
+				  (uf (functor_function (clone uf))))
+			  (declare (type cl:function bf uf))
+			  (for (nil (< idx1 idx2) (incf idx1) :returns result)
+				(_= (_* result) init)
+				(_++ result)
+				(_= init (funcall bf init (funcall uf (aref buffer idx1))))))))))
+
+  ;;PTN; transform_exclusive_scan : 3 -   i  x  ci
+  (defmethod transform_exclusive_scan ((first input_iterator)
+									   (last  input_iterator)
+									   (result cons_iterator) init bf uf)
+	;;(format t "transform_exclusive_scan - i x ci.~%")
+	(if (_== first last)
+		(clone result)
+		(let ((out-cons (__cons-itr-cons result))
+			  (first    (clone first))
+			  (bf       (functor_function (clone bf)))
+			  (uf       (functor_function (clone uf))))
+		  (declare (type cl:function bf uf))
+		  (for (nil (_/= first last) (_++ first)
+									 :returns (__algo-make-cns-iterator result out-cons))
+			   (_= (car out-cons) init)
+			   (setf out-cons (cdr out-cons))
+			   (_= init (funcall bf init (funcall uf (_* first))))))))
+
+
+  ;;PTN; transform_exclusive_scan : 4 -  cci x  ci
+  (defmethod transform_exclusive_scan ((first  cons_const_iterator)
+									   (last   cons_const_iterator)
+									   (result cons_iterator) init bf uf)
+	;;(format t "transform_exclusive_scan - cci x ci.~%")
+	(let ((cons1 (__cons-itr-cons first))
+		  (cons2 (__cons-itr-cons  last)))
+	  (if (eq cons1 cons2)
+		  (clone result)
+		  (let ((out-cons (__cons-itr-cons result))
+				(bf       (functor_function (clone bf)))
+				(uf       (functor_function (clone uf))))
+			(declare (type cl:function bf uf))
+			(for (nil (not (eq cons1 cons2)) (setf cons1 (cdr cons1))
+								:returns (__algo-make-cns-iterator result out-cons))
+				 (_= (car out-cons) init)
+				 (setf out-cons (cdr out-cons))
+				 (_= init (funcall bf init (funcall uf (car cons1)))))))))
+
+  ;;PTN; transform_exclusive_scan : 5 -  cvp x  ci 
+  (defmethod transform_exclusive_scan ((first  const-vector-pointer)
+									   (last   const-vector-pointer)
+									   (result cons_iterator) init bf uf)
+	;;(format t "transform_exclusive_scan - cvp x ci.~%")
+	(__pointer-check-iterator-range first last)
+	(let ((idx1   (opr::vec-ptr-index  first))
+		  (idx2   (opr::vec-ptr-index   last))
+		  (buffer (opr::vec-ptr-buffer first)))
+	  (declare (type fixnum idx1 idx2))
+	  (declare (type cl:vector buffer))
+	  (if (= idx1 idx2)
+		  (clone result)
+		  (let ((out-cons (__cons-itr-cons result))
+				(bf       (functor_function (clone bf)))
+				(uf       (functor_function (clone uf))))
+			(declare (type cl:function bf uf))
+			(for (nil (< idx1 idx2) (incf idx1)
+									:returns (__algo-make-cns-iterator result out-cons))
+			  (_= (car out-cons) init)
+			  (setf out-cons (cdr out-cons))
+			  (_= init (funcall bf init (funcall uf (aref buffer idx1)))))))))
+
+  ;;PTN; transform_exclusive_scan : 6 -   i  x  vp
+  (defmethod transform_exclusive_scan ((first  input_iterator)
+									   (last   input_iterator)
+									   (result vector-pointer) init bf uf)
+	  ;;(format t "transform_exclusive_scan - i x vp.~%")
+	(if (_== first last)
+		(clone result)
+		(let ((out-idx (opr::vec-ptr-index  result))
+			  (out-buf (opr::vec-ptr-buffer result))
+			  (first   (clone first))
+			  (bf      (functor_function (clone bf)))
+			  (uf      (functor_function (clone uf))))
+		  (declare (type fixnum    out-idx))
+		  (declare (type cl:vector out-buf))
+		  (declare (type cl:function bf uf))
+		  (for (nil (_/= first last) (_++ first)
+									 :returns (__algo-make-vct-iterator result out-idx))
+			   (_= (aref out-buf out-idx) init)
+			   (incf out-idx)
+			   (_= init (funcall bf init (funcall uf (_* first))))))))
+
+  ;;PTN; transform_exclusive_scan : 7 -  cci x  vp
+  (defmethod transform_exclusive_scan ((first  cons_const_iterator)
+									   (last   cons_const_iterator)
+									   (result vector-pointer) init bf uf)
+	;;(format t "transform_exclusive_scan - cci x vp.~%")
+	(let ((cons1 (__cons-itr-cons first))
+		  (cons2 (__cons-itr-cons  last)))
+	  (if (eq cons1 cons2)
+		  (clone result)
+		  (let ((out-idx (opr::vec-ptr-index  result))
+				(out-buf (opr::vec-ptr-buffer result))
+				(bf      (functor_function (clone bf)))
+				(uf      (functor_function (clone uf))))
+			(declare (type fixnum    out-idx))
+			(declare (type cl:vector out-buf))
+			(declare (type cl:function bf uf))
+			(for (nil (not (eq cons1 cons2)) (setf cons1 (cdr cons1))
+									 :returns (__algo-make-vct-iterator result out-idx))
+				 (_= (aref out-buf out-idx) init)
+				 (incf out-idx)
+				 (_= init (funcall bf init (funcall uf (car cons1)))))))))
+
+  ;;PTN; transform_exclusive_scan : 8 -  cvp x  vp 
+  (defmethod transform_exclusive_scan ((first  const-vector-pointer)
+									   (last   const-vector-pointer)
+									   (result vector-pointer) init bf uf)
+	;;(format t "transform_exclusive_scan - cvp x vp.~%")
+	(__pointer-check-iterator-range first last)
+	(let ((idx1   (opr::vec-ptr-index  first))
+		  (idx2   (opr::vec-ptr-index   last))
+		  (buffer (opr::vec-ptr-buffer first)))
+	  (declare (type fixnum idx1 idx2))
+	  (declare (type cl:vector buffer))
+	  (if (= idx1 idx2)
+		  (clone result)
+		  (let ((out-idx (opr::vec-ptr-index  result))
+				(out-buf (opr::vec-ptr-buffer result))
+				(bf      (functor_function (clone bf)))
+				(uf      (functor_function (clone uf))))
+			(declare (type fixnum    out-idx))
+			(declare (type cl:vector out-buf))
+			(declare (type cl:function bf uf))
+			(for (nil (< idx1 idx2) (incf idx1)
+									:returns (__algo-make-vct-iterator result out-idx))
+				 (_= (aref out-buf out-idx) init)
+				 (incf out-idx)
+				 (_= init (funcall bf init (funcall uf (aref buffer idx1))))))))))
+
+
